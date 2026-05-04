@@ -5,6 +5,8 @@
     - Lots of booleans for the meta paths that have been built?
     - Also booleans for EVERY DARN LEVEL to check what the player has access to? (surely nah...) Surely I can do a single int and the player has access to every level number <= level tracker int.
 
+- Tilemap just for snapping purposes. Might not even use it?
+
 # Scripts
 
 ## Managers

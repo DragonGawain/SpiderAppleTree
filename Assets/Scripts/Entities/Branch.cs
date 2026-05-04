@@ -1,16 +1,14 @@
-using UnityEngine;
+using System;
 
-public class Branch : MonoBehaviour
+[Serializable]
+public class Branch : IWalkable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    // Y is NOT readonly! Branches can fall!
+    public Coord coord;
+    public readonly int length;
+    public readonly Direction direction;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    int supportLevel;
+
+    public bool CanWalkHorizontal(int y) => true;
 }

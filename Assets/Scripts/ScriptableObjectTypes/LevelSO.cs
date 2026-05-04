@@ -1,16 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
 
-public class LevelSO : MonoBehaviour
+[CreateAssetMenu(fileName = "NewLevel", menuName = "Level")]
+public class LevelSO : ScriptableObject
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [Header("Trees")]
+    public List<Trunk> trees = new();
+    public int asda;
 }

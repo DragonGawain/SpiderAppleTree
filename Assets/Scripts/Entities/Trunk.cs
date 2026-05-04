@@ -1,16 +1,17 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Trunk : MonoBehaviour
+[Serializable]
+public class Trunk : IWalkable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public readonly Coord coord;
+    public readonly int height;
+    public List<Branch> leftSide = new();
+    public List<Branch> rightSide = new();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    // can walk hori at the BASE of trees! Connecting trunks are floating trunks with a height of 1.
+    public bool CanWalkHorizontal(int y) => y == coord.y;
+
+    public bool CanWalkVertical() => true;
 }

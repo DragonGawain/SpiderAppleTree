@@ -1,16 +1,11 @@
-using UnityEngine;
-
-public class IWalkable : MonoBehaviour
+public enum Direction
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    LEFT,
+    RIGHT
+}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+public interface IWalkable
+{
+    bool CanWalkHorizontal(int y) => false;
+    bool CanWalkVertical() => false;
 }
