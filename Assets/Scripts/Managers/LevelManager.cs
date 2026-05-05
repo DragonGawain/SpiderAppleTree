@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using Unity.Serialization.Json;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class LevelManager : MonoBehaviour
 {
+    public Tilemap tilemap;
     static Level activeLevel;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,7 +28,7 @@ public class LevelManager : MonoBehaviour
                     new(
                         Path.Combine(
                             SaveManager.levelStatePath[LevelStateDictionary.levelStates[levelID]],
-                            levelID.ToString()
+                            levelID.ToString() + ".txt"
                         )
                     )
             )

@@ -24,33 +24,35 @@ public class LevelAdapter : IJsonAdapter<Level>
 
         foreach (var group in walkables)
         {
-            switch ((ILevelElement)group.Key)
+            if (group.Key == typeof(Branch))
             {
-                case Branch:
-                    context.Writer.WriteKey("branches");
-                    using (context.Writer.WriteArrayScope())
-                    {
-                        foreach (Branch b in group)
-                            context.SerializeValue(b);
-                    }
-                    break;
-                case Trunk:
-                    context.Writer.WriteKey("trunks");
-                    using (context.Writer.WriteArrayScope())
-                    {
-                        foreach (Trunk t in group)
-                            context.SerializeValue(t);
-                    }
-                    break;
-                // case WebString:
-                //     break;
-                // case WebSupport:
-                //     break;
-                default:
-                    Debug.Log(
-                        "<color=red>Unknown type of walkable supplied when serializing walkables!</color>"
-                    );
-                    break;
+                context.Writer.WriteKey("branches");
+                using (context.Writer.WriteArrayScope())
+                {
+                    foreach (Branch b in group)
+                        context.SerializeValue(b);
+                }
+            }
+            else if (group.Key == typeof(Trunk))
+            {
+                context.Writer.WriteKey("trunks");
+                using (context.Writer.WriteArrayScope())
+                {
+                    foreach (Trunk t in group)
+                        context.SerializeValue(t);
+                }
+            }
+            // case WebString:
+            //     break;
+            // case WebSupport:
+            //     break;
+            else
+            {
+                Debug.Log(
+                    "<color=red>Unknown type of walkable supplied when serializing walkables! Supplied walkable: "
+                        + group.Key
+                        + "</color>"
+                );
             }
         }
     }

@@ -5,19 +5,20 @@ using UnityEngine;
 [Serializable]
 public class Trunk : IWalkable
 {
-    public Trunk(Coord coord, int height, Level level = null)
+    public Trunk(Coord coord, int height)
     {
         this.coord = coord;
         this.height = height;
-        if (level == null)
+
+        if (SaveManager.GetCreatingLevel())
             for (int i = coord.y; i < coord.y + height; i++)
-                LevelManager.GetActiveLevel().AddToWalkableDict(new Coord(coord.x, i), this);
+                SaveManager.GetNewLevel().AddToWalkableDict(new Coord(coord.x, i), this);
         else
             for (int i = coord.y; i < coord.y + height; i++)
-                level.AddToWalkableDict(new Coord(coord.x, i), this);
+                LevelManager.GetActiveLevel().AddToWalkableDict(new Coord(coord.x, i), this);
     }
 
-    public Trunk(int x, int y, int height, Level level = null)
+    public Trunk(int x, int y, int height)
         : this(new Coord(x, y), height) { }
 
     public readonly Coord coord;

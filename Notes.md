@@ -33,6 +33,7 @@
 - Handles creating and loading saves
     - Game file
     - Solved level solution (Read/write) [Might move this to LevelManager]
+    - Level creation file saving
 
 ### LevelManager
 

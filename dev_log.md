@@ -15,3 +15,5 @@
 - All this serialization stuff is untested. Next step is creating some objects to represent these things, trying to make a save file, and loading a file. Creating the json from scratch without a sample is surely doable, but sounds like a pain.
 - Renamed the SampleScene to LevelEditor. I'll use it to make the levels (paint the levels, then assign the level ID and hit a button to create a new/overwrite an existing file)
 - Starting to work on level editor system (painting!)
+- Successfully wrote a painted level to a file!
+    - This means that I have the paint-based level editor that I wanted!
