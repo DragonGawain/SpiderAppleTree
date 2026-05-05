@@ -6,7 +6,10 @@ public class Level
 {
     // This was <(int, int), int>, with the tuple being x,y coords, and the value being the number of walkables at the loc.
     // This dealt with overlapping walkables.
+
+    // This is a dictionary and not a set to make searching by coordinate O(1) instead of O(n)
     Dictionary<Coord, ILevelElement> isWalkable = new();
+    HashSet<ILevelElement> uniqueLevelElements = new();
     readonly int levelID;
 
     public Level(int id)
@@ -45,6 +48,12 @@ public class Level
     }
 
     public Dictionary<Coord, ILevelElement> GetIsWalkable() => isWalkable;
+
+    public void AddNewElementToLevel(ILevelElement ile) => uniqueLevelElements.Add(ile);
+
+    public void RemoveElementFromLevel(ILevelElement ile) => uniqueLevelElements.Remove(ile);
+
+    public HashSet<ILevelElement> GetLevelElements() => uniqueLevelElements;
 
     public int GetLevelID() => levelID;
 }

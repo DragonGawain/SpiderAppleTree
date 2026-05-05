@@ -17,9 +17,13 @@ public class LevelAdapter : IJsonAdapter<Level>
         using var os = context.Writer.WriteObjectScope();
         context.Writer.WriteKeyValue("levelID", value.GetLevelID());
 
+        // IEnumerable<IGrouping<Type, ILevelElement>> walkables = value
+        //     .GetIsWalkable()
+        //     .Values.Distinct()
+        //     .GroupBy(w => w.GetType());
+
         IEnumerable<IGrouping<Type, ILevelElement>> walkables = value
-            .GetIsWalkable()
-            .Values.Distinct()
+            .GetLevelElements()
             .GroupBy(w => w.GetType());
 
         foreach (var group in walkables)

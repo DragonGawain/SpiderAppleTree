@@ -5,6 +5,7 @@ public class LevelStateDictionary
     public static Dictionary<int, LevelState> levelStates =
         new()
         {
+            { 000, LevelState.FRESH },
             { 001, LevelState.FRESH },
             { 002, LevelState.FRESH },
             { 003, LevelState.FRESH },

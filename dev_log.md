@@ -17,3 +17,6 @@
 - Starting to work on level editor system (painting!)
 - Successfully wrote a painted level to a file!
     - This means that I have the paint-based level editor that I wanted!
+- Loaded a level successfully!!!
+- Data is currently all being populated to a tilemap. I may want to change that at some point (when I make it such that branches can fall).
+    - That being said, manipulating targetted cells with SetTile is pretty easy (can `SetTile(V3I, null)` to clear a cell)
