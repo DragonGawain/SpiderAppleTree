@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e52fdf280ce46b4d9c23228c244ff1e, type: 3}
   m_Name: NewLevel
   m_EditorClassIdentifier: Assembly-CSharp::LevelSO
-  level: {fileID: 0}
+  trees:
+  - leftSide: []
+    rightSide: []
+  asda: 0

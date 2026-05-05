@@ -4,7 +4,7 @@ public enum Direction
     RIGHT
 }
 
-public interface IWalkable
+public interface IWalkable : ILevelElement
 {
     bool CanWalkHorizontal(int y) => false;
     bool CanWalkVertical() => false;
