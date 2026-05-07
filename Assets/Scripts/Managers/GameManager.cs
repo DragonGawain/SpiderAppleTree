@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     // TRACKER VARS
 
     // GENERAL (??? what does that even mean? "Stuff that doesn't fit anywhere else"?)
-    GameState gameState = GameState.MAIN_MENU;
+    // GameState gameState = GameState.MAIN_MENU;
 
     static GameManager singleton;
 

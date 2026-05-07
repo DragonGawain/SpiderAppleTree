@@ -48,3 +48,6 @@
 
 - Fixed trunk horizontal walkable status
 - Fixed fruits only being collected when the cell it is on was left, instead of when the cell is entered.
+- Added web menu UI
+- Set up web menu controls (both keyboard and mouse)
+- Web menu visuals and selection is working as intended!

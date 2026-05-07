@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
 
     IEnumerator SmoothMoveAnimation(Direction dir)
     {
-        InputManager.DisableMovementInputs();
+        InputManager.DisableAllInputs();
 
         Vector3 oldPos = transform.position;
         Vector3 targetPos =

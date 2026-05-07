@@ -2,14 +2,18 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(UIManager))]
 public class InputManager : MonoBehaviour
 {
+    // public static event Action<Coord> OnMoveAttempt;
     static Inputs inputs;
 
-    public static event Action<Coord> OnMoveAttempt;
+    static UIManager uiManagerRef;
 
     private void Awake()
     {
+        uiManagerRef = GetComponent<UIManager>();
+
         inputs = new Inputs();
         inputs.Player.Enable();
         inputs.Player.MoveUp.performed += MoveUp;
@@ -104,30 +108,63 @@ public class InputManager : MonoBehaviour
     }
 
     // menus
-    void OpenWebMenu(InputAction.CallbackContext ctx) { }
+    void OpenWebMenu(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.OpenWebMenu();
+    }
 
     void Pause(InputAction.CallbackContext ctx) { }
 
     // WEB MENU
     // cycle
-    void CycleUp(InputAction.CallbackContext ctx) { }
+    void CycleUp(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.SetWebMenuButton(uiManagerRef.GetSelectedButton().GetUpButton());
+    }
 
-    void CycleRight(InputAction.CallbackContext ctx) { }
+    void CycleRight(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.SetWebMenuButton(uiManagerRef.GetSelectedButton().GetRightButton());
+    }
 
-    void CycleDown(InputAction.CallbackContext ctx) { }
+    void CycleDown(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.SetWebMenuButton(uiManagerRef.GetSelectedButton().GetDownButton());
+    }
 
-    void CycleLeft(InputAction.CallbackContext ctx) { }
+    void CycleLeft(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.SetWebMenuButton(uiManagerRef.GetSelectedButton().GetLeftButton());
+    }
 
     void PerformWebAction(InputAction.CallbackContext ctx)
     {
+        uiManagerRef.SelectWebMenuOption();
         CloseWebMenu(ctx);
     }
 
-    void CloseWebMenu(InputAction.CallbackContext ctx) { }
+    void CloseWebMenu(InputAction.CallbackContext ctx)
+    {
+        uiManagerRef.CloseWebMenu();
+    }
 
-    public static void EnableMovementInputs() => inputs.Player.Enable();
+    public static void DisableAllInputs()
+    {
+        inputs.Player.Disable();
+        inputs.WebMenu.Disable();
+    }
 
-    public static void DisableMovementInputs() => inputs.Player.Disable();
+    public static void EnableMovementInputs()
+    {
+        DisableAllInputs();
+        inputs.Player.Enable();
+    }
+
+    public static void EnableWebMenuInputs()
+    {
+        DisableAllInputs();
+        inputs.WebMenu.Enable();
+    }
 
     void LogInfo1(InputAction.CallbackContext ctx)
     {

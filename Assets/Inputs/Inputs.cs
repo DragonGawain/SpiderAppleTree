@@ -364,17 +364,6 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b08c36da-8797-4dcd-ba5a-827ca834b0d5"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LogInfo1"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""4064a34b-fce9-4c49-9c07-f0f3e6cc1ced"",
                     ""path"": ""<Keyboard>/f1"",
                     ""interactions"": """",
@@ -386,34 +375,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""65dda1e0-f5db-46ca-a036-f30309e3adae"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LogInfo2"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""5610ca8d-8e9c-44cd-a106-2a4e8bb85f23"",
                     ""path"": ""<Keyboard>/f2"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""LogInfo2"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""dc76b554-b294-4eeb-8ce1-5a485648b899"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""LogInfo3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },

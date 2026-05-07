@@ -1,16 +1,53 @@
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("Web menu")]
+    [SerializeField]
+    GameObject webMenu;
+
+    [SerializeField]
+    WebMenuButton defaultWebButton;
+
+    WebMenuButton selectedWebButton;
+
+    public void SetWebMenuButton(WebMenuButton webButton)
     {
-        
+        // selectedWebButton.gameObject.GetComponentInChildren<TMP
+        selectedWebButton.GetComponent<Image>().color = selectedWebButton
+            .GetComponent<Button>()
+            .colors.normalColor;
+        selectedWebButton = webButton;
+        selectedWebButton.GetComponent<Image>().color = selectedWebButton
+            .GetComponent<Button>()
+            .colors.selectedColor;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SelectWebMenuOption()
     {
-        
+        selectedWebButton.OnClick();
+        CloseWebMenu();
+    }
+
+    public WebMenuButton GetSelectedButton() => selectedWebButton;
+
+    public void OpenWebMenu()
+    {
+        webMenu.SetActive(true);
+        selectedWebButton = defaultWebButton;
+        SetWebMenuButton(defaultWebButton);
+        InputManager.EnableWebMenuInputs();
+    }
+
+    public void CloseWebMenu()
+    {
+        selectedWebButton.GetComponent<Image>().color = selectedWebButton
+            .GetComponent<Button>()
+            .colors.normalColor;
+        webMenu.SetActive(false);
+        InputManager.EnableMovementInputs();
     }
 }
