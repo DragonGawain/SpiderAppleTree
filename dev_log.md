@@ -38,3 +38,8 @@
 - `LevelManager` should now spawn in a player prefab at the designated spawn coordiantes upon loading a level
 - Made movement logic - player should now be able to move. Movement is being checked via IWalkable CanWalk.. methods.
 - Set up InputAction maps for movement (Player) and web menu (WebMenu) and gave the `InputManager` callbacks for all the inputs
+- Created new dictionary in `Level.cs`, interactables. Filled with elements that inherit from IInteractable (which inherits from ILevelElement)
+- Thought up that each ILevelElement should _not_ be a monobehaviour, but should instead instantiate the corresponding prefab at the end of its constructor.
+    - This will let me have the elements be animated while easily maintaining my current detection system (which is based on the tilemap coordinates)
+- `Fruit.cs` and `FruitAdapted.cs` set up.
+- Successfully saved and loaded more complex level structure, including fruits, spawn point, and goal! (i.e. saved and loaded interactables)

@@ -9,7 +9,8 @@ public class Level
 
     // This is a dictionary and not a set to make searching by coordinate O(1) instead of O(n)
     HashSet<ILevelElement> uniqueLevelElements = new();
-    Dictionary<Coord, IWalkable> isWalkable = new();
+    Dictionary<Coord, IWalkable> walkables = new();
+    Dictionary<Coord, IInteractable> interactables = new();
     public readonly int levelID;
     InitialLevelDataContainer ldc;
 
@@ -26,18 +27,30 @@ public class Level
         int initLength
     ) => ldc = new(spawnPoint, goalPoint, initWebCount, initWeight, initLength);
 
-    public void AddToWalkableDict(Coord coord, IWalkable walkable)
+    public void AddWalkable(Coord coord, IWalkable walkable)
     {
         // TODO:: Collision checking (multiple walkables at a single loc).
         // Maybe a list of IWalkables?
         // Maybe I just enforce that there's never any overlap? (seems bad)
-        isWalkable.Add(coord, walkable);
+        walkables.Add(coord, walkable);
     }
 
     public void ModifyIsWalkable(Coord oldC, Coord newC, IWalkable walkable)
     {
-        isWalkable.Remove(oldC);
-        isWalkable.Add(newC, walkable);
+        walkables.Remove(oldC);
+        walkables.Add(newC, walkable);
+    }
+
+    public void AddInteractable(Coord coord, IInteractable interactable)
+    {
+        interactables.Add(coord, interactable);
+        uniqueLevelElements.Add(interactable);
+    }
+
+    public void RemoveInteractable(Coord coord)
+    {
+        uniqueLevelElements.Remove(interactables[coord]);
+        interactables.Remove(coord);
     }
 
     /// <summary>
@@ -49,13 +62,13 @@ public class Level
     /// <returns>True if the player can move into that space, false otherwise</returns>
     public bool IsWalkable(Coord targetCoord, Direction dir)
     {
-        if (!isWalkable.ContainsKey(targetCoord))
+        if (!walkables.ContainsKey(targetCoord))
             return false;
         // verify that the element is walkable (unwalkable elements include we reinforcement)
-        if (isWalkable[targetCoord].GetType() is not IWalkable)
+        if (walkables[targetCoord].GetType() is not IWalkable)
             return false;
         // fetch entity at coord
-        IWalkable walkable = isWalkable[targetCoord];
+        IWalkable walkable = walkables[targetCoord];
 
         // if entity at TARGET LOC allows that dir of movement, ret true
         // else ret false.
@@ -64,7 +77,23 @@ public class Level
             : walkable.CanWalkHorizontal(targetCoord.y, dir);
     }
 
-    public Dictionary<Coord, IWalkable> GetIsWalkable() => isWalkable;
+    /// <summary>
+    /// Series of checks to be done after a successful move. Namely:
+    /// * Collected fruit?
+    /// * Reached activated goal?
+    /// * Branch stable? (Did a branch fall)
+    /// </summary>
+    /// <param name="loc">The current location of the player</param>
+    public void PostMove(Coord loc)
+    {
+        // TODO:: check for branch stability
+        if (interactables.ContainsKey(loc))
+            interactables[loc].Interact();
+    }
+
+    public void PostAction() { }
+
+    public Dictionary<Coord, IWalkable> GetWalkables() => walkables;
 
     public void AddNewElementToLevel(ILevelElement ile) => uniqueLevelElements.Add(ile);
 
@@ -73,8 +102,6 @@ public class Level
     public HashSet<ILevelElement> GetLevelElements() => uniqueLevelElements;
 
     public Coord GetSpawnPoint() => ldc.spawnPoint;
-
-    public Vector3Int GetSpawnPointAsV3I() => new(ldc.spawnPoint.x, ldc.spawnPoint.y, 0);
 
     public Coord GetGoalPoint() => ldc.goalPoint;
 

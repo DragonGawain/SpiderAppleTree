@@ -1,16 +1,20 @@
-using UnityEngine;
+using Unity.Serialization.Json;
 
-public class FruitAdapter : MonoBehaviour
+public class FruitAdapter : IJsonAdapter<Fruit>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void Serialize(in JsonSerializationContext<Fruit> context, Fruit value)
     {
-        
+        using var os = context.Writer.WriteObjectScope();
+        context.Writer.WriteKey("Coord");
+        context.SerializeValue(value.coord);
+        context.Writer.WriteKeyValue("fruitType", (int)value.fruitType);
     }
 
-    // Update is called once per frame
-    void Update()
+    public Fruit Deserialize(in JsonDeserializationContext<Fruit> context)
     {
-        
+        return new Fruit(
+            context.DeserializeValue<Coord>(context.SerializedValue["Coord"]),
+            context.DeserializeValue<int>(context.SerializedValue["fruitType"])
+        );
     }
 }

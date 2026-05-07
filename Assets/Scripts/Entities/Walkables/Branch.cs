@@ -23,21 +23,23 @@ public class Branch : IWalkable
             SaveManager.GetNewLevel().AddNewElementToLevel(this);
             if (direction == Direction.RIGHT)
                 for (int i = coord.x; i < coord.x + length; i++)
-                    SaveManager.GetNewLevel().AddToWalkableDict(new Coord(i, coord.y), this);
+                    SaveManager.GetNewLevel().AddWalkable(new Coord(i, coord.y), this);
             else
                 for (int i = coord.x; i > coord.x - length; i--)
-                    SaveManager.GetNewLevel().AddToWalkableDict(new Coord(i, coord.y), this);
+                    SaveManager.GetNewLevel().AddWalkable(new Coord(i, coord.y), this);
         }
         else
         {
             LevelManager.GetActiveLevel().AddNewElementToLevel(this);
             if (direction == Direction.RIGHT)
                 for (int i = coord.x; i < coord.x + length; i++)
-                    LevelManager.GetActiveLevel().AddToWalkableDict(new Coord(i, coord.y), this);
+                    LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
             else
                 for (int i = coord.x; i > coord.x - length; i--)
-                    LevelManager.GetActiveLevel().AddToWalkableDict(new Coord(i, coord.y), this);
+                    LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
         }
+
+        // TODO:: Have this constructor spawn in a prefab at the desired location
     }
 
     public Branch(int x, int y, int length, Direction direction, int supportLevel)

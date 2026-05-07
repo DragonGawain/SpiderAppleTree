@@ -8,15 +8,21 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField]
     Grid grid;
-    public Tilemap walkableMap;
-    public Tilemap elementsMap;
+    public Tilemap walkablesMap;
+    public Tilemap interactablesMap;
 
-    public Tile red,
-        orange,
-        green,
-        yellow,
-        black,
-        grey;
+    public Tile t_src,
+        t_bdy,
+        b_src_R,
+        b_bdy_R,
+        b_src_L,
+        b_bdy_L,
+        goal,
+        empty_fruit,
+        web_fruit,
+        anti_web_fruit,
+        light_fruit,
+        heavy_fruit;
 
     [SerializeField]
     GameObject playerPrefab;
@@ -62,15 +68,17 @@ public class LevelManager : MonoBehaviour
 
         Trunk t;
         Branch b;
+        Fruit f;
+        // Tile tile;
         foreach (ILevelElement ile in activeLevel.GetLevelElements())
         {
             if (ile.GetType() == typeof(Trunk))
             {
                 t = (Trunk)ile;
-                walkableMap.SetTile(new Vector3Int(t.coord.x, t.coord.y), red);
+                walkablesMap.SetTile(new Vector3Int(t.coord.x, t.coord.y), t_src);
                 for (int y = 1; y < t.height; y++)
                 {
-                    walkableMap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), orange);
+                    walkablesMap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), t_bdy);
                 }
             }
             else if (ile.GetType() == typeof(Branch))
@@ -78,20 +86,50 @@ public class LevelManager : MonoBehaviour
                 b = (Branch)ile;
                 if (b.direction == Direction.RIGHT)
                 {
-                    walkableMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), green);
+                    walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
                     for (int x = 1; x < b.length; x++)
                     {
-                        walkableMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), yellow);
+                        walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
                     }
                 }
                 else
                 {
-                    walkableMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), black);
+                    walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_L);
                     for (int x = 1; x < b.length; x++)
                     {
-                        walkableMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), grey);
+                        walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
                     }
                 }
+            }
+            else if (ile.GetType() == typeof(Fruit))
+            {
+                f = (Fruit)ile;
+
+                // tile =  f.fruitType switch
+                // {
+                //     FruitType.EMPTY => empty_fruit,
+                //     FruitType.WEB => web_fruit,
+                //     FruitType.ANTI_WEB => anti_web_fruit,
+                //     FruitType.LIGHT => light_fruit,
+                //     FruitType.HEAVY => heavy_fruit,
+                //     _ => throw Exception("ERROR: Unknown FruitType supplied when loading level")
+                // };
+
+                interactablesMap.SetTile(
+                    f.coord.ToVector3Int(),
+                    f.fruitType switch
+                    {
+                        FruitType.EMPTY => empty_fruit,
+                        FruitType.WEB => web_fruit,
+                        FruitType.ANTI_WEB => anti_web_fruit,
+                        FruitType.LIGHT => light_fruit,
+                        FruitType.HEAVY => heavy_fruit,
+                        _
+                            => throw new Exception(
+                                "ERROR: Unknown FruitType supplied when loading level"
+                            )
+                    }
+                );
             }
         }
 
@@ -100,7 +138,7 @@ public class LevelManager : MonoBehaviour
         // Create player at appropriate spot
         playerRef = Instantiate(
                 playerPrefab,
-                grid.CellToWorld(activeLevel.GetSpawnPointAsV3I()),
+                grid.CellToWorld(activeLevel.GetSpawnPoint().ToVector3Int()),
                 Quaternion.identity
             )
             .GetComponent<Player>();
@@ -111,6 +149,11 @@ public class LevelManager : MonoBehaviour
     public static Level GetActiveLevel() => activeLevel;
 
     public static Player GetPlayerRef() => playerRef;
+
+    public void RemoveInteractableFromMap(Coord coord)
+    {
+        interactablesMap.SetTile(coord.ToVector3Int(), null);
+    }
 
     void OnDestroy()
     {
@@ -128,4 +171,6 @@ public struct Coord
 
     public readonly int x;
     public int y;
+
+    public readonly Vector3Int ToVector3Int() => new(x, y, 0);
 }

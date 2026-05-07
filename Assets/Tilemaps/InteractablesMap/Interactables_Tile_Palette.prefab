@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 2206571826149171652}
   - component: {fileID: 1662590683766517444}
   m_Layer: 0
-  m_Name: Elements_Tile_Palette
+  m_Name: Interactables_Tile_Palette
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

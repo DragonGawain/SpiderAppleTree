@@ -48,6 +48,15 @@ public class LevelAdapter : IJsonAdapter<Level>
                         context.SerializeValue(t);
                 }
             }
+            else if (group.Key == typeof(Fruit))
+            {
+                context.Writer.WriteKey("fruits");
+                using (context.Writer.WriteArrayScope())
+                {
+                    foreach (Fruit f in group)
+                        context.SerializeValue(f);
+                }
+            }
             // case WebString:
             //     break;
             // case WebSupport:
@@ -87,6 +96,7 @@ public class LevelAdapter : IJsonAdapter<Level>
             );
         context.DeserializeValue<List<Trunk>>(context.SerializedValue["trunks"]);
         context.DeserializeValue<List<Branch>>(context.SerializedValue["branches"]);
+        context.DeserializeValue<List<Fruit>>(context.SerializedValue["fruits"]);
 
         return null;
     }

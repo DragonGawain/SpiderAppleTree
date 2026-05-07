@@ -37,11 +37,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() { }
-
-    // Update is called once per frame
-    void Update() { }
+    public static GameManager GetManagerSingleton() => singleton;
 
     public void SelectLevel(int levelID)
     {

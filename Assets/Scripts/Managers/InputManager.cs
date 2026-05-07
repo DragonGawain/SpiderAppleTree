@@ -37,12 +37,13 @@ public class InputManager : MonoBehaviour
     // movement
     void MoveUp(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Detected up!");
         if (
             LevelManager
                 .GetActiveLevel()
                 .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.DOWN)
         )
-            LevelManager.GetPlayerRef().Move(Direction.UP);
+            CompleteMove(Direction.UP);
     }
 
     void MoveRight(InputAction.CallbackContext ctx)
@@ -52,7 +53,7 @@ public class InputManager : MonoBehaviour
                 .GetActiveLevel()
                 .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.LEFT)
         )
-            LevelManager.GetPlayerRef().Move(Direction.RIGHT);
+            CompleteMove(Direction.RIGHT);
     }
 
     void MoveDown(InputAction.CallbackContext ctx)
@@ -62,7 +63,7 @@ public class InputManager : MonoBehaviour
                 .GetActiveLevel()
                 .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.UP)
         )
-            LevelManager.GetPlayerRef().Move(Direction.DOWN);
+            CompleteMove(Direction.DOWN);
     }
 
     void MoveLeft(InputAction.CallbackContext ctx)
@@ -72,7 +73,13 @@ public class InputManager : MonoBehaviour
                 .GetActiveLevel()
                 .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.RIGHT)
         )
-            LevelManager.GetPlayerRef().Move(Direction.LEFT);
+            CompleteMove(Direction.LEFT);
+    }
+
+    void CompleteMove(Direction dir)
+    {
+        LevelManager.GetPlayerRef().Move(dir);
+        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCuurentPos());
     }
 
     // menus

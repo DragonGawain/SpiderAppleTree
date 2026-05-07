@@ -19,17 +19,19 @@ public class Trunk : IWalkable
         {
             SaveManager.GetNewLevel().AddNewElementToLevel(this);
             for (int i = coord.y; i < coord.y + height; i++)
-                SaveManager.GetNewLevel().AddToWalkableDict(new Coord(coord.x, i), this);
+                SaveManager.GetNewLevel().AddWalkable(new Coord(coord.x, i), this);
         }
         else
         {
             LevelManager.GetActiveLevel().AddNewElementToLevel(this);
             for (int i = coord.y; i < coord.y + height; i++)
-                LevelManager.GetActiveLevel().AddToWalkableDict(new Coord(coord.x, i), this);
+                LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
         }
 
         horizontalWalkables.Add((coord.y, Direction.LEFT));
         horizontalWalkables.Add((coord.y, Direction.RIGHT));
+
+        // TODO:: Have this constructor spawn in a prefab at the desired location
     }
 
     public Trunk(int x, int y, int height)

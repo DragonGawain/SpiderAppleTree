@@ -39,8 +39,8 @@ public class SaveManager : MonoBehaviour
             { LevelState.SOLVED, solutionPath },
         };
 
-    public Tilemap walkableMap;
-    public Tilemap elementMap;
+    public Tilemap walkablesMap_editor;
+    public Tilemap interactablesMap_editor;
 
     private void Awake()
     {
@@ -48,6 +48,7 @@ public class SaveManager : MonoBehaviour
         JsonSerialization.AddGlobalAdapter(new TrunkAdapter());
         JsonSerialization.AddGlobalAdapter(new LevelAdapter());
         JsonSerialization.AddGlobalAdapter(new CoordAdapter());
+        JsonSerialization.AddGlobalAdapter(new FruitAdapter());
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
@@ -64,9 +65,9 @@ public class SaveManager : MonoBehaviour
             for (int y = 0; y <= 8; y++)
             {
                 loc = new Vector3Int(x, y, 0);
-                if (walkableMap.HasTile(loc))
+                if (walkablesMap_editor.HasTile(loc))
                 {
-                    tile = walkableMap.GetTile(loc);
+                    tile = walkablesMap_editor.GetTile(loc);
                     Debug.Log(
                         "Found walkable at (" + x + ", " + y + "), with identity " + tile.name + "!"
                     );
@@ -95,9 +96,9 @@ public class SaveManager : MonoBehaviour
                             break;
                     }
                 }
-                if (elementMap.HasTile(loc))
+                if (interactablesMap_editor.HasTile(loc))
                 {
-                    tile = elementMap.GetTile(loc);
+                    tile = interactablesMap_editor.GetTile(loc);
                     Debug.Log(
                         "Found element at (" + x + ", " + y + "), with identity " + tile.name + "!"
                     );
@@ -109,6 +110,21 @@ public class SaveManager : MonoBehaviour
                             break;
                         case "goal":
                             goalPoint = new(x, y);
+                            break;
+                        case "empty_fruit":
+                            new Fruit(new(x, y), FruitType.EMPTY);
+                            break;
+                        case "web_fruit":
+                            new Fruit(new(x, y), FruitType.WEB);
+                            break;
+                        case "anti_web_fruit":
+                            new Fruit(new(x, y), FruitType.ANTI_WEB);
+                            break;
+                        case "light_fruit":
+                            new Fruit(new(x, y), FruitType.LIGHT);
+                            break;
+                        case "heavy_fruit":
+                            new Fruit(new(x, y), FruitType.HEAVY);
                             break;
                     }
                 }
@@ -142,9 +158,9 @@ public class SaveManager : MonoBehaviour
         // max height is 8
         for (int y = src.y + 1; y <= 8; y++)
         {
-            if (walkableMap.HasTile(new Vector3Int(src.x, y, 0)))
+            if (walkablesMap_editor.HasTile(new Vector3Int(src.x, y, 0)))
             {
-                if (walkableMap.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
+                if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
                 {
                     height++;
                     continue;
@@ -173,9 +189,12 @@ public class SaveManager : MonoBehaviour
         {
             for (int x = src.x + 1; x <= 7; x++)
             {
-                if (walkableMap.HasTile(new Vector3Int(x, src.y, 0)))
+                if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
-                    if (walkableMap.GetTile(new Vector3Int(x, src.y, 0)).name == "branch_bdy_R")
+                    if (
+                        walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
+                        == "branch_bdy_R"
+                    )
                     {
                         length++;
                         continue;
@@ -189,9 +208,12 @@ public class SaveManager : MonoBehaviour
         {
             for (int x = src.x - 1; x >= -7; x--)
             {
-                if (walkableMap.HasTile(new Vector3Int(x, src.y, 0)))
+                if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
-                    if (walkableMap.GetTile(new Vector3Int(x, src.y, 0)).name == "branch_bdy_L")
+                    if (
+                        walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
+                        == "branch_bdy_L"
+                    )
                     {
                         length++;
                         continue;
