@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: squares_4
+  m_Name: web_string
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
-  m_Sprite: {fileID: 1238221630, guid: d25bacaa6c1adfa4cac04016dba4ec9d, type: 3}
+  m_Sprite: {fileID: -101806214, guid: d25bacaa6c1adfa4cac04016dba4ec9d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1

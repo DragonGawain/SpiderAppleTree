@@ -26,7 +26,7 @@
 
 - Handles player movement
 - Handles player stats (web count, weight, length, etc)
-- Should NOT handle chacking if a branch should snap
+- Should NOT handle checking if a branch should snap
 
 ### SaveManager
 
@@ -46,6 +46,10 @@
 - Web menu
 - HUD (web count, weight, length, etc)
 
+### InputManager
+
+- Handles reading inputs
+
 ## Entities
 
 ### IWalkable (interface)
@@ -59,3 +63,37 @@
 ### Branch
 
 - Branches
+- Support level
+    - `calcFall` (name pending) method? (`LevelManager.cs` or even `GameManager.cs` is likely a more appropriate place)
+
+## Level elements
+
+### Player
+
+### ILevelElement (interface)
+
+- Root of all level elements
+- Empty. Serves as a contract (similar to Serializable) so that I can store all unique elements in a set.
+- Also makes it easier to set up the level adapter
+
+### IWalkable (interface)
+
+- Walkable contract. Enforces that all walkables state if they can be stepped on from a horizontal or vertical direction
+    - May later expand to enforce stating from a specific direction?
+- Houses the `Direction` enum
+
+### Level
+
+- Contains raw level data including:
+    - Level id
+    - Level size (bottom left corner should always be (0,0))
+    - Spawn point coord (coord where the player starts)
+    - WindController(?) -> inner class (not sure if this should be its own file)
+    - Turn counter (used for wind)
+
+#### WindController
+
+- Wind direction (mainly left/right, but maybe up winds increases all support levels and down winds decreases support levels?)
+- Wind counter (how often does wind blow)
+    - To make cyclical wind, each row of any given level would need its own wind counter
+    - Wind counter will be a constant number. Checking `turnNumber % windFrequency == 0` will determine when wind should blow on that row

@@ -25,6 +25,12 @@ public class SaveManager : MonoBehaviour
 
     public static Level GetNewLevel() => newLevel;
 
+    [Header("Initial values")]
+    [SerializeField]
+    int initWebCount,
+        initWeight,
+        initLength;
+
     public static readonly Dictionary<LevelState, string> levelStatePath =
         new()
         {
@@ -33,8 +39,8 @@ public class SaveManager : MonoBehaviour
             { LevelState.SOLVED, solutionPath },
         };
 
-    public Tilemap tilemap;
-    public Grid grid;
+    public Tilemap walkableMap;
+    public Tilemap elementMap;
 
     private void Awake()
     {
@@ -47,47 +53,71 @@ public class SaveManager : MonoBehaviour
 
     public void SaveOrOverwriteLevel(int id)
     {
-        try
+        creatingLevel = true;
+        newLevel = new Level(id);
+        Coord spawnPoint = new(0, 0);
+        Coord goalPoint = new(0, 0);
+        TileBase tile;
+        Vector3Int loc;
+        for (int x = -7; x <= 7; x++)
         {
-            creatingLevel = true;
-            newLevel = new Level(id);
-            TileBase tile;
-            for (int x = -7; x <= 7; x++)
+            for (int y = 0; y <= 8; y++)
             {
-                for (int y = 0; y <= 8; y++)
+                loc = new Vector3Int(x, y, 0);
+                if (walkableMap.HasTile(loc))
                 {
-                    if (tilemap.HasTile(new Vector3Int(x, y, 0)))
+                    tile = walkableMap.GetTile(loc);
+                    Debug.Log(
+                        "Found walkable at (" + x + ", " + y + "), with identity " + tile.name + "!"
+                    );
+                    switch (tile.name)
                     {
-                        tile = tilemap.GetTile(new Vector3Int(x, y, 0));
-                        Debug.Log(
-                            "Found tile at (" + x + ", " + y + "), with identity " + tile.name + "!"
-                        );
-                        switch (tile.name)
-                        {
-                            case "squares_2":
-                                // trunk src
-                                // body: 5
-                                BuildTrunk(new Vector3Int(x, y, 0));
-                                break;
-                            case "squares_6":
-                                // branch src
-                                // body: 8
-                                // DIRECTION: RIGHT
-                                BuildBranch(new Vector3Int(x, y, 0), false);
-                                break;
-                            case "squares_1":
-                                // alt branch src
-                                // body: 4
-                                // DIRECTION: LEFT
-                                BuildBranch(new Vector3Int(x, y, 0), true);
-                                break;
-                            default:
-                                break;
-                        }
+                        case "trunk_src":
+                            // trunk src
+                            // body: 5
+                            BuildTrunk(loc);
+                            break;
+                        case "branch_src_R":
+                            // branch src
+                            // body: 8
+                            // DIRECTION: RIGHT
+                            BuildBranch(loc, false);
+                            break;
+                        case "branch_src_L":
+                            // alt branch src
+                            // body: 4
+                            // DIRECTION: LEFT
+                            BuildBranch(loc, true);
+                            break;
+                        case "web_string":
+                            break;
+                        case "web_support":
+                            break;
+                    }
+                }
+                if (elementMap.HasTile(loc))
+                {
+                    tile = elementMap.GetTile(loc);
+                    Debug.Log(
+                        "Found element at (" + x + ", " + y + "), with identity " + tile.name + "!"
+                    );
+
+                    switch (tile.name)
+                    {
+                        case "spawn":
+                            spawnPoint = new(x, y);
+                            break;
+                        case "goal":
+                            goalPoint = new(x, y);
+                            break;
                     }
                 }
             }
-            Debug.Log("<color=blue>Finished building level object!</color>");
+        }
+        newLevel.InitializeData(spawnPoint, goalPoint, initWebCount, initWeight, initLength);
+        Debug.Log("<color=blue>Finished building level object!</color>");
+        try
+        {
             using (StreamWriter sw = new(Path.Combine(levelPath, id.ToString() + ".txt")))
             {
                 sw.WriteLine(JsonSerialization.ToJson(newLevel));
@@ -112,9 +142,9 @@ public class SaveManager : MonoBehaviour
         // max height is 8
         for (int y = src.y + 1; y <= 8; y++)
         {
-            if (tilemap.HasTile(new Vector3Int(src.x, y, 0)))
+            if (walkableMap.HasTile(new Vector3Int(src.x, y, 0)))
             {
-                if (tilemap.GetTile(new Vector3Int(src.x, y, 0)).name == "squares_5")
+                if (walkableMap.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
                 {
                     height++;
                     continue;
@@ -143,9 +173,9 @@ public class SaveManager : MonoBehaviour
         {
             for (int x = src.x + 1; x <= 7; x++)
             {
-                if (tilemap.HasTile(new Vector3Int(x, src.y, 0)))
+                if (walkableMap.HasTile(new Vector3Int(x, src.y, 0)))
                 {
-                    if (tilemap.GetTile(new Vector3Int(x, src.y, 0)).name == "squares_8")
+                    if (walkableMap.GetTile(new Vector3Int(x, src.y, 0)).name == "branch_bdy_R")
                     {
                         length++;
                         continue;
@@ -159,9 +189,9 @@ public class SaveManager : MonoBehaviour
         {
             for (int x = src.x - 1; x >= -7; x--)
             {
-                if (tilemap.HasTile(new Vector3Int(x, src.y, 0)))
+                if (walkableMap.HasTile(new Vector3Int(x, src.y, 0)))
                 {
-                    if (tilemap.GetTile(new Vector3Int(x, src.y, 0)).name == "squares_4")
+                    if (walkableMap.GetTile(new Vector3Int(x, src.y, 0)).name == "branch_bdy_L")
                     {
                         length++;
                         continue;

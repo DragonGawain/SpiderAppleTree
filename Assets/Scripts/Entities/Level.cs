@@ -8,14 +8,23 @@ public class Level
     // This dealt with overlapping walkables.
 
     // This is a dictionary and not a set to make searching by coordinate O(1) instead of O(n)
-    Dictionary<Coord, ILevelElement> isWalkable = new();
     HashSet<ILevelElement> uniqueLevelElements = new();
-    readonly int levelID;
+    Dictionary<Coord, IWalkable> isWalkable = new();
+    public readonly int levelID;
+    InitialLevelDataContainer ldc;
 
     public Level(int id)
     {
         this.levelID = id;
     }
+
+    public void InitializeData(
+        Coord spawnPoint,
+        Coord goalPoint,
+        int initWebCount,
+        int initWeight,
+        int initLength
+    ) => ldc = new(spawnPoint, goalPoint, initWebCount, initWeight, initLength);
 
     public void AddToWalkableDict(Coord coord, IWalkable walkable)
     {
@@ -31,23 +40,31 @@ public class Level
         isWalkable.Add(newC, walkable);
     }
 
-    public bool IsWalkable(Coord coord, bool isVertical)
+    /// <summary>
+    /// Determines if a target cell location (grid space) can be walked on
+    /// </summary>
+    /// <param name="targetCoord">The coordinate that the player is attempting to move into</param>
+    /// <param name="dir">The direction that the player is coming from.
+    /// This means that this input should be the opposite of the direction the player is moving (RIGHT if player is moving LEFT)</param>
+    /// <returns>True if the player can move into that space, false otherwise</returns>
+    public bool IsWalkable(Coord targetCoord, Direction dir)
     {
-        if (!isWalkable.ContainsKey(coord))
+        if (!isWalkable.ContainsKey(targetCoord))
             return false;
         // verify that the element is walkable (unwalkable elements include we reinforcement)
-        if (isWalkable[coord].GetType() is not IWalkable)
+        if (isWalkable[targetCoord].GetType() is not IWalkable)
             return false;
         // fetch entity at coord
-        IWalkable walkable = (IWalkable)isWalkable[coord];
-        // ~~check if player is moving hori/vert~~
+        IWalkable walkable = isWalkable[targetCoord];
 
         // if entity at TARGET LOC allows that dir of movement, ret true
         // else ret false.
-        return isVertical ? walkable.CanWalkVertical() : walkable.CanWalkHorizontal(coord.y);
+        return (dir == Direction.UP || dir == Direction.DOWN)
+            ? walkable.CanWalkVertical(targetCoord.x, dir)
+            : walkable.CanWalkHorizontal(targetCoord.y, dir);
     }
 
-    public Dictionary<Coord, ILevelElement> GetIsWalkable() => isWalkable;
+    public Dictionary<Coord, IWalkable> GetIsWalkable() => isWalkable;
 
     public void AddNewElementToLevel(ILevelElement ile) => uniqueLevelElements.Add(ile);
 
@@ -55,5 +72,48 @@ public class Level
 
     public HashSet<ILevelElement> GetLevelElements() => uniqueLevelElements;
 
+    public Coord GetSpawnPoint() => ldc.spawnPoint;
+
+    public Vector3Int GetSpawnPointAsV3I() => new(ldc.spawnPoint.x, ldc.spawnPoint.y, 0);
+
+    public Coord GetGoalPoint() => ldc.goalPoint;
+
+    public int GetInitWebCount() => ldc.initWebCount;
+
+    public int GetInitWeight() => ldc.initWeight;
+
+    public int GetInitLenght() => ldc.initLength;
+
+    public InitialLevelDataContainer GetInitialLevelDataContainer() => ldc;
+
     public int GetLevelID() => levelID;
+
+    class WindController
+    {
+        //
+    }
+}
+
+public readonly struct InitialLevelDataContainer
+{
+    public readonly Coord spawnPoint,
+        goalPoint;
+    public readonly int initWebCount,
+        initWeight,
+        initLength;
+
+    public InitialLevelDataContainer(
+        Coord spawnPoint,
+        Coord goalPoint,
+        int initWebCount,
+        int initWeight,
+        int initLength
+    )
+    {
+        this.spawnPoint = spawnPoint;
+        this.goalPoint = goalPoint;
+        this.initWebCount = initWebCount;
+        this.initWeight = initWeight;
+        this.initLength = initLength;
+    }
 }

@@ -6,7 +6,10 @@ using UnityEngine.Tilemaps;
 
 public class LevelManager : MonoBehaviour
 {
-    public Tilemap tilemap;
+    [SerializeField]
+    Grid grid;
+    public Tilemap walkableMap;
+    public Tilemap elementsMap;
 
     public Tile red,
         orange,
@@ -15,7 +18,11 @@ public class LevelManager : MonoBehaviour
         black,
         grey;
 
+    [SerializeField]
+    GameObject playerPrefab;
+
     static Level activeLevel;
+    static Player playerRef;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,11 +30,10 @@ public class LevelManager : MonoBehaviour
         GameManager.OnLevelSelect += SetActiveLevel;
     }
 
-    // Update is called once per frame
-    void Update() { }
-
     void SetActiveLevel(int levelID)
     {
+        // Grab level file
+        // Deserialize level file
         activeLevel = new Level(levelID);
         try
         {
@@ -61,10 +67,10 @@ public class LevelManager : MonoBehaviour
             if (ile.GetType() == typeof(Trunk))
             {
                 t = (Trunk)ile;
-                tilemap.SetTile(new Vector3Int(t.coord.x, t.coord.y), red);
+                walkableMap.SetTile(new Vector3Int(t.coord.x, t.coord.y), red);
                 for (int y = 1; y < t.height; y++)
                 {
-                    tilemap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), orange);
+                    walkableMap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), orange);
                 }
             }
             else if (ile.GetType() == typeof(Branch))
@@ -72,29 +78,39 @@ public class LevelManager : MonoBehaviour
                 b = (Branch)ile;
                 if (b.direction == Direction.RIGHT)
                 {
-                    tilemap.SetTile(new Vector3Int(b.coord.x, b.coord.y), green);
+                    walkableMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), green);
                     for (int x = 1; x < b.length; x++)
                     {
-                        tilemap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), yellow);
+                        walkableMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), yellow);
                     }
                 }
                 else
                 {
-                    tilemap.SetTile(new Vector3Int(b.coord.x, b.coord.y), black);
+                    walkableMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), black);
                     for (int x = 1; x < b.length; x++)
                     {
-                        tilemap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), grey);
+                        walkableMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), grey);
                     }
                 }
             }
         }
 
         Debug.Log("Finished drawing loaded level!");
-        // Grab level file
-        // Deserialize level file
+
+        // Create player at appropriate spot
+        playerRef = Instantiate(
+                playerPrefab,
+                grid.CellToWorld(activeLevel.GetSpawnPointAsV3I()),
+                Quaternion.identity
+            )
+            .GetComponent<Player>();
+
+        playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
     }
 
     public static Level GetActiveLevel() => activeLevel;
+
+    public static Player GetPlayerRef() => playerRef;
 
     void OnDestroy()
     {

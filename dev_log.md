@@ -20,3 +20,21 @@
 - Loaded a level successfully!!!
 - Data is currently all being populated to a tilemap. I may want to change that at some point (when I make it such that branches can fall).
     - That being said, manipulating targetted cells with SetTile is pretty easy (can `SetTile(V3I, null)` to clear a cell)
+
+## May 06 2026
+
+- Made a second tilemap in the editor scene for elements (aka "interactables" cause walkabales are also technically elements)
+- Make a second tile palette to go along with the second tilemap
+- Renamed all the Tiles to have better names (e.g. trunk_src)
+- Postulated having `WindController.cs` be an inner class of `Level.cs`
+- Created InputManager and started to populate it
+- Made GameManager a `DontDestroyOnLoad` object
+- Made GameManager (and therefore all of its required managers) singleton
+- Made WebMenu action map in the InputActions
+- Expanded IWalkable.CanWalkHorizontal to take in an exact direction so that I can handle moving from a branch back onto the trunk
+- Also allows me to have two trunks next to each other with a branch sticking off of one trunk while simultaneously disallowing movement from one trunk to the other
+- Updated `Level.cs` with new public readonly struct `InitalLevelDataContainer` to store initial level data and easily pass it off to the Player object.
+- Updated `Level.cs`, `LevelManager.cs`, `SaveManager.cs` to handle the new struct
+- `LevelManager` should now spawn in a player prefab at the designated spawn coordiantes upon loading a level
+- Made movement logic - player should now be able to move. Movement is being checked via IWalkable CanWalk.. methods.
+- Set up InputAction maps for movement (Player) and web menu (WebMenu) and gave the `InputManager` callbacks for all the inputs

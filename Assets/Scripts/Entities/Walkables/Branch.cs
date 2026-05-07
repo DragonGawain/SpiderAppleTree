@@ -1,5 +1,8 @@
 using System;
 
+// It is important that trunks get loaded before branches.
+// This is because when a branch is created, it will check to see if its source is next to a trunk.
+// If it is, then it sets that trunk segment to be horizontally walkable.
 public class Branch : IWalkable
 {
     // Y is NOT readonly! Branches can fall!
