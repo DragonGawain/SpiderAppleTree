@@ -26,7 +26,7 @@ public class LevelAdapter : IJsonAdapter<Level>
 
         IEnumerable<IGrouping<Type, ILevelElement>> elements = value
             .GetLevelElements()
-            .GroupBy(w => w.GetType());
+            .GroupBy(e => e.GetType());
 
         foreach (var group in elements)
         {

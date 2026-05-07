@@ -32,6 +32,9 @@ public class Trunk : IWalkable
         horizontalWalkables.Add((coord.y, Direction.RIGHT));
 
         // TODO:: Have this constructor spawn in a prefab at the desired location
+        // (prefab will be used to animate the image of the entity)
+        // https://docs.unity3d.com/Packages/com.unity.2d.tilemap.extras@8.88/manual/AnimatedTile.html
+        // Animated tiles exist, so maybe prefab won't be needed?
     }
 
     public Trunk(int x, int y, int height)
@@ -40,10 +43,17 @@ public class Trunk : IWalkable
     // can walk hori at the BASE of trees! Connecting trunks are floating trunks with a height of 1.
     public bool CanWalkHorizontal(int y, Direction d) => horizontalWalkables.Contains((y, d));
 
-    public bool CanWalkVertical() => true;
+    public bool CanWalkVertical(int x, Direction d) => true;
 
     public void AddHorizontalConnection(int y, Direction d) => horizontalWalkables.Add((y, d));
 
     public void RemoveHorizontalConnection(int y, Direction d) =>
         horizontalWalkables.Remove((y, d));
+
+    public void ClearHorizontalConnections()
+    {
+        horizontalWalkables.Clear();
+        horizontalWalkables.Add((coord.y, Direction.LEFT));
+        horizontalWalkables.Add((coord.y, Direction.RIGHT));
+    }
 }

@@ -29,10 +29,22 @@ public class Player : MonoBehaviour
 
     public int GetLength() => length;
 
-    public Coord GetCuurentPos() => currentPos;
+    public Coord GetCurentPos() => currentPos;
 
     public void Move(Direction dir)
     {
+        currentPos = dir switch
+        {
+            Direction.UP => new(currentPos.x, currentPos.y + 1),
+            Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
+            Direction.DOWN => new(currentPos.x, currentPos.y - 1),
+            Direction.LEFT => new(currentPos.x - 1, currentPos.y),
+            _
+                => throw new Exception(
+                    "ERROR: Attempted to move the player in an undefined Direction"
+                )
+        };
+
         StartCoroutine(SmoothMoveAnimation(dir));
     }
 
@@ -40,20 +52,9 @@ public class Player : MonoBehaviour
     {
         InputManager.DisableMovementInputs();
 
-        Vector3Int targetCoord = dir switch
-        {
-            Direction.UP => new(currentPos.x, currentPos.y + 1, 0),
-            Direction.RIGHT => new(currentPos.x + 1, currentPos.y, 0),
-            Direction.DOWN => new(currentPos.x, currentPos.y - 1, 0),
-            Direction.LEFT => new(currentPos.x - 1, currentPos.y, 0),
-            _
-                => throw new Exception(
-                    "ERROR: Attempted to move the player in an undefined Direction"
-                )
-        };
-
         Vector3 oldPos = transform.position;
-        Vector3 targetPos = gridRef.CellToWorld(targetCoord);
+        Vector3 targetPos =
+            gridRef.CellToWorld(currentPos.ToVector3Int()) + new Vector3(0.5f, 0.5f, 0);
         float lerp = 0.0f;
 
         for (int i = 0; i < 50; i++)
@@ -65,6 +66,7 @@ public class Player : MonoBehaviour
 
         // ensure that player is at the desired position
         transform.position = targetPos;
+        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
 
         InputManager.EnableMovementInputs();
     }

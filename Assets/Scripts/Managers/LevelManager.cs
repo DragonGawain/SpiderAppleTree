@@ -138,12 +138,14 @@ public class LevelManager : MonoBehaviour
         // Create player at appropriate spot
         playerRef = Instantiate(
                 playerPrefab,
-                grid.CellToWorld(activeLevel.GetSpawnPoint().ToVector3Int()),
+                grid.CellToWorld(activeLevel.GetSpawnPoint().ToVector3Int())
+                    + new Vector3(0.5f, 0.5f, 0),
                 Quaternion.identity
             )
             .GetComponent<Player>();
 
         playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
+        activeLevel.RefreshWalkablesDirections();
     }
 
     public static Level GetActiveLevel() => activeLevel;
@@ -173,4 +175,6 @@ public struct Coord
     public int y;
 
     public readonly Vector3Int ToVector3Int() => new(x, y, 0);
+
+    public override string ToString() => $"({x}, {y})";
 }

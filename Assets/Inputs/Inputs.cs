@@ -145,6 +145,33 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LogInfo1"",
+                    ""type"": ""Button"",
+                    ""id"": ""ecd3ad74-0e1d-4778-9828-7ef085037c6e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LogInfo2"",
+                    ""type"": ""Button"",
+                    ""id"": ""93f0a694-e42a-43ff-9a38-3830995ba43c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LogInfo3"",
+                    ""type"": ""Button"",
+                    ""id"": ""1a4e4393-6888-4d93-92fe-6645bf65605a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -332,6 +359,72 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b08c36da-8797-4dcd-ba5a-827ca834b0d5"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4064a34b-fce9-4c49-9c07-f0f3e6cc1ced"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65dda1e0-f5db-46ca-a036-f30309e3adae"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5610ca8d-8e9c-44cd-a106-2a4e8bb85f23"",
+                    ""path"": ""<Keyboard>/f2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc76b554-b294-4eeb-8ce1-5a485648b899"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""985a0d52-0f99-435e-85c8-85fa3a1f5b8d"",
+                    ""path"": ""<Keyboard>/f3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LogInfo3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1152,6 +1245,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_MoveLeft = m_Player.FindAction("MoveLeft", throwIfNotFound: true);
         m_Player_WebMenu = m_Player.FindAction("WebMenu", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_LogInfo1 = m_Player.FindAction("LogInfo1", throwIfNotFound: true);
+        m_Player_LogInfo2 = m_Player.FindAction("LogInfo2", throwIfNotFound: true);
+        m_Player_LogInfo3 = m_Player.FindAction("LogInfo3", throwIfNotFound: true);
         // WebMenu
         m_WebMenu = asset.FindActionMap("WebMenu", throwIfNotFound: true);
         m_WebMenu_Up = m_WebMenu.FindAction("Up", throwIfNotFound: true);
@@ -1260,6 +1356,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MoveLeft;
     private readonly InputAction m_Player_WebMenu;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_LogInfo1;
+    private readonly InputAction m_Player_LogInfo2;
+    private readonly InputAction m_Player_LogInfo3;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1295,6 +1394,18 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Pause".
         /// </summary>
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LogInfo1".
+        /// </summary>
+        public InputAction @LogInfo1 => m_Wrapper.m_Player_LogInfo1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LogInfo2".
+        /// </summary>
+        public InputAction @LogInfo2 => m_Wrapper.m_Player_LogInfo2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LogInfo3".
+        /// </summary>
+        public InputAction @LogInfo3 => m_Wrapper.m_Player_LogInfo3;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1339,6 +1450,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @LogInfo1.started += instance.OnLogInfo1;
+            @LogInfo1.performed += instance.OnLogInfo1;
+            @LogInfo1.canceled += instance.OnLogInfo1;
+            @LogInfo2.started += instance.OnLogInfo2;
+            @LogInfo2.performed += instance.OnLogInfo2;
+            @LogInfo2.canceled += instance.OnLogInfo2;
+            @LogInfo3.started += instance.OnLogInfo3;
+            @LogInfo3.performed += instance.OnLogInfo3;
+            @LogInfo3.canceled += instance.OnLogInfo3;
         }
 
         /// <summary>
@@ -1368,6 +1488,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @LogInfo1.started -= instance.OnLogInfo1;
+            @LogInfo1.performed -= instance.OnLogInfo1;
+            @LogInfo1.canceled -= instance.OnLogInfo1;
+            @LogInfo2.started -= instance.OnLogInfo2;
+            @LogInfo2.performed -= instance.OnLogInfo2;
+            @LogInfo2.canceled -= instance.OnLogInfo2;
+            @LogInfo3.started -= instance.OnLogInfo3;
+            @LogInfo3.performed -= instance.OnLogInfo3;
+            @LogInfo3.canceled -= instance.OnLogInfo3;
         }
 
         /// <summary>
@@ -1861,6 +1990,27 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LogInfo1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLogInfo1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LogInfo2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLogInfo2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LogInfo3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLogInfo3(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "WebMenu" which allows adding and removing callbacks.

@@ -25,6 +25,13 @@ public class InputManager : MonoBehaviour
         inputs.WebMenu.Left.performed += CycleLeft;
         inputs.WebMenu.Select.performed += PerformWebAction;
         inputs.WebMenu.Cancel.performed += CloseWebMenu;
+
+        // DEBUG
+#if UNITY_EDITOR
+        inputs.Player.LogInfo1.performed += LogInfo1;
+        inputs.Player.LogInfo2.performed += LogInfo2;
+        inputs.Player.LogInfo3.performed += LogInfo3;
+#endif
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,45 +48,59 @@ public class InputManager : MonoBehaviour
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.DOWN)
+                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.DOWN)
         )
+        {
+            Debug.Log("moving up");
             CompleteMove(Direction.UP);
+        }
     }
 
     void MoveRight(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Detected right!");
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.LEFT)
+                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.LEFT)
         )
+        {
+            Debug.Log("moving right");
             CompleteMove(Direction.RIGHT);
+        }
     }
 
     void MoveDown(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Detected down!");
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.UP)
+                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.UP)
         )
+        {
+            Debug.Log("moving down");
             CompleteMove(Direction.DOWN);
+        }
     }
 
     void MoveLeft(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Detected left!");
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCuurentPos(), Direction.RIGHT)
+                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.RIGHT)
         )
+        {
+            Debug.Log("moving left");
             CompleteMove(Direction.LEFT);
+        }
     }
 
     void CompleteMove(Direction dir)
     {
         LevelManager.GetPlayerRef().Move(dir);
-        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCuurentPos());
     }
 
     // menus
@@ -108,6 +129,15 @@ public class InputManager : MonoBehaviour
 
     public static void DisableMovementInputs() => inputs.Player.Disable();
 
+    void LogInfo1(InputAction.CallbackContext ctx)
+    {
+        LevelManager.GetActiveLevel().AnalyzeUniqueElements();
+    }
+
+    void LogInfo2(InputAction.CallbackContext ctx) { }
+
+    void LogInfo3(InputAction.CallbackContext ctx) { }
+
     void OnDestroy()
     {
         inputs.Player.MoveUp.performed -= MoveUp;
@@ -123,5 +153,12 @@ public class InputManager : MonoBehaviour
         inputs.WebMenu.Left.performed -= CycleLeft;
         inputs.WebMenu.Select.performed -= PerformWebAction;
         inputs.WebMenu.Cancel.performed -= CloseWebMenu;
+
+        // DEBUG
+#if UNITY_EDITOR
+        inputs.Player.LogInfo1.performed -= LogInfo1;
+        inputs.Player.LogInfo2.performed -= LogInfo2;
+        inputs.Player.LogInfo3.performed -= LogInfo3;
+#endif
     }
 }

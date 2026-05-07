@@ -11,6 +11,8 @@ public class Branch : IWalkable
     public readonly Direction direction;
     public int supportLevel;
 
+    public const int BRANCH_SUPPORT = 5;
+
     public Branch(Coord coord, int length, Direction direction, int supportLevel)
     {
         this.coord = coord;
@@ -51,5 +53,5 @@ public class Branch : IWalkable
     public Branch(Coord coord, int length, int direction, int supportLevel)
         : this(coord, length, (Direction)direction, supportLevel) { }
 
-    public bool CanWalkHorizontal(int y) => true;
+    public bool CanWalkHorizontal(int y, Direction d) => true;
 }

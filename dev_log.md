@@ -43,3 +43,8 @@
     - This will let me have the elements be animated while easily maintaining my current detection system (which is based on the tilemap coordinates)
 - `Fruit.cs` and `FruitAdapted.cs` set up.
 - Successfully saved and loaded more complex level structure, including fruits, spawn point, and goal! (i.e. saved and loaded interactables)
+
+## May 07 2026
+
+- Fixed trunk horizontal walkable status
+- Fixed fruits only being collected when the cell it is on was left, instead of when the cell is entered.

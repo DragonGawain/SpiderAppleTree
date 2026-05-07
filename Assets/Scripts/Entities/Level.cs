@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Level
@@ -53,22 +54,82 @@ public class Level
         interactables.Remove(coord);
     }
 
+    public void RefreshWalkablesDirections()
+    {
+        /* Trunks:: Segment is HORI walkable on side iff adjacent to:
+        1. other trunk src
+        2. branch
+        */
+        int x,
+            y;
+        IWalkable w;
+        List<Trunk> trunks = uniqueLevelElements.Where(e => e is Trunk).Cast<Trunk>().ToList();
+        foreach (Trunk t in trunks)
+        {
+            x = t.coord.x;
+            t.ClearHorizontalConnections();
+            for (y = t.coord.y + 1; y < t.coord.y + t.height; y++)
+            {
+                // LEFT
+                if (walkables.TryGetValue(new Coord(x - 1, y), out w))
+                {
+                    if (w.GetType() == typeof(Branch))
+                        t.AddHorizontalConnection(y, Direction.LEFT);
+                    else if (w.GetType() == typeof(Trunk))
+                        if (((Trunk)w).coord.y == y)
+                            t.AddHorizontalConnection(y, Direction.LEFT);
+                }
+
+                // RIGHT
+                if (walkables.TryGetValue(new Coord(x + 1, y), out w))
+                {
+                    if (w.GetType() == typeof(Branch))
+                        t.AddHorizontalConnection(y, Direction.RIGHT);
+                    else if (w.GetType() == typeof(Trunk))
+                        if (((Trunk)w).coord.y == y)
+                            t.AddHorizontalConnection(y, Direction.RIGHT);
+                }
+            }
+        }
+
+        /* Branches:: Segment is VERT walkable on side if adjacent to:
+        1. web string (not made yet)
+        */
+    }
+
     /// <summary>
     /// Determines if a target cell location (grid space) can be walked on
     /// </summary>
-    /// <param name="targetCoord">The coordinate that the player is attempting to move into</param>
+    /// <param name="targetPos">The coordinate that the player is currently in</param>
     /// <param name="dir">The direction that the player is coming from.
     /// This means that this input should be the opposite of the direction the player is moving (RIGHT if player is moving LEFT)</param>
     /// <returns>True if the player can move into that space, false otherwise</returns>
-    public bool IsWalkable(Coord targetCoord, Direction dir)
+    public bool IsWalkable(Coord currentPos, Direction dir)
     {
+        // TODO:: if webrella is active, ALL cells are walkable.
+        // Webrella auto-deactivates if you land on a walkable
+        Coord targetCoord = dir switch
+        {
+            Direction.UP => new(currentPos.x, currentPos.y - 1),
+            Direction.RIGHT => new(currentPos.x - 1, currentPos.y),
+            Direction.DOWN => new(currentPos.x, currentPos.y + 1),
+            Direction.LEFT => new(currentPos.x + 1, currentPos.y),
+            _
+                => throw new Exception(
+                    "ERROR: Attempted to move the player in an undefined Direction"
+                )
+        };
+
+        Debug.Log("Moving from " + currentPos + " to " + targetCoord);
+
+        Debug.Log("Walkable at target? " + walkables.ContainsKey(targetCoord));
+
         if (!walkables.ContainsKey(targetCoord))
-            return false;
-        // verify that the element is walkable (unwalkable elements include we reinforcement)
-        if (walkables[targetCoord].GetType() is not IWalkable)
             return false;
         // fetch entity at coord
         IWalkable walkable = walkables[targetCoord];
+
+        Debug.Log("walkable type: " + walkable.GetType());
 
         // if entity at TARGET LOC allows that dir of movement, ret true
         // else ret false.
@@ -114,6 +175,19 @@ public class Level
     public InitialLevelDataContainer GetInitialLevelDataContainer() => ldc;
 
     public int GetLevelID() => levelID;
+
+    // DEBUG
+
+    public void AnalyzeUniqueElements()
+    {
+        Debug.Log("<color=yellow>Analyzing unique elements in the level!</color>");
+        foreach (ILevelElement ile in uniqueLevelElements)
+        {
+            Debug.Log("ile type: " + ile.GetType());
+            Debug.Log("is IWalkable?: " + (ile is IWalkable)); // TRUE!
+            Debug.Log("is type of IWalkable?: " + (ile.GetType() == typeof(IWalkable))); // false :(
+        }
+    }
 
     class WindController
     {
