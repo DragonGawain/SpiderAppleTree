@@ -51,3 +51,10 @@
 - Added web menu UI
 - Set up web menu controls (both keyboard and mouse)
 - Web menu visuals and selection is working as intended!
+
+## May 09 2029=6
+
+- Figured out how to branch weights, and by relation (somewhat) refined the branch snapping system.
+- Decided that fruits will have a weight that can affect branches
+- Added the third tilemap, the numbers map!
+    - This tilemap will display the amount of support (or how much weight a branch segment can still accept).

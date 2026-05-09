@@ -1,13 +1,21 @@
-using System;
-
 // It is important that trunks get loaded before branches.
 // This is because when a branch is created, it will check to see if its source is next to a trunk.
 // If it is, then it sets that trunk segment to be horizontally walkable.
 public class Branch : IWalkable
 {
+    enum SupportSides
+    {
+        LEFT,
+        RIGHT,
+        BOTH
+    }
+
     // Y is NOT readonly! Branches can fall!
+    // Y IS in fact readonly. If a branch falls, I will create a new branch instance.
     public Coord coord;
     public readonly int length;
+
+    // A branch is a single object. The direction determines in what direction it extends.
     public readonly Direction direction;
     public int supportLevel;
 
@@ -42,6 +50,7 @@ public class Branch : IWalkable
         }
 
         // TODO:: Have this constructor spawn in a prefab at the desired location
+        // Prefab would only be used for animations. But, animated tiles exist, so I might use those instead.
     }
 
     public Branch(int x, int y, int length, Direction direction, int supportLevel)

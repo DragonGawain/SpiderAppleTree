@@ -15,10 +15,15 @@ public class Fruit : IInteractable
 
     public readonly Coord coord;
 
-    public Fruit(Coord coord, FruitType fruitType)
+    // The amount of weight the fruit is exerting on the branch its resting on.
+    // Can be negative! (i.e. the fruit is pulling the branch up, supporting it)
+    public readonly int weight;
+
+    public Fruit(Coord coord, FruitType fruitType, int weight = 0)
     {
         this.coord = coord;
         this.fruitType = fruitType;
+        this.weight = weight;
 
         if (SaveManager.GetCreatingLevel())
             SaveManager.GetNewLevel().AddInteractable(coord, this);
@@ -27,7 +32,7 @@ public class Fruit : IInteractable
         // TODO:: Have this constructor spawn in a prefab at the desired location
     }
 
-    public Fruit(Coord coord, int fruitType)
+    public Fruit(Coord coord, int fruitType, int weight = 0)
         : this(coord, (FruitType)fruitType) { }
 
     public void Interact()

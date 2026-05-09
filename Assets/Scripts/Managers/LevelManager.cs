@@ -163,7 +163,7 @@ public class LevelManager : MonoBehaviour
     }
 }
 
-public struct Coord
+public readonly struct Coord
 {
     public Coord(int x, int y)
     {
@@ -172,7 +172,7 @@ public struct Coord
     }
 
     public readonly int x;
-    public int y;
+    public readonly int y;
 
     public readonly Vector3Int ToVector3Int() => new(x, y, 0);
 
