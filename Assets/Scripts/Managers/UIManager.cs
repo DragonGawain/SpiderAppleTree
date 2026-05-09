@@ -3,6 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handles UI related tasks, such as:
+/// * Showing/hiding menus (web menu, main menu, pause menu, etc)
+/// * Updating the HUD (web count, weight, etc)
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     [Header("Web menu")]

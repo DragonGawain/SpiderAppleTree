@@ -158,3 +158,29 @@
 - The shorter a branch is, the higher its initial support value should be.
 - Support value represents the amount of weight that portion of the branch can take before snapping.
 - So, since a long branch puts more strain on the connecting point, a shorter branch is easier to support and therefore should start with a higher support value!
+
+## String supports
+
+- A string support is built by stringing down from one branch all the way until a lower branch, **and then building a web support at that location**.
+- Only one string support can affect a branch at any given time
+- The string support that is farthest from the source of the branch has priority. If there are multiple supports, the ones closer to the source do nothing (other than provide verticle walkable passages)
+- **QUESTION**: Can a branch be suspended by string supports alone?
+    - YES! By 'adding slack' (new web menu option!) to the string, you can create a suspension bridge!
+- **QUESTION**: Do the strings on both sides of the suspended branch need to be even?
+    - NO! These suspension branches can form diagonals! (room to grow inspo showing itself here!)
+- **QUESTION**: What happens to a branch that is only being held by a single string support?
+    - Uhh, it goes vertical?
+- The weight of the susepnsion branch (and the stuff on it) shout be split 50/50 to the two strings (so if the suspension bridge is 3 units long, each string transfers 1.5 weight to its upper connection. The segment that the string is attached to needs to be able to support this value).
+
+- In order for suspension branches to be valuable, dropped branches need to have a length equal to or greater than (1 + gap length) in order to form a bridge.
+    - If the dropped branch is (gap size + odd_number), the branch will shift to occupy 0.5 of a cell on both sides
+
+#### Fruits
+
+- Fruits can maybe have more affects on branches beyond just having a weight?
+    - Maybe fruits can be sources of wind/water?
+    - I will NIX the idea of fruits giving the player temporary special powers. That is outside scope and I do not think it will add to the game in a positive manner. The web menu is plenty of powers to create good puzzles.
+    - Decaying fruit? -> fruit will disappear if not collected in N moves
+        - This might not necessarily lead to a loss? But it usually will
+    - Optional fruit -> fruit that does not need to be collected to access the level goal portal
+        - Actually, I kinda think it should be the other way around. By default, you don't need to collect all the fruit. But, some fruit can have a 'golden aura' or something. The level goal portal will remain inactive until all golden fruit are collected.

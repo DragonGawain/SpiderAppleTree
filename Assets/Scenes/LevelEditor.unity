@@ -620,8 +620,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -795526793
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -1172,7 +1172,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000bb7d5ebe
+  m_ApplyToSortingLayers: 00000000bb7d5ebe773995d0
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1420,8 +1420,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -795526793
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -2020,8 +2020,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -795526793
+  m_SortingLayer: -1
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -2716,8 +2716,8 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -795526793
+  m_SortingLayer: -1
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
@@ -3318,9 +3318,9 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -795526793
+  m_SortingLayer: -1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -3339,15 +3339,43 @@ Tilemap:
   m_Enabled: 1
   m_Tiles: {}
   m_AnimatedTiles: {}
-  m_TileAssetArray: []
-  m_TileSpriteArray: []
-  m_TileMatrixArray: []
-  m_TileColorArray: []
+  m_TileAssetArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileSpriteArray:
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  m_TileMatrixArray:
+  - m_RefCount: 0
+    m_Data:
+      e00: 2.7477148e+38
+      e01: 0
+      e02: 2.7477343e+38
+      e03: 1.8973559e-19
+      e10: 1.7e-43
+      e11: 0
+      e12: 1.7e-43
+      e13: 6.52e-43
+      e20: 0.0000024074616
+      e21: 0
+      e22: -1.2027394e-15
+      e23: -2.4694755e-28
+      e30: 4.5912e-41
+      e31: 0
+      e32: 6.56e-43
+      e33: 6.52e-43
+  m_TileColorArray:
+  - m_RefCount: 0
+    m_Data: {r: 1e-45, g: 1e-45, b: 1e-45, a: 1e-45}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
-  m_Size: {x: 0, y: 0, z: 1}
+  m_Size: {x: 4, y: 3, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -3399,6 +3427,10 @@ PrefabInstance:
       propertyPath: 'webButtons.Array.data[3]'
       value: 
       objectReference: {fileID: 2059016446}
+    - target: {fileID: 4579263343019005996, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
+      propertyPath: test
+      value: 
+      objectReference: {fileID: 4971581038957865261, guid: 93d6861a23ca81b40af5af23f40ed1ce, type: 3}
     - target: {fileID: 6064364457089420484, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
       propertyPath: walkablesMap_editor
       value: 
@@ -3415,6 +3447,10 @@ PrefabInstance:
       propertyPath: grid
       value: 
       objectReference: {fileID: 97679944}
+    - target: {fileID: 7629931106859666369, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
+      propertyPath: numbersMap
+      value: 
+      objectReference: {fileID: 2100048182}
     - target: {fileID: 7629931106859666369, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
       propertyPath: walkablesMap
       value: 

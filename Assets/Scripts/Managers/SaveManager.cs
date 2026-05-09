@@ -11,6 +11,13 @@ public enum LevelState
     SOLVED
 }
 
+/// <summary>
+/// Houses LevelState enum.
+///
+/// Handles reading and writing of files.
+/// Relevant mainly in the creation/editing and loading of level files.
+/// All adapter registrations happen in this script.
+/// </summary>
 public class SaveManager : MonoBehaviour
 {
     public static readonly string levelPath = Path.Combine(@"SaveData", "Levels");

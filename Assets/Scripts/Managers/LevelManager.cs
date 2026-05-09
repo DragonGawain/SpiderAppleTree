@@ -4,12 +4,25 @@ using Unity.Serialization.Json;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Houses Coord struct.
+///
+/// Handles level related elements, including:
+/// * Populating tilemaps (level data)
+/// * Updating tilemaps (weight, webs, etc)
+///
+/// Exposes:
+/// * playerRef
+/// * activeLevel
+/// * grid
+/// </summary>
 public class LevelManager : MonoBehaviour
 {
     [SerializeField]
     Grid grid;
     public Tilemap walkablesMap;
     public Tilemap interactablesMap;
+    public Tilemap numbersMap;
 
     public Tile t_src,
         t_bdy,
@@ -25,6 +38,11 @@ public class LevelManager : MonoBehaviour
         heavy_fruit;
 
     [SerializeField]
+    Grid numberPalette;
+
+    Tile[] numberTiles;
+
+    [SerializeField]
     GameObject playerPrefab;
 
     static Level activeLevel;
@@ -34,6 +52,30 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         GameManager.OnLevelSelect += SetActiveLevel;
+
+        // Get all the number tiles from the tile palette
+        // I'm doing it this way to avoid needing to have MANY Tiles that I need to manually place in as SerializeFields.
+        numberTiles = new Tile[19];
+        Tilemap map = numberPalette.GetComponentInChildren<Tilemap>();
+        BoundsInt bounds = map.cellBounds;
+        TileBase[] tiles = map.GetTilesBlock(bounds);
+        int index;
+        // 4 is the number of elements in a horizontal row in the tile palette
+        // 17 is the total number of tiles minus 2
+        // It is important that there are no empty tile in the palette!
+        // Trailing null tiles in the bottom right corner are fine.
+        for (int i = 0; i < 19; i += 4)
+        {
+            index = 17 - (i / 2);
+            numberTiles[index] = (Tile)tiles[i];
+            numberTiles[++index] = (Tile)tiles[i + 2];
+            index -= 10;
+            numberTiles[index] = (Tile)tiles[i + 1];
+            numberTiles[++index] = (Tile)tiles[i + 3];
+        }
+
+        // Whole numbers 1-9 (index 0-8)
+        // Half numbers 0.5-9.5 (index 9-19)
     }
 
     void SetActiveLevel(int levelID)
@@ -70,6 +112,8 @@ public class LevelManager : MonoBehaviour
         Branch b;
         Fruit f;
         // Tile tile;
+        int nbIndex;
+        float support;
         foreach (ILevelElement ile in activeLevel.GetLevelElements())
         {
             if (ile.GetType() == typeof(Trunk))
@@ -84,12 +128,28 @@ public class LevelManager : MonoBehaviour
             else if (ile.GetType() == typeof(Branch))
             {
                 b = (Branch)ile;
+                walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
                 if (b.direction == Direction.RIGHT)
                 {
-                    walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
+                    // HACK:: this will not always be true. I should be doing the support calc for the src as well.
+                    // (This implies that some levels will start with pre-place supports/weights)
+                    numbersMap.SetTile(
+                        new Vector3Int(b.coord.x, b.coord.y),
+                        numberTiles[Branch.MAX_BRANCH_SUPPORT - 1]
+                    );
+                    // TODO:: half numbers
                     for (int x = 1; x < b.length; x++)
                     {
                         walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
+
+                        support = b.supports[x];
+                        nbIndex = Mathf.FloorToInt(support);
+                        // half numbers:
+                        // if (nbIndex == support) => T: whole number, F: has a decimal
+                        numbersMap.SetTile(
+                            new Vector3Int(b.coord.x + x, b.coord.y),
+                            numberTiles[nbIndex - 1]
+                        );
                     }
                 }
                 else
@@ -98,6 +158,13 @@ public class LevelManager : MonoBehaviour
                     for (int x = 1; x < b.length; x++)
                     {
                         walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
+
+                        support = b.supports[x];
+                        nbIndex = Mathf.FloorToInt(support);
+                        numbersMap.SetTile(
+                            new Vector3Int(b.coord.x - x, b.coord.y),
+                            numberTiles[nbIndex - 1]
+                        );
                     }
                 }
             }
@@ -146,6 +213,12 @@ public class LevelManager : MonoBehaviour
 
         playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
         activeLevel.RefreshWalkablesDirections();
+    }
+
+    public void UpdateWeightMap(Coord coord, float value)
+    {
+        numbersMap.SetTile(coord.ToVector3Int(), numberTiles[Mathf.FloorToInt(value) - 1]);
+        numbersMap.RefreshTile(coord.ToVector3Int());
     }
 
     public static Level GetActiveLevel() => activeLevel;

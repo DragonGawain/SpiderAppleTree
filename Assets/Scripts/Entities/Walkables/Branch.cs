@@ -1,6 +1,7 @@
 // It is important that trunks get loaded before branches.
 // This is because when a branch is created, it will check to see if its source is next to a trunk.
 // If it is, then it sets that trunk segment to be horizontally walkable.
+
 public class Branch : IWalkable
 {
     enum SupportSides
@@ -19,7 +20,12 @@ public class Branch : IWalkable
     public readonly Direction direction;
     public int supportLevel;
 
-    public const int BRANCH_SUPPORT = 5;
+    /// <summary>
+    /// This is the amount of weight that the source of a branch can hold.
+    /// </summary>
+    public const int MAX_BRANCH_SUPPORT = 6;
+
+    public readonly float[] supports;
 
     public Branch(Coord coord, int length, Direction direction, int supportLevel)
     {
@@ -27,6 +33,12 @@ public class Branch : IWalkable
         this.length = length;
         this.direction = direction;
         this.supportLevel = supportLevel;
+
+        supports = new float[length];
+
+        supports[0] = MAX_BRANCH_SUPPORT;
+        for (int i = 1; i < length; i++)
+            supports[i] = supports[i - 1] - 1;
 
         if (SaveManager.GetCreatingLevel())
         {
@@ -63,4 +75,41 @@ public class Branch : IWalkable
         : this(coord, length, (Direction)direction, supportLevel) { }
 
     public bool CanWalkHorizontal(int y, Direction d) => true;
+
+    public void Interacted(int delta)
+    {
+        supports[0] += delta;
+        // check for snaps here!
+    }
+
+    // When the player moves from one branch segment to another, this method will end up getting called twice
+    /// <summary>
+    /// Recalculate the amount of support that each segment of the branch has according to the new change that occured.
+    /// </summary>
+    /// <param name="pos">The position of the change</param>
+    /// <param name="delta">The amount of change.
+    /// Positive value => branch has more support (thing removed)
+    /// Negative value => branch has less support (thing added)
+    /// </param>
+    public void RecalculateWeights(Coord pos, int delta)
+    {
+        int segmentIndex;
+        int dir = 1;
+        if (direction == Direction.LEFT)
+        {
+            segmentIndex = coord.x - pos.x;
+            dir = -1;
+        }
+        else
+            segmentIndex = pos.x - coord.x;
+
+        for (int i = 0; i <= segmentIndex; i++)
+        {
+            supports[i] += delta;
+            GameManager
+                .GetManagerSingleton()
+                .GetComponent<LevelManager>()
+                .UpdateWeightMap(new Coord(coord.x + (i * dir), coord.y), supports[i]);
+        }
+    }
 }

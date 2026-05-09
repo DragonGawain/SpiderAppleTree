@@ -100,7 +100,7 @@ public class Level
     /// <summary>
     /// Determines if a target cell location (grid space) can be walked on
     /// </summary>
-    /// <param name="targetPos">The coordinate that the player is currently in</param>
+    /// <param name="currentPos">The coordinate that the player is currently in</param>
     /// <param name="dir">The direction that the player is coming from.
     /// This means that this input should be the opposite of the direction the player is moving (RIGHT if player is moving LEFT)</param>
     /// <returns>True if the player can move into that space, false otherwise</returns>

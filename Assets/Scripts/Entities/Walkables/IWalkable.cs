@@ -3,8 +3,8 @@ using Unity.Mathematics;
 public enum Direction
 {
     LEFT,
-    RIGHT,
     UP,
+    RIGHT,
     DOWN
 }
 

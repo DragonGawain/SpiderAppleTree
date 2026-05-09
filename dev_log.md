@@ -58,3 +58,8 @@
 - Decided that fruits will have a weight that can affect branches
 - Added the third tilemap, the numbers map!
     - This tilemap will display the amount of support (or how much weight a branch segment can still accept).
+- Added comments in the manager scripts about what task they handle. Going forward, I should try to describe the task of any given file before writing it. (for the important files at least. It's kinda just bloat if I have these javadoc-esque comments for every class)
+- Simplified verifying movement input. All checks are now performed in the `VerifyAndCompleteMove(Direction dir)` method.
+- In order to enable that, the Direction enum was shifted slightly to be in a clockwise order.
+- Fetching all the numbers for the number tilemap straight from the TilePalette prefab. Doing it this way so I don't need to individually set up all the SerializeFields (it would be 19 at the moment, and that number is almost guaranteed to go up as my need for more decimal places goes up. I'll want to try to find a better solution that having wayyy too many numbers prepared).
+- Initial weights calc set up!

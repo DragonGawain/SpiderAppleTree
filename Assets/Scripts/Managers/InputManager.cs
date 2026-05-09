@@ -2,6 +2,13 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Handles reading inputs.
+/// Does not handle processing of inputs.
+///
+/// Exposes methods to change the current active input action map.
+/// All other maps are auto-disabled when a map enable is called.
+/// </summary>
 [RequireComponent(typeof(UIManager))]
 public class InputManager : MonoBehaviour
 {
@@ -38,73 +45,41 @@ public class InputManager : MonoBehaviour
 #endif
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() { }
-
-    // Update is called once per frame
-    void Update() { }
-
     // PLAYER MAP
     // movement
     void MoveUp(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Detected up!");
-        if (
-            LevelManager
-                .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.DOWN)
-        )
-        {
-            Debug.Log("moving up");
-            CompleteMove(Direction.UP);
-        }
+        VerifyAndCompleteMove(Direction.UP);
     }
 
     void MoveRight(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Detected right!");
-        if (
-            LevelManager
-                .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.LEFT)
-        )
-        {
-            Debug.Log("moving right");
-            CompleteMove(Direction.RIGHT);
-        }
+        VerifyAndCompleteMove(Direction.RIGHT);
     }
 
     void MoveDown(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Detected down!");
-        if (
-            LevelManager
-                .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.UP)
-        )
-        {
-            Debug.Log("moving down");
-            CompleteMove(Direction.DOWN);
-        }
+        VerifyAndCompleteMove(Direction.DOWN);
     }
 
     void MoveLeft(InputAction.CallbackContext ctx)
     {
-        Debug.Log("Detected left!");
+        VerifyAndCompleteMove(Direction.LEFT);
+    }
+
+    void VerifyAndCompleteMove(Direction dir)
+    {
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), Direction.RIGHT)
+                .IsWalkable(
+                    LevelManager.GetPlayerRef().GetCurentPos(),
+                    (Direction)(((int)dir + 2) % 4)
+                )
         )
         {
-            Debug.Log("moving left");
-            CompleteMove(Direction.LEFT);
+            LevelManager.GetPlayerRef().Move(dir);
         }
-    }
-
-    void CompleteMove(Direction dir)
-    {
-        LevelManager.GetPlayerRef().Move(dir);
     }
 
     // menus

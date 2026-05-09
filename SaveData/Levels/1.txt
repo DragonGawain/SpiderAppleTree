@@ -128,7 +128,7 @@
                 "y": 4
             },
             "length": 3,
-            "direction": 1,
+            "direction": 2,
             "supportLevel": 2
         },
         {
@@ -146,7 +146,7 @@
                 "y": 5
             },
             "length": 1,
-            "direction": 1,
+            "direction": 2,
             "supportLevel": 2
         },
         {
@@ -155,7 +155,7 @@
                 "y": 5
             },
             "length": 1,
-            "direction": 1,
+            "direction": 2,
             "supportLevel": 2
         }
     ],
@@ -184,6 +184,6 @@
         "y": 6
     },
     "initWebCount": 0,
-    "initWeight": 0,
+    "initWeight": 2,
     "initLenght": 0
 }

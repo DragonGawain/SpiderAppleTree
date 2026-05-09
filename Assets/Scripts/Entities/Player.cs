@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,6 +13,11 @@ public class Player : MonoBehaviour
     Coord currentPos;
 
     Grid gridRef;
+
+    // This should maybe be an IWalkable?
+    // Fundamentally, all weight will find its way back to the source of a branch,
+    // but maybe I should consider tensile strength of web strings and give them a snapping point as well?
+    Branch occupiedBranch = null;
 
     public void Initialize(InitialLevelDataContainer ldc, Grid gridRef)
     {
@@ -33,6 +40,9 @@ public class Player : MonoBehaviour
 
     public void Move(Direction dir)
     {
+        if (occupiedBranch != null)
+            occupiedBranch.RecalculateWeights(currentPos, weight);
+
         currentPos = dir switch
         {
             Direction.UP => new(currentPos.x, currentPos.y + 1),
@@ -44,6 +54,13 @@ public class Player : MonoBehaviour
                     "ERROR: Attempted to move the player in an undefined Direction"
                 )
         };
+
+        IWalkable target = LevelManager.GetActiveLevel().GetWalkables()[currentPos];
+        if (target.GetType() == typeof(Branch))
+        {
+            occupiedBranch = (Branch)target;
+            occupiedBranch.RecalculateWeights(currentPos, -weight);
+        }
 
         StartCoroutine(SmoothMoveAnimation(dir));
     }
