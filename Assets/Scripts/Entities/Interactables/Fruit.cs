@@ -25,15 +25,17 @@ public class Fruit : IInteractable
         this.fruitType = fruitType;
         this.weight = weight;
 
-        if (SaveManager.GetCreatingLevel())
-            SaveManager.GetNewLevel().AddInteractable(coord, this);
-        else
-            LevelManager.GetActiveLevel().AddInteractable(coord, this);
+        LevelManager.GetActiveLevel().AddInteractable(coord, this);
         // TODO:: Have this constructor spawn in a prefab at the desired location
+
+        LevelManager.GetActiveLevel().GetWalkables().TryGetValue(coord, out IWalkable target);
+
+        if (target != null && target.GetType() == typeof(Branch))
+            ((Branch)target).UpdateWeightDelta(coord, weight);
     }
 
     public Fruit(Coord coord, int fruitType, int weight = 0)
-        : this(coord, (FruitType)fruitType) { }
+        : this(coord, (FruitType)fruitType, weight) { }
 
     public void Interact()
     {
@@ -50,6 +52,11 @@ public class Fruit : IInteractable
             case FruitType.HEAVY:
                 break;
         }
+
+        LevelManager.GetActiveLevel().GetWalkables().TryGetValue(coord, out IWalkable target);
+
+        if (target != null && target.GetType() == typeof(Branch))
+            ((Branch)target).UpdateWeightDelta(coord, -weight);
 
         LevelManager.GetActiveLevel().RemoveInteractable(coord);
         GameManager

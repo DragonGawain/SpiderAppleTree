@@ -55,15 +55,6 @@ public class Player : MonoBehaviour
                 )
         };
 
-        IWalkable target = LevelManager.GetActiveLevel().GetWalkables()[currentPos];
-        if (target.GetType() == typeof(Branch))
-        {
-            occupiedBranch = (Branch)target;
-            occupiedBranch.UpdateWeightDelta(currentPos, weight);
-        }
-        else
-            occupiedBranch = null;
-
         StartCoroutine(SmoothMoveAnimation(dir));
     }
 
@@ -86,6 +77,15 @@ public class Player : MonoBehaviour
         // ensure that player is at the desired position
         transform.position = targetPos;
         LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
+
+        IWalkable target = LevelManager.GetActiveLevel().GetWalkables()[currentPos];
+        if (target.GetType() == typeof(Branch))
+        {
+            occupiedBranch = (Branch)target;
+            occupiedBranch.UpdateWeightDelta(currentPos, weight);
+        }
+        else
+            occupiedBranch = null;
 
         InputManager.EnableMovementInputs();
     }

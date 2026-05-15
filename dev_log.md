@@ -74,3 +74,11 @@
     - Can now properly save and load levels with the new support system
 - Updated Player to call the new weight methods of Branch.
 - Fixed a bug in player where it would not set the branch it occupied to null when leaving the branch, which would cause a crash.
+
+## May 15 2026
+
+- Continued work on level editor
+- Set default player weight to be 2 instead of 0
+- Set up systems to allow me to customize aspects of trunk supports and fruits from the editor
+- Fruits now apply their weight to branches that they spawn on
+- Fruits now correctly remove their weight from branches when collected

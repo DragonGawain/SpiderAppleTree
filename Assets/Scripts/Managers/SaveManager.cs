@@ -32,11 +32,17 @@ public class SaveManager : MonoBehaviour
 
     public static Level GetNewLevel() => newLevel;
 
+    static Dictionary<(EditorIdentity, Coord), EditorElement> editorElements = new();
+
     [Header("Initial values")]
     [SerializeField]
-    int initWebCount,
-        initWeight,
-        initLength;
+    int initWebCount;
+
+    [SerializeField]
+    int initWeight;
+
+    [SerializeField]
+    int initLength;
 
     public static readonly Dictionary<LevelState, string> levelStatePath =
         new()
@@ -69,6 +75,7 @@ public class SaveManager : MonoBehaviour
         Coord goalPoint = new(0, 0);
         TileBase tile;
         Vector3Int loc;
+        EditorElement editorElement;
         for (int x = -7; x <= 7; x++)
         {
             for (int y = 0; y <= 8; y++)
@@ -107,9 +114,14 @@ public class SaveManager : MonoBehaviour
                             // DIRECTION: LEFT
                             BuildBranch(loc, true);
                             break;
-                        case "web_string":
-                            break;
-                        case "web_support":
+                        // case "web_string":
+                        //     break;
+                        // case "web_support":
+                        //     break;
+                        default:
+                            Debug.LogWarning(
+                                "Unknown walkable of name " + tile.name + " found at " + loc + "!"
+                            );
                             break;
                     }
                 }
@@ -128,26 +140,30 @@ public class SaveManager : MonoBehaviour
 
                     switch (tile.name)
                     {
-                        case "spawn":
+                        case "spawn_point":
                             spawnPoint = new(x, y);
                             break;
                         case "goal":
                             goalPoint = new(x, y);
                             break;
-                        case "empty_fruit":
-                            new Fruit(new(x, y), FruitType.EMPTY);
+                        case "fruit":
+                            editorElement = editorElements[
+                                (EditorIdentity.INTERACTABLE, new(x, y))
+                            ];
+                            new Fruit(
+                                new(x, y),
+                                ((FruitEditor)editorElement).fruitType,
+                                ((FruitEditor)editorElement).weight
+                            );
                             break;
-                        case "web_fruit":
-                            new Fruit(new(x, y), FruitType.WEB);
-                            break;
-                        case "anti_web_fruit":
-                            new Fruit(new(x, y), FruitType.ANTI_WEB);
-                            break;
-                        case "light_fruit":
-                            new Fruit(new(x, y), FruitType.LIGHT);
-                            break;
-                        case "heavy_fruit":
-                            new Fruit(new(x, y), FruitType.HEAVY);
+                        default:
+                            Debug.LogWarning(
+                                "Unknown interactable of name "
+                                    + tile.name
+                                    + " found at "
+                                    + loc
+                                    + "!"
+                            );
                             break;
                     }
                 }
@@ -167,7 +183,16 @@ public class SaveManager : MonoBehaviour
                     switch (tile.name)
                     {
                         case "trunk_support":
-                            new TrunkSupport(new(loc.x, loc.y), ISupport.TRUNK_SUPPORT);
+                            editorElement = editorElements[(EditorIdentity.SUPPORT, new(x, y))];
+                            new TrunkSupport(
+                                new(x, y),
+                                ((TrunkSupportEditor)editorElement).supportValue
+                            );
+                            break;
+                        default:
+                            Debug.LogWarning(
+                                "Unknown support of name " + tile.name + " found at " + loc + "!"
+                            );
                             break;
                     }
                 }
@@ -278,5 +303,18 @@ public class SaveManager : MonoBehaviour
                 + "!"
         );
         new Branch(coord, length, alt ? Direction.LEFT : Direction.RIGHT);
+    }
+
+    public void ClearEditor()
+    {
+        editorElements.Clear();
+        walkablesMap_editor.ClearAllTiles();
+        interactablesMap_editor.ClearAllTiles();
+        supportsMap_editor.ClearAllTiles();
+    }
+
+    public static void RegisterEditorElement(EditorIdentity ei, Coord crd, EditorElement ee)
+    {
+        editorElements.Add((ei, crd), ee);
     }
 }

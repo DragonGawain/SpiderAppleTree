@@ -79,17 +79,13 @@ public class Branch : IWalkable
         calculatededSupports = new int[length];
         actualWeight = new float[length];
 
-        Level level = SaveManager.GetCreatingLevel()
-            ? SaveManager.GetNewLevel()
-            : LevelManager.GetActiveLevel();
-
-        level.AddNewElementToLevel(this);
+        LevelManager.GetActiveLevel().AddNewElementToLevel(this);
         if (direction == Direction.RIGHT)
             for (int i = coord.x; i < coord.x + length; i++)
-                level.AddWalkable(new Coord(i, coord.y), this);
+                LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
         else
             for (int i = coord.x; i > coord.x - length; i--)
-                level.AddWalkable(new Coord(i, coord.y), this);
+                LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
 
         // TODO:: Have this constructor spawn in a prefab at the desired location
         // Prefab would only be used for animations. But, animated tiles exist, so I might use those instead.
@@ -182,7 +178,7 @@ public class Branch : IWalkable
         int nextSupportIndex = -1;
         if (!singleSupport)
             rightSupportIndex = supportIndices[1];
-        if (supportIndices.Count > 1)
+        if (supportIndices.Count > 2)
             nextSupportIndex = 2;
 
         float half; // I don't want to need to keep recalculating the half. Division is expensive!
@@ -260,13 +256,13 @@ public class Branch : IWalkable
         // for (int i = 0; i < length; i++)
         //     GameManager.DebugLog("" + calculatededSupports[i]);
 
-        GameManager.DebugLog("\nweight deltas:");
-        for (int i = 0; i < length; i++)
-            GameManager.DebugLog("" + weightDeltas[i]);
+        // GameManager.DebugLog("\nweight deltas:");
+        // for (int i = 0; i < length; i++)
+        //     GameManager.DebugLog("" + weightDeltas[i]);
 
-        GameManager.DebugLog("actual weight:");
-        for (int i = 0; i < length; i++)
-            GameManager.DebugLog("" + actualWeight[i]);
+        // GameManager.DebugLog("actual weight:");
+        // for (int i = 0; i < length; i++)
+        //     GameManager.DebugLog("" + actualWeight[i]);
 
         int dir = direction == Direction.LEFT ? -1 : 1;
         for (int i = 0; i < length; i++)
@@ -276,78 +272,6 @@ public class Branch : IWalkable
                 .GetComponent<LevelManager>()
                 .UpdateWeightMap(new Coord(coord.x + (i * dir), coord.y), actualWeight[i]);
         }
-    }
-
-    public void Interacted(int delta)
-    {
-        weightDeltas[0] += delta;
-        // check for snaps here!
-    }
-
-    // ------------------------
-
-    // ------------------------
-
-    // ------------------------
-
-    // When the player moves from one branch segment to another, this method will end up getting called twice
-    /// <summary>
-    /// Recalculate the amount of support that each segment of the branch has according to the new change that occured.
-    /// </summary>
-    /// <param name="pos">The position of the change</param>
-    /// <param name="delta">The amount of change.
-    /// Positive value => branch has more support (thing removed)
-    /// Negative value => branch has less support (thing added)
-    /// </param>
-    public void RecalculateWeights(Coord pos, int delta)
-    {
-        int segmentIndex;
-        int dir = 1;
-        if (direction == Direction.LEFT)
-        {
-            segmentIndex = coord.x - pos.x;
-            dir = -1;
-        }
-        else
-            segmentIndex = pos.x - coord.x;
-
-        weightDeltas[segmentIndex] += delta;
-
-        // determine if there are multiple supports on this branch.
-        // weightDeltas are literal, not inverse.
-        // So, a positive value will indicate a branch support.
-        // A negative value indicates that an object with positive weight is there, requiring support.
-        int nbs = rawSupports.Where((t, v) => v > 0).Count();
-        GameManager.DebugLog("There are " + nbs + " weight deltas greater than 0.");
-        int allNbs = rawSupports.Where((t, v) => v != 0).Count();
-        GameManager.DebugLog("There are " + nbs + " non-zero weight deltas.");
-
-        // up propagation: stepping on the end of a branch will impact the support of the source
-        for (int i = 0; i <= segmentIndex; i++)
-        {
-            weightDeltas[i] += delta;
-            GameManager
-                .GetManagerSingleton()
-                .GetComponent<LevelManager>()
-                .UpdateWeightMap(new Coord(coord.x + (i * dir), coord.y), weightDeltas[i]);
-        }
-    }
-
-    // HACK:: Maybe this should also be a delta?
-    // The reason it's not is because it's a tuple, and that makes checking the value slightly tough.
-
-    // WAIT WAIT WAIT!! I just realized that we can have multiple supports on a single branch segment.
-    // Hmm, either I disallow that, or I need 2 arrays. One for additive, one for multiplicative.
-    public void SetSupport(Coord pos, int delta)
-    {
-        int segmentIndex;
-        if (direction == Direction.LEFT)
-            segmentIndex = coord.x - pos.x;
-        else
-            segmentIndex = pos.x - coord.x;
-
-        rawSupports[segmentIndex] += delta;
-        RecalculateWeights(new Coord(coord.x + length - 1, coord.y), 0);
     }
 
     int CoordToSegmentIndex(Coord crd) =>

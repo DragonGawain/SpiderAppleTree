@@ -21,11 +21,7 @@ public class TrunkSupport : ISupport
         this.coord = coord;
         this.supportValue = supportValue;
 
-        Level level = SaveManager.GetCreatingLevel()
-            ? SaveManager.GetNewLevel()
-            : LevelManager.GetActiveLevel();
-
-        branch = (Branch)level.GetWalkables()[coord];
+        branch = (Branch)LevelManager.GetActiveLevel().GetWalkables()[coord];
         branch.OnBranchSnap += OnSnap;
 
         branch.UpdateSupports(this);

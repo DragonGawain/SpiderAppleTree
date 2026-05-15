@@ -15,18 +15,9 @@ public class Trunk : IWalkable
         this.coord = coord;
         this.height = height;
 
-        if (SaveManager.GetCreatingLevel())
-        {
-            SaveManager.GetNewLevel().AddNewElementToLevel(this);
-            for (int i = coord.y; i < coord.y + height; i++)
-                SaveManager.GetNewLevel().AddWalkable(new Coord(coord.x, i), this);
-        }
-        else
-        {
-            LevelManager.GetActiveLevel().AddNewElementToLevel(this);
-            for (int i = coord.y; i < coord.y + height; i++)
-                LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
-        }
+        LevelManager.GetActiveLevel().AddNewElementToLevel(this);
+        for (int i = coord.y; i < coord.y + height; i++)
+            LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
 
         horizontalWalkables.Add((coord.y, Direction.LEFT));
         horizontalWalkables.Add((coord.y, Direction.RIGHT));
