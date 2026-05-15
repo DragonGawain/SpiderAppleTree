@@ -52,7 +52,7 @@
 - Set up web menu controls (both keyboard and mouse)
 - Web menu visuals and selection is working as intended!
 
-## May 09 2029=6
+## May 09 2026
 
 - Figured out how to branch weights, and by relation (somewhat) refined the branch snapping system.
 - Decided that fruits will have a weight that can affect branches
@@ -63,3 +63,14 @@
 - In order to enable that, the Direction enum was shifted slightly to be in a clockwise order.
 - Fetching all the numbers for the number tilemap straight from the TilePalette prefab. Doing it this way so I don't need to individually set up all the SerializeFields (it would be 19 at the moment, and that number is almost guaranteed to go up as my need for more decimal places goes up. I'll want to try to find a better solution that having wayyy too many numbers prepared).
 - Initial weights calc set up!
+
+## May 11-14 2026
+
+- Fiddled around with how branch weight calculations work. Finally settled on an algorithm that I'm satisfied with. (for now at least).
+- I decided that weight deltas would only be propagated up (towards nearest supports) only! Down propagation would could a branch segment to instantly snap the moment the player stepped onto the source of the branch, or never (at that player weight).
+- More setup for the new support calculation system:
+    - Fixed/added save adapters as needed
+    - Added Supports Tilemap (editor) to the tilemaps so I can place supports in the level editor
+    - Can now properly save and load levels with the new support system
+- Updated Player to call the new weight methods of Branch.
+- Fixed a bug in player where it would not set the branch it occupied to null when leaving the branch, which would cause a crash.

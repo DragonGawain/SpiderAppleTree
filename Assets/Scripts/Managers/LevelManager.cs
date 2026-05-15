@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Unity.Serialization.Json;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -48,6 +50,10 @@ public class LevelManager : MonoBehaviour
     static Level activeLevel;
     static Player playerRef;
 
+    static bool loadingLevel = false;
+
+    public static bool GetLoadingLevel() => loadingLevel;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -80,6 +86,7 @@ public class LevelManager : MonoBehaviour
 
     void SetActiveLevel(int levelID)
     {
+        loadingLevel = true;
         // Grab level file
         // Deserialize level file
         activeLevel = new Level(levelID);
@@ -112,8 +119,8 @@ public class LevelManager : MonoBehaviour
         Branch b;
         Fruit f;
         // Tile tile;
-        int nbIndex;
-        float support;
+        // int nbIndex;
+        // float support;
         foreach (ILevelElement ile in activeLevel.GetLevelElements())
         {
             if (ile.GetType() == typeof(Trunk))
@@ -133,23 +140,24 @@ public class LevelManager : MonoBehaviour
                 {
                     // HACK:: this will not always be true. I should be doing the support calc for the src as well.
                     // (This implies that some levels will start with pre-place supports/weights)
-                    numbersMap.SetTile(
-                        new Vector3Int(b.coord.x, b.coord.y),
-                        numberTiles[Branch.MAX_BRANCH_SUPPORT - 1]
-                    );
+                    // numbersMap.SetTile(
+                    //     new Vector3Int(b.coord.x, b.coord.y),
+                    //     numberTiles[Branch.MAX_BRANCH_SUPPORT - 1]
+                    // );
                     // TODO:: half numbers
+                    // if (val % 1 != 0) => true if decimal exists
                     for (int x = 1; x < b.length; x++)
                     {
                         walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
 
-                        support = b.supports[x];
-                        nbIndex = Mathf.FloorToInt(support);
-                        // half numbers:
-                        // if (nbIndex == support) => T: whole number, F: has a decimal
-                        numbersMap.SetTile(
-                            new Vector3Int(b.coord.x + x, b.coord.y),
-                            numberTiles[nbIndex - 1]
-                        );
+                        // support = b.weightDeltas[x];
+                        // nbIndex = Mathf.FloorToInt(support);
+                        // // half numbers:
+                        // // if (nbIndex == support) => T: whole number, F: has a decimal
+                        // numbersMap.SetTile(
+                        //     new Vector3Int(b.coord.x + x, b.coord.y),
+                        //     numberTiles[nbIndex - 1]
+                        // );
                     }
                 }
                 else
@@ -159,14 +167,15 @@ public class LevelManager : MonoBehaviour
                     {
                         walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
 
-                        support = b.supports[x];
-                        nbIndex = Mathf.FloorToInt(support);
-                        numbersMap.SetTile(
-                            new Vector3Int(b.coord.x - x, b.coord.y),
-                            numberTiles[nbIndex - 1]
-                        );
+                        // support = b.weightDeltas[x];
+                        // nbIndex = Mathf.FloorToInt(support);
+                        // numbersMap.SetTile(
+                        //     new Vector3Int(b.coord.x - x, b.coord.y),
+                        //     numberTiles[nbIndex - 1]
+                        // );
                     }
                 }
+                // b.UpdateWeightMap();
             }
             else if (ile.GetType() == typeof(Fruit))
             {
@@ -200,6 +209,15 @@ public class LevelManager : MonoBehaviour
             }
         }
 
+        loadingLevel = false;
+        List<Branch> branches = activeLevel
+            .GetLevelElements()
+            .Where(e => e.GetType() == typeof(Branch))
+            .Cast<Branch>()
+            .ToList();
+        foreach (Branch br in branches)
+            br.RecalculateSupports();
+
         Debug.Log("Finished drawing loaded level!");
 
         // Create player at appropriate spot
@@ -217,7 +235,12 @@ public class LevelManager : MonoBehaviour
 
     public void UpdateWeightMap(Coord coord, float value)
     {
-        numbersMap.SetTile(coord.ToVector3Int(), numberTiles[Mathf.FloorToInt(value) - 1]);
+        int nbToIndex = Mathf.FloorToInt(value) - 1;
+        if (nbToIndex % 1 != 0)
+            nbToIndex += 9;
+
+        Debug.Log("Placing number of value " + value + " found at index " + nbToIndex);
+        numbersMap.SetTile(coord.ToVector3Int(), numberTiles[nbToIndex]);
         numbersMap.RefreshTile(coord.ToVector3Int());
     }
 

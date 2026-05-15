@@ -48,6 +48,7 @@ public class SaveManager : MonoBehaviour
 
     public Tilemap walkablesMap_editor;
     public Tilemap interactablesMap_editor;
+    public Tilemap supportsMap_editor;
 
     private void Awake()
     {
@@ -56,6 +57,7 @@ public class SaveManager : MonoBehaviour
         JsonSerialization.AddGlobalAdapter(new LevelAdapter());
         JsonSerialization.AddGlobalAdapter(new CoordAdapter());
         JsonSerialization.AddGlobalAdapter(new FruitAdapter());
+        JsonSerialization.AddGlobalAdapter(new TrunkSupportAdapter());
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
@@ -72,11 +74,19 @@ public class SaveManager : MonoBehaviour
             for (int y = 0; y <= 8; y++)
             {
                 loc = new Vector3Int(x, y, 0);
+                // The order in which the maps are scanned is important!
+                // In particular, the walkables map MUST be scanned before the supports map
                 if (walkablesMap_editor.HasTile(loc))
                 {
                     tile = walkablesMap_editor.GetTile(loc);
                     Debug.Log(
-                        "Found walkable at (" + x + ", " + y + "), with identity " + tile.name + "!"
+                        "WALKABLE: Found walkable at ("
+                            + x
+                            + ", "
+                            + y
+                            + "), with identity "
+                            + tile.name
+                            + "!"
                     );
                     switch (tile.name)
                     {
@@ -107,7 +117,13 @@ public class SaveManager : MonoBehaviour
                 {
                     tile = interactablesMap_editor.GetTile(loc);
                     Debug.Log(
-                        "Found element at (" + x + ", " + y + "), with identity " + tile.name + "!"
+                        "INTERACTABLE: Found element at ("
+                            + x
+                            + ", "
+                            + y
+                            + "), with identity "
+                            + tile.name
+                            + "!"
                     );
 
                     switch (tile.name)
@@ -132,6 +148,26 @@ public class SaveManager : MonoBehaviour
                             break;
                         case "heavy_fruit":
                             new Fruit(new(x, y), FruitType.HEAVY);
+                            break;
+                    }
+                }
+                if (supportsMap_editor.HasTile(loc))
+                {
+                    tile = supportsMap_editor.GetTile(loc);
+                    Debug.Log(
+                        "SUPPORT: Found element at ("
+                            + x
+                            + ", "
+                            + y
+                            + "), with identity "
+                            + tile.name
+                            + "!"
+                    );
+
+                    switch (tile.name)
+                    {
+                        case "trunk_support":
+                            new TrunkSupport(new(loc.x, loc.y), ISupport.TRUNK_SUPPORT);
                             break;
                     }
                 }
@@ -241,14 +277,6 @@ public class SaveManager : MonoBehaviour
                 + (alt ? "left" : "right")
                 + "!"
         );
-        new Branch(coord, length, alt ? Direction.LEFT : Direction.RIGHT, 2);
+        new Branch(coord, length, alt ? Direction.LEFT : Direction.RIGHT);
     }
 }
-
-/*
-Tilemap bounds (in my sample at least):
-BL: (-7, 0)
-BR: (7, 0)
-TL: (-7, 8)
-TR: (7, 8)
-*/

@@ -176,6 +176,9 @@ public class Level
 
     public int GetLevelID() => levelID;
 
+    // TODO
+    public void RecalculateBranchSupports() { }
+
     // DEBUG
 
     public void AnalyzeUniqueElements()

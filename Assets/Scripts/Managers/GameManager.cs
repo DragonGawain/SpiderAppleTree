@@ -62,4 +62,9 @@ public class GameManager : MonoBehaviour
 
         // This is really only valuable if I don't create an undo stack.
     }
+
+    public static void DebugLog(string msg)
+    {
+        Debug.Log(msg);
+    }
 }

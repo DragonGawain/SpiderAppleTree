@@ -5,10 +5,13 @@ public class WebMenuButton : MonoBehaviour
     enum WebAction
     {
         NONE,
+
+        // if a support is added not next to a trunk, it adds weight to the branch.
+        // To be precise, a ws always adds 1 weight, it's just that when adjacent to a trunk, it also adds 2 support.
         ADD_SUPPORT,
         REMOVE_SUPPORT,
         WEBRELLA,
-        STRING_DOWN
+        STRING_DOWN,
     }
 
     [SerializeField]

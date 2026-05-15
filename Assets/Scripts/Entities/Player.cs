@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
     public void Move(Direction dir)
     {
         if (occupiedBranch != null)
-            occupiedBranch.RecalculateWeights(currentPos, weight);
+            occupiedBranch.UpdateWeightDelta(currentPos, -weight);
 
         currentPos = dir switch
         {
@@ -59,8 +59,10 @@ public class Player : MonoBehaviour
         if (target.GetType() == typeof(Branch))
         {
             occupiedBranch = (Branch)target;
-            occupiedBranch.RecalculateWeights(currentPos, -weight);
+            occupiedBranch.UpdateWeightDelta(currentPos, weight);
         }
+        else
+            occupiedBranch = null;
 
         StartCoroutine(SmoothMoveAnimation(dir));
     }
