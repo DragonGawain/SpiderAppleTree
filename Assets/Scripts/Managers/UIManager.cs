@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     WebMenuButton defaultWebButton;
 
-    WebMenuButton selectedWebButton;
+    public WebMenuButton selectedWebButton;
 
     public void SetWebMenuButton(WebMenuButton webButton)
     {
@@ -49,10 +49,10 @@ public class UIManager : MonoBehaviour
 
     public void CloseWebMenu()
     {
+        webMenu.SetActive(false);
         selectedWebButton.GetComponent<Image>().color = selectedWebButton
             .GetComponent<Button>()
             .colors.normalColor;
-        webMenu.SetActive(false);
         InputManager.EnableMovementInputs();
     }
 }

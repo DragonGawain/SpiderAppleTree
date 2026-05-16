@@ -225,6 +225,6 @@
         "y": 6
     },
     "initWebCount": 0,
-    "initWeight": 2,
+    "initWeight": 3,
     "initLenght": 0
 }

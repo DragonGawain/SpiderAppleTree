@@ -263,8 +263,8 @@ public class LevelManager : MonoBehaviour
     public void UpdateWeightMap(Coord coord, float value)
     {
         int nbToIndex = Mathf.FloorToInt(value) - 1;
-        if (nbToIndex % 1 != 0)
-            nbToIndex += 9;
+        if (value % 1 != 0)
+            nbToIndex += 10;
 
         Debug.Log("Placing number of value " + value + " found at index " + nbToIndex);
         numbersMap.SetTile(coord.ToVector3Int(), numberTiles[nbToIndex]);

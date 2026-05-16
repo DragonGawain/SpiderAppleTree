@@ -82,3 +82,12 @@
 - Set up systems to allow me to customize aspects of trunk supports and fruits from the editor
 - Fruits now apply their weight to branches that they spawn on
 - Fruits now correctly remove their weight from branches when collected
+
+## May 16 2026
+
+- Fixed decimal weights not displaying
+- Fixed branches displaying no player load during the move transition time when the player is moving from one branch segment to another
+- Fixed bug that caused web menu buttons to sometimes be highlighted as if selected when they were not.
+    - This bug sometimes displayed multiple buttons as being selected
+    - This bug only occured when clicking an option with the mouse
+    - I fixed it by stopping the automatic colour shifting that the Button component has built in.

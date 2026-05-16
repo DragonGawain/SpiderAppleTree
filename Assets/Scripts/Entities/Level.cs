@@ -168,7 +168,7 @@ public class Level
 
     public int GetInitWebCount() => ldc.initWebCount;
 
-    public int GetInitWeight() => ldc.initWeight;
+    public float GetInitWeight() => ldc.initWeight;
 
     public int GetInitLenght() => ldc.initLength;
 
@@ -203,8 +203,8 @@ public readonly struct InitialLevelDataContainer
     public readonly Coord spawnPoint,
         goalPoint;
     public readonly int initWebCount,
-        initWeight,
-        initLength;
+        initLength,
+        initWeight;
 
     public InitialLevelDataContainer(
         Coord spawnPoint,

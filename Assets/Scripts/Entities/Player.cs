@@ -7,8 +7,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     int webCount,
-        weight,
-        length;
+        length,
+        weight;
 
     Coord currentPos;
 
@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
     // Fundamentally, all weight will find its way back to the source of a branch,
     // but maybe I should consider tensile strength of web strings and give them a snapping point as well?
     Branch occupiedBranch = null;
+
+    // default is 50. Mock FU timer => divide value by 50 to determine the number of seconds the animation will take
+    const int MOVE_SPEED = 10;
 
     public void Initialize(InitialLevelDataContainer ldc, Grid gridRef)
     {
@@ -30,7 +33,7 @@ public class Player : MonoBehaviour
 
     public void AlterWeight(int delta) => weight += delta;
 
-    public int GetWeight() => weight;
+    public float GetWeight() => weight;
 
     public void AlterLength(int delta) => length += delta;
 
@@ -40,8 +43,7 @@ public class Player : MonoBehaviour
 
     public void Move(Direction dir)
     {
-        if (occupiedBranch != null)
-            occupiedBranch.UpdateWeightDelta(currentPos, -weight);
+        Coord oldCoord = currentPos;
 
         currentPos = dir switch
         {
@@ -55,10 +57,10 @@ public class Player : MonoBehaviour
                 )
         };
 
-        StartCoroutine(SmoothMoveAnimation(dir));
+        StartCoroutine(SmoothMoveAnimation(oldCoord));
     }
 
-    IEnumerator SmoothMoveAnimation(Direction dir)
+    IEnumerator SmoothMoveAnimation(Coord oldCoord)
     {
         InputManager.DisableAllInputs();
 
@@ -67,10 +69,10 @@ public class Player : MonoBehaviour
             gridRef.CellToWorld(currentPos.ToVector3Int()) + new Vector3(0.5f, 0.5f, 0);
         float lerp = 0.0f;
 
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < MOVE_SPEED; i++)
         {
             transform.position = Vector3.Lerp(oldPos, targetPos, lerp);
-            lerp += 0.02f;
+            lerp += 1f / MOVE_SPEED;
             yield return new WaitForFixedUpdate();
         }
 
@@ -79,6 +81,9 @@ public class Player : MonoBehaviour
         LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
 
         IWalkable target = LevelManager.GetActiveLevel().GetWalkables()[currentPos];
+
+        if (occupiedBranch != null)
+            occupiedBranch.UpdateWeightDelta(oldCoord, -weight);
         if (target.GetType() == typeof(Branch))
         {
             occupiedBranch = (Branch)target;
