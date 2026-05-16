@@ -56,6 +56,8 @@ public class SaveManager : MonoBehaviour
     public Tilemap interactablesMap_editor;
     public Tilemap supportsMap_editor;
 
+    bool isOverwriting = false;
+
     private void Awake()
     {
         JsonSerialization.AddGlobalAdapter(new BranchAdapter());
@@ -69,6 +71,15 @@ public class SaveManager : MonoBehaviour
 
     public void SaveOrOverwriteLevel(int id)
     {
+        if (File.Exists(new(Path.Combine(levelPath, id.ToString() + ".txt"))) && !isOverwriting)
+        {
+            Debug.Log(
+                "<color=red>A level with this id already exists! Please click the \"save level\" button again to confirm overwriting."
+            );
+            isOverwriting = true;
+            return;
+        }
+        isOverwriting = false;
         creatingLevel = true;
         newLevel = new Level(id);
         Coord spawnPoint = new(0, 0);

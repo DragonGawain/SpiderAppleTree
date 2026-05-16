@@ -91,3 +91,4 @@
     - This bug sometimes displayed multiple buttons as being selected
     - This bug only occured when clicking an option with the mouse
     - I fixed it by stopping the automatic colour shifting that the Button component has built in.
+- Added double-click confirmation when trying to overwrite a save file (console message)
