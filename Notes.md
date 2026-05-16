@@ -86,6 +86,14 @@
 
 ### Player
 
+### Web menu
+
+#### Web reinforcement
+
+- Has a weight of 1
+- Offers a support value of +2 if horizontall adjacent to a trunk
+- **Can be placed in the middle of a branch to simply add weight to the branch!**
+
 ### ILevelElement (interface)
 
 - Root of all level elements
@@ -97,6 +105,24 @@
 - Walkable contract. Enforces that all walkables state if they can be stepped on from a horizontal or vertical direction
     - May later expand to enforce stating from a specific direction?
 - Houses the `Direction` enum
+
+### ISupport
+
+- Support contract.
+
+#### Trunk support
+
+- Possible thought: I'd like TrunkSupports to be place automatically.
+    - I posit the thought that each trunk source would have a value that discates the support that any trunk segment along it would offer.
+    - To enable the ability to have a trunk segment that offers different root supports at different heights, I would just need a new trunk source in the middle of the tree.
+    - This might necessitate trunk variants where the source cannot be walked onto from certain sides.
+    - Problem: if I need a single trunk segment to have branches extending both left and right with different support values.
+        - This actually shouldn't be a problem. I can adjust all other values to work around this. Or place a different type of support at the base of one of the branches.
+
+#### Hidden support
+
+- A type of support that is never shown to the player. Will typically be used to modify the value of an existing support in the case that I can't modify it directly for some reason (see TrunkSupport thoughts for an example of such a scenario)
+- Only make if needed!
 
 ### Level
 
@@ -129,6 +155,7 @@
 
 - Pushes player when hanging from string or using webrella
 - Can be in any direction, and any row, happening every N actions
+- Can make a branch swivel around a trunk (i.e. left facing branch now extends to the right on the other side of the trunk)
 
 ### Water
 
@@ -184,3 +211,9 @@
         - This might not necessarily lead to a loss? But it usually will
     - Optional fruit -> fruit that does not need to be collected to access the level goal portal
         - Actually, I kinda think it should be the other way around. By default, you don't need to collect all the fruit. But, some fruit can have a 'golden aura' or something. The level goal portal will remain inactive until all golden fruit are collected.
+
+#### Fulcrums
+
+- Extension os single string support thoughts, if a suspended bridge only has a single support, instead of snapping, it tilts to one side or another.
+- ~~Tilting can be more extreme the closer to an extremity the weight difference is?~~
+- Tilting level is determined by the weight difference between sides

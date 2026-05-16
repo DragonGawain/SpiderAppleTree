@@ -170,6 +170,9 @@ public class Branch : IWalkable
         }
 
         bool singleSupport = supportIndices.Count == 1;
+
+        // FORWARD PASS
+
         // by default, I'm assuming all branches face to the right.
         // This is because arrays are 0 indexed and visually described as extending to the right.
         // If a branch is left facing, we simply flip the world coordinate. The segment index is identical.
@@ -190,7 +193,7 @@ public class Branch : IWalkable
         for (int i = 0; i < length; i++)
         {
             // If the current segment is the right support segment, shift over the registered support indices
-            if (!singleSupport)
+            if (!singleSupport) // short circuit
             {
                 if (i == rightSupportIndex)
                 {
@@ -231,7 +234,59 @@ public class Branch : IWalkable
             }
         }
 
+        // BACKWARD PASS
+        // Account for supports that are supporting segments to their left.
+        // i.e. what if a branch only has one support and it's not at index 0?
+        rightSupportIndex = supportIndices[^1]; // this should be referencing the rightmost support
+        leftSupportIndex = -1;
+        nextSupportIndex = -1;
+
+        singleSupport = supportIndices.Count == 1;
+        if (!singleSupport)
+            leftSupportIndex = supportIndices[^2];
+        if (supportIndices.Count > 2)
+            nextSupportIndex = 3;
+
+        // Then, we scan the weightDeltas.
+        // When we find a wd, we need to determine the following:
+        // 1: are the supports to the left, the right, or both?
+        // 2: based on the closest supports, what are the segments that this weight affects?
+        for (int i = length - 1; i >= 0; i--)
+        {
+            // If the current segment is the LEFT support segment, shift over the registered support indices
+            if (!singleSupport) // short circuit
+            {
+                if (i == leftSupportIndex)
+                {
+                    rightSupportIndex = i;
+                    if (nextSupportIndex == -1)
+                        singleSupport = true;
+                    else
+                    {
+                        leftSupportIndex = supportIndices[^nextSupportIndex];
+                        nextSupportIndex =
+                            supportIndices.Count >= nextSupportIndex ? nextSupportIndex + 1 : -1;
+                    }
+                }
+            }
+            // weight delta found!
+            if (weightDeltas[i] > 0)
+            {
+                // step 1: determine load bearing supports
+                // We don't want to factor in if the weight is directly on the support segment.
+                // That has already been accounted for in the forward pass.
+                if (singleSupport && i != rightSupportIndex)
+                {
+                    // only rightSupportIndex matters
+                    for (int j = rightSupportIndex; j >= i; j--)
+                        actualWeight[j] -= weightDeltas[i];
+                }
+                // If it is NOT single support, then the weight has already been factored in during the forward pass!
+            }
+        }
+
         // TODO:: verify mid-support true minimum accepted weights
+        // This means that if a mid support has a support value of X, the neighbouring segments should display a maximum capacity of X as well.
         // (I'm not doing this now. Set this up when mid-supports start to exist for real)
         // Finally, we need to do a consistency check:
         // If a mid-support is bearing a weight, all values between it and its neighbours must be at most the value of the mid-support
@@ -242,8 +297,65 @@ public class Branch : IWalkable
         // This check should be disabled during level load and only activated once level load is completed.
 
         // If we are creating the level, we shouldn't update the weight map
+        // We should also only check for branch snapping if we are not saving/loading a level.
         if (!SaveManager.GetCreatingLevel() && !LevelManager.GetLoadingLevel())
-            UpdateWeightMap();
+        {
+            if (!BranchSnapCheck(supportIndices))
+                UpdateWeightMap();
+        }
+    }
+
+    bool BranchSnapCheck(List<int> supportIndices)
+    {
+        for (int seg = 0; seg < length; seg++)
+        {
+            // A weight of value 0 or less has been detected!
+            // The branch should snap!
+            if (actualWeight[seg] <= 0)
+            {
+                GameManager.DebugLog("SNAP DETECTED!");
+                int dir = direction == Direction.LEFT ? -1 : 1;
+
+                // Step 1: determine how much of the branch should snap
+                // Step 1.5: short circuit, are there supports on both sides of the snap point, or only one side?
+
+                // A support on the same segment that snapped is considered to be on the left side (arbitrary)
+                bool left = supportIndices.Any(s => s <= seg);
+                bool right = supportIndices.Any(s => s > seg);
+
+                // If there is support on both sides...
+                if (left && right)
+                {
+                    //
+                }
+                // else, there is support only on one side (and that side is likely to be left, but we should not assume that)
+                else
+                {
+                    // single support on the left => snap from seg to the end
+                    if (left)
+                    {
+                        GameManager.DebugLog("L: Branch segments to snap are at coords: ");
+                        for (int i = seg; i < length; i++)
+                        {
+                            GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
+                        }
+                    }
+                    // single support on the right (this means the support is closer to the end of the branch)
+                    // => snap from seg to root of branch
+                    else
+                    {
+                        GameManager.DebugLog("R: Branch segments to snap are at coords: ");
+                        for (int i = seg; i >= 0; i--)
+                        {
+                            GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
+                        }
+                    }
+                }
+
+                return true;
+            }
+        }
+        return false;
     }
 
     public void UpdateWeightMap()

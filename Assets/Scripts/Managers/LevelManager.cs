@@ -93,6 +93,7 @@ public class LevelManager : MonoBehaviour
 
     void SetActiveLevel(int levelID)
     {
+        ClearLevel();
         loadingLevel = true;
         // Grab level file
         // Deserialize level file
@@ -258,6 +259,16 @@ public class LevelManager : MonoBehaviour
 
         playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
         activeLevel.RefreshWalkablesDirections();
+    }
+
+    void ClearLevel()
+    {
+        walkablesMap.ClearAllTiles();
+        interactablesMap.ClearAllTiles();
+        numbersMap.ClearAllTiles();
+        if (playerRef != null)
+            Destroy(playerRef.gameObject);
+        playerRef = null;
     }
 
     public void UpdateWeightMap(Coord coord, float value)

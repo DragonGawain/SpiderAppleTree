@@ -135,7 +135,7 @@
                         "x": -1,
                         "y": 4
                     },
-                    "delta": 6
+                    "delta": 4
                 }
             ]
         },
@@ -173,7 +173,7 @@
             "trunkSupports": [
                 {
                     "Coord": {
-                        "x": 4,
+                        "x": 2,
                         "y": 4
                     },
                     "delta": 6
@@ -225,6 +225,6 @@
         "y": 6
     },
     "initWebCount": 0,
-    "initWeight": 3,
+    "initWeight": 2,
     "initLenght": 0
 }

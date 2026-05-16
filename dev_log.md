@@ -92,3 +92,5 @@
     - This bug only occured when clicking an option with the mouse
     - I fixed it by stopping the automatic colour shifting that the Button component has built in.
 - Added double-click confirmation when trying to overwrite a save file (console message)
+- Loading a level now clears all level elements from the old level, regardless of if the old level existed or not.
+- Updated branch calculations to now factor in a backwards pass to handle cases where a branch segment has no supports to its left (but yes support to the right).
