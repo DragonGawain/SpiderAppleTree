@@ -54,6 +54,42 @@ public class Level
         interactables.Remove(coord);
     }
 
+    // Alias: OnBranchSnap
+    public void RemoveWalkable(IWalkable walkabale)
+    {
+        (Coord, Coord) bounds = walkabale.GetBounds();
+        uniqueLevelElements.Remove(walkables[bounds.Item1]);
+
+        if (bounds.Item1.x < bounds.Item2.x)
+        {
+            for (int x = bounds.Item1.x; x <= bounds.Item2.x; x++)
+            {
+                walkables.Remove(new(x, bounds.Item1.y));
+            }
+        }
+        else if (bounds.Item1.x > bounds.Item2.x)
+        {
+            for (int x = bounds.Item2.x; x <= bounds.Item1.x; x++)
+            {
+                walkables.Remove(new(x, bounds.Item1.y));
+            }
+        }
+        else if (bounds.Item1.y < bounds.Item2.y)
+        {
+            for (int y = bounds.Item1.y; y <= bounds.Item2.y; y++)
+            {
+                walkables.Remove(new(bounds.Item1.x, y));
+            }
+        }
+        else if (bounds.Item1.y > bounds.Item2.y)
+        {
+            for (int y = bounds.Item2.y; y <= bounds.Item1.y; y++)
+            {
+                walkables.Remove(new(bounds.Item1.x, y));
+            }
+        }
+    }
+
     public void RefreshWalkablesDirections()
     {
         /* Trunks:: Segment is HORI walkable on side iff adjacent to:
@@ -175,9 +211,6 @@ public class Level
     public InitialLevelDataContainer GetInitialLevelDataContainer() => ldc;
 
     public int GetLevelID() => levelID;
-
-    // TODO
-    public void RecalculateBranchSupports() { }
 
     // DEBUG
 

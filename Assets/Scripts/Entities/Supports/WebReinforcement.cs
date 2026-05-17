@@ -14,7 +14,7 @@ public class WebReinforcement : ISupport
 
     public Coord GetCoord() => coord;
 
-    public void OnSnap(Coord coord)
+    public void OnSnap(Coord lcrd, Coord rcrd, Branch branch)
     {
         throw new System.NotImplementedException();
     }

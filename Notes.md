@@ -47,6 +47,8 @@
 ### LevelManager
 
 - Handles loading a level (read only)
+- The lowest possible y value that can be interacted with on any given level is 0.
+    - If I need a lower y value, the entire level should be lifted up instead. (Can also shift the camera if needed, but y of 0 as the lowest MUST be maintained. It's an assumption that falling branches assume).
 
 ### UI Manager
 
@@ -75,10 +77,16 @@
 - Support level
     - `calcFall` (name pending) method? (`LevelManager.cs` or even `GameManager.cs` is likely a more appropriate place)
 
+#### Idea: different branch types that calculate support differently. ex:
+
+    - Current calculation method: up propogate towards support
+    - ex: up propogate towards branch src (con: src might not be clear if not conencted to a trunk)
+    - ex: down propogation
+
 #### Idea: branch types
 
 - Crushing branch -> will apply extra weight to branches it falls onto, potentially causing a cascade
-- Hollow branch -> will always be caught
+- Hollow branch -> will always be caught (does not need min overlap for single side catching, has less weight, does not auto-selfdown-propogate)
 - Spinning branch -> flips vertically, can be caught and acts like a trunk after wards
 - _Grid breaker -> lands diagonally, allowing for diagonal movement along its path_ (Room to Grow inspiration)
 

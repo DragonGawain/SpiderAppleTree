@@ -9,7 +9,7 @@ using System.Linq;
 
 public class Branch : IWalkable
 {
-    public event Action<Coord> OnBranchSnap;
+    public event Action<Coord, Coord, Branch> OnBranchSnap;
 
     // Y is NOT readonly! Branches can fall!
     // Y IS in fact readonly. If a branch falls, I will create a new branch instance.
@@ -314,48 +314,141 @@ public class Branch : IWalkable
             if (actualWeight[seg] <= 0)
             {
                 GameManager.DebugLog("SNAP DETECTED!");
+                LevelManager levelManager = GameManager
+                    .GetManagerSingleton()
+                    .GetComponent<LevelManager>();
+
+                // Step 0: remove this branch from the level list.
+                LevelManager.GetActiveLevel().RemoveWalkable(this);
+                levelManager.ClearBranch(this);
+
                 int dir = direction == Direction.LEFT ? -1 : 1;
+
+                // Step 1: set up for the creation of up to 3 new branches (left, mid (falling), right)
+                Branch leftBranch,
+                    midBranch,
+                    rightBranch;
+
+                // And the corresponding supports that each segment will have
+                // The middle segment has no supports because it's falling. The supports don't fall with it..
+                // INFO:: Maybe flying fruit? I have an idea for a level where a branch suspended by a flying fruit on each end bobs up and down as needed,
+                // so the flying fruit would need to travel with the branch...
+                List<ISupport> leftSupports = new();
+                List<ISupport> rightSupports = new();
+
+                List<Coord> midBranchSegments = new();
+
+                // Step 2: determine the legnth of each of the segments.
+                // We know that the `seg` value is at the leftmost index that is <= 0, so that's a good starting point.
+                // We also determine the actual number of segments needed here.
+
+                // The entire branch falls!
+                if (seg <= 1)
+                {
+                    for (int i = 0; i < length; i++)
+                    {
+                        midBranchSegments.Add(new(coord.x + (i * dir), coord.y));
+                    }
+                }
+                else
+                {
+                    // create leftBranch piece
+                    leftBranch = new(coord, seg - 1, direction);
+                    OnBranchSnap?.Invoke(
+                        leftBranch.coord,
+                        new(
+                            leftBranch.coord.x + ((leftBranch.length - 1) * dir),
+                            leftBranch.coord.y
+                        ),
+                        leftBranch
+                    );
+                    levelManager.RefreshBranch(leftBranch);
+                    int midLength = seg;
+                    midBranchSegments.Add(new(coord.x + ((midLength - 1) * dir), coord.y));
+                    for (midLength = seg; midLength < length; midLength++)
+                    {
+                        midBranchSegments.Add(new(coord.x + (midLength * dir), coord.y));
+                        if (actualWeight[midLength] > 0)
+                            break;
+                    }
+                    bool right = supportIndices.Any(s => s > midLength);
+                    midLength++;
+                    if (!right)
+                    {
+                        for (; midLength < length; midLength++)
+                            midBranchSegments.Add(new(coord.x + (midLength * dir), coord.y));
+                    }
+                    else
+                    {
+                        // right branch segment
+                        if (length - midLength > 0)
+                        {
+                            // create rightBranch piece
+                            rightBranch = new(
+                                new(coord.x + (midLength * dir), coord.y),
+                                length - midLength,
+                                direction
+                            );
+                            OnBranchSnap?.Invoke(
+                                rightBranch.coord,
+                                new(
+                                    rightBranch.coord.x + ((rightBranch.length - 1) * dir),
+                                    rightBranch.coord.y
+                                ),
+                                rightBranch
+                            );
+                            levelManager.RefreshBranch(rightBranch);
+                        }
+                    }
+                }
 
                 // Step 1: determine how much of the branch should snap
                 // Step 1.5: short circuit, are there supports on both sides of the snap point, or only one side?
 
                 // A support on the same segment that snapped is considered to be on the left side (arbitrary)
-                bool left = supportIndices.Any(s => s <= seg);
-                bool right = supportIndices.Any(s => s > seg);
+                // bool left = supportIndices.Any(s => s <= seg);
+                // bool right = supportIndices.Any(s => s > seg);
+
+                // OnBranchSnap.Invoke(SegmentIndexToCoord(INDEX));
 
                 // If there is support on both sides...
-                if (left && right)
-                {
-                    //
-                }
-                // else, there is support only on one side (and that side is likely to be left, but we should not assume that)
-                else
-                {
-                    // single support on the left => snap from seg to the end
-                    if (left)
-                    {
-                        GameManager.DebugLog("L: Branch segments to snap are at coords: ");
-                        for (int i = seg; i < length; i++)
-                        {
-                            GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
-                        }
-                    }
-                    // single support on the right (this means the support is closer to the end of the branch)
-                    // => snap from seg to root of branch
-                    else
-                    {
-                        GameManager.DebugLog("R: Branch segments to snap are at coords: ");
-                        for (int i = seg; i >= 0; i--)
-                        {
-                            GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
-                        }
-                    }
-                }
+                // if (left && right)
+                // {
+                //     //
+                // }
+                // // else, there is support only on one side (and that side is likely to be left, but we should not assume that)
+                // else
+                // {
+                //     // single support on the left => snap from seg to the end
+                //     if (left)
+                //     {
+                //         GameManager.DebugLog("L: Branch segments to snap are at coords: ");
+                //         for (int i = seg; i < length; i++)
+                //         {
+                //             GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
+                //         }
+                //     }
+                //     // single support on the right (this means the support is closer to the end of the branch)
+                //     // => snap from seg to root of branch
+                //     else
+                //     {
+                //         GameManager.DebugLog("R: Branch segments to snap are at coords: ");
+                //         for (int i = seg; i >= 0; i--)
+                //         {
+                //             GameManager.DebugLog("" + new Coord(coord.x + (i * dir), coord.y));
+                //         }
+                //     }
+                // }
 
                 return true;
             }
         }
         return false;
+    }
+
+    void Falling()
+    {
+        //
     }
 
     public void UpdateWeightMap()
@@ -388,4 +481,10 @@ public class Branch : IWalkable
 
     int CoordToSegmentIndex(Coord crd) =>
         direction == Direction.LEFT ? coord.x - crd.x : crd.x - coord.x;
+
+    Coord SegmentIndexToCoord(int index) =>
+        direction == Direction.LEFT ? new(coord.x - index, coord.y) : new(coord.x + index, coord.y);
+
+    public (Coord, Coord) GetBounds() =>
+        (coord, new(coord.x + ((length - 1) * (direction == Direction.LEFT ? -1 : 1)), coord.y));
 }

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class TrunkSupport : ISupport
 {
     readonly Branch branch;
@@ -27,18 +25,15 @@ public class TrunkSupport : ISupport
         branch.UpdateSupports(this);
     }
 
-    // public SupportType GetSupportType()
-    // {
-    //     return SupportType.ADDITIVE;
-    // }
-
     public int GetSupportValue() => supportValue;
 
     public Coord GetCoord() => coord;
 
-    public void OnSnap(Coord coord)
+    public void OnSnap(Coord lcrd, Coord rcrd, Branch branch)
     {
-        throw new System.NotImplementedException();
+        // if this support is within the requested bounds, reassign the support to the part of the branch that is left behind.
+        if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
+            new TrunkSupport(branch, new(coord, supportValue));
     }
 }
 

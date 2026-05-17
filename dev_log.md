@@ -94,3 +94,5 @@
 - Added double-click confirmation when trying to overwrite a save file (console message)
 - Loading a level now clears all level elements from the old level, regardless of if the old level existed or not.
 - Updated branch calculations to now factor in a backwards pass to handle cases where a branch segment has no supports to its left (but yes support to the right).
+- Branch snapping is working!
+    - Falling branch segment is currently just getting deleted

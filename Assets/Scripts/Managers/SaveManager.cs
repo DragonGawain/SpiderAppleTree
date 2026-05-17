@@ -74,7 +74,7 @@ public class SaveManager : MonoBehaviour
         if (File.Exists(new(Path.Combine(levelPath, id.ToString() + ".txt"))) && !isOverwriting)
         {
             Debug.Log(
-                "<color=red>A level with this id already exists! Please click the \"save level\" button again to confirm overwriting."
+                "<color=red>A level with this id already exists! Please click the \"save level\" button again to confirm overwriting.</color>"
             );
             isOverwriting = true;
             return;
@@ -87,9 +87,9 @@ public class SaveManager : MonoBehaviour
         TileBase tile;
         Vector3Int loc;
         EditorElement editorElement;
-        for (int x = -7; x <= 7; x++)
+        for (int x = -10; x <= 10; x++)
         {
-            for (int y = 0; y <= 8; y++)
+            for (int y = 0; y <= 10; y++)
             {
                 loc = new Vector3Int(x, y, 0);
                 // The order in which the maps are scanned is important!
@@ -235,7 +235,7 @@ public class SaveManager : MonoBehaviour
         Coord coord = new(src.x, src.y);
         int height = 1;
         // max height is 8
-        for (int y = src.y + 1; y <= 8; y++)
+        for (int y = src.y + 1; y <= 10; y++)
         {
             if (walkablesMap_editor.HasTile(new Vector3Int(src.x, y, 0)))
             {
@@ -266,7 +266,7 @@ public class SaveManager : MonoBehaviour
         // RIGHT
         if (!alt)
         {
-            for (int x = src.x + 1; x <= 7; x++)
+            for (int x = src.x + 1; x <= 10; x++)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
@@ -285,7 +285,7 @@ public class SaveManager : MonoBehaviour
         // LEFT
         else
         {
-            for (int x = src.x - 1; x >= -7; x--)
+            for (int x = src.x - 1; x >= -10; x--)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {

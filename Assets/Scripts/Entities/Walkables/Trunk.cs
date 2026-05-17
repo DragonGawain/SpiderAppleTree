@@ -47,4 +47,6 @@ public class Trunk : IWalkable
         horizontalWalkables.Add((coord.y, Direction.LEFT));
         horizontalWalkables.Add((coord.y, Direction.RIGHT));
     }
+
+    public (Coord, Coord) GetBounds() => (coord, new(coord.x, coord.y + height - 1));
 }

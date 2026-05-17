@@ -164,9 +164,9 @@ public class LevelManager : MonoBehaviour
         // {
         foreach (Branch b in branches)
         {
-            walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
             if (b.direction == Direction.RIGHT)
             {
+                walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
                 // HACK:: this will not always be true. I should be doing the support calc for the src as well.
                 // (This implies that some levels will start with pre-place supports/weights)
                 // numbersMap.SetTile(
@@ -269,6 +269,39 @@ public class LevelManager : MonoBehaviour
         if (playerRef != null)
             Destroy(playerRef.gameObject);
         playerRef = null;
+    }
+
+    public void ClearBranch(Branch branch)
+    {
+        int dir = branch.direction == Direction.LEFT ? -1 : 1;
+        for (int i = 0; i < branch.length; i++)
+        {
+            walkablesMap.SetTile(
+                new Vector3Int(branch.coord.x + (i * dir), branch.coord.y, 0),
+                null
+            );
+            numbersMap.SetTile(new Vector3Int(branch.coord.x + (i * dir), branch.coord.y, 0), null);
+        }
+    }
+
+    public void RefreshBranch(Branch branch)
+    {
+        ClearBranch(branch);
+
+        if (branch.direction == Direction.RIGHT)
+        {
+            walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_R);
+            for (int x = 1; x < branch.length; x++)
+                walkablesMap.SetTile(new Vector3Int(branch.coord.x + x, branch.coord.y), b_bdy_R);
+        }
+        else
+        {
+            walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_L);
+            for (int x = 1; x < branch.length; x++)
+                walkablesMap.SetTile(new Vector3Int(branch.coord.x - x, branch.coord.y), b_bdy_L);
+        }
+
+        branch.RecalculateSupports();
     }
 
     public void UpdateWeightMap(Coord coord, float value)

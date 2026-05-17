@@ -24,4 +24,6 @@ public interface IWalkable : ILevelElement
     /// <returns>True if the horizontal movement is legal. False otherwise</returns>
     bool CanWalkHorizontal(int y, Direction d) => false;
     bool CanWalkVertical(int x, Direction d) => false;
+
+    public (Coord, Coord) GetBounds();
 }

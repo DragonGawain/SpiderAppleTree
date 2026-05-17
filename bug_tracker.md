@@ -1,0 +1,1 @@
+- When you step on a branch segment that has a support and there is another support farther to the right, the weight delta is incorrectly halved.
