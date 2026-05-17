@@ -25,5 +25,9 @@ public interface IWalkable : ILevelElement
     bool CanWalkHorizontal(int y, Direction d) => false;
     bool CanWalkVertical(int x, Direction d) => false;
 
+    /// <summary>
+    /// The first bound will always be the source of the IWalkable.
+    /// </summary>
+    /// <returns></returns>
     public (Coord, Coord) GetBounds();
 }

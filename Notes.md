@@ -225,3 +225,19 @@
 - Extension os single string support thoughts, if a suspended bridge only has a single support, instead of snapping, it tilts to one side or another.
 - ~~Tilting can be more extreme the closer to an extremity the weight difference is?~~
 - Tilting level is determined by the weight difference between sides
+
+## Story
+
+Setting: "Narrator" (just text on the bottom of the screen lol): "For eons, we have been in search. Through the tall windy mountains _show spider holding on for dear life, just to be flung off. Spins up a webrella and floats down safely_, through the jungles _show snake hissing from a branch, then the branch snaps and falls on the snake, killing it_, failing to cross water _show spider getting flushed downstream_ all in search of... THE REALLY TALL TREE!"
+_Smash cut to old spider with glasses reading out of a book_ "But granpa... that sounds dumb. Why are we searching for a tree?"
+"So we can climb it of course!"
+_scene changes to background of spider with a bindle in front of a tall tree_ "And that's how I was kicked out of the house a year ago. Welp, I think this is the tree, so let's get climbing!"
+
+- The point of this little intro is to showcase some mechanics (including some hints at late game mechanics). Also just a short lil' story can go a looong way towards developing a character and making the player feel attatched to the spider they play as.
+- (Also, when I say spider, I'm envisioning the main character to be a black circle with 8 stick legs, and only 2 eyes. Don't need to stir up any arachnophobia, and hopefully that'll do the trick!)
+
+### Other lore
+
+- To make my coding life a bit easier, the tree is somewhat magical! When a bridge is formed between branches, the tree springs to life and ties the branch segments together, making a new branch.
+    - The alternative is that if you have a bridge being supported from both sides and one side snaps, then I'd need what was once the bridge to fall as well, and that sounds somewhat complicated. S
+    - So for now at least, I'm just going to have it all merge into a single cohesive branch, and if I need to change that in the future, so be it.

@@ -96,3 +96,10 @@
 - Updated branch calculations to now factor in a backwards pass to handle cases where a branch segment has no supports to its left (but yes support to the right).
 - Branch snapping is working!
     - Falling branch segment is currently just getting deleted
+
+## May 17 2026
+
+- Added some story/lore to the notes document
+- Preemptively fixed a bug where I was ignoring the possibility of a snapped branch only having supports to the right of the snap
+- Branches can fall and land on other branches, forming a bridge!
+    - Branches falling on top of a trunk should also work, but this is untested.

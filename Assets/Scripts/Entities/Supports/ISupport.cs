@@ -1,12 +1,5 @@
-// public enum SupportType
-// {
-//     ADDITIVE,
-//     MULTIPLICATIVE,
-// }
-
 public interface ISupport : ILevelElement
 {
-    // public SupportType GetSupportType();
     public int GetSupportValue();
     public Coord GetCoord();
 

@@ -61,33 +61,17 @@ public class Level
         uniqueLevelElements.Remove(walkables[bounds.Item1]);
 
         if (bounds.Item1.x < bounds.Item2.x)
-        {
             for (int x = bounds.Item1.x; x <= bounds.Item2.x; x++)
-            {
                 walkables.Remove(new(x, bounds.Item1.y));
-            }
-        }
         else if (bounds.Item1.x > bounds.Item2.x)
-        {
             for (int x = bounds.Item2.x; x <= bounds.Item1.x; x++)
-            {
                 walkables.Remove(new(x, bounds.Item1.y));
-            }
-        }
         else if (bounds.Item1.y < bounds.Item2.y)
-        {
             for (int y = bounds.Item1.y; y <= bounds.Item2.y; y++)
-            {
                 walkables.Remove(new(bounds.Item1.x, y));
-            }
-        }
         else if (bounds.Item1.y > bounds.Item2.y)
-        {
             for (int y = bounds.Item2.y; y <= bounds.Item1.y; y++)
-            {
                 walkables.Remove(new(bounds.Item1.x, y));
-            }
-        }
     }
 
     public void RefreshWalkablesDirections()
@@ -156,16 +140,16 @@ public class Level
                 )
         };
 
-        Debug.Log("Moving from " + currentPos + " to " + targetCoord);
-
-        Debug.Log("Walkable at target? " + walkables.ContainsKey(targetCoord));
+        // Debug.Log("Walkable at target? " + walkables.ContainsKey(targetCoord));
 
         if (!walkables.ContainsKey(targetCoord))
             return false;
+
+        Debug.Log("Moving from " + currentPos + " to " + targetCoord);
         // fetch entity at coord
         IWalkable walkable = walkables[targetCoord];
 
-        Debug.Log("walkable type: " + walkable.GetType());
+        // Debug.Log("walkable type: " + walkable.GetType());
 
         // if entity at TARGET LOC allows that dir of movement, ret true
         // else ret false.

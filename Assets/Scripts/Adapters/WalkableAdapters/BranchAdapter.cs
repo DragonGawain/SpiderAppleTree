@@ -70,10 +70,10 @@ public class BranchAdapter : IJsonAdapter<Branch>
         foreach (TrunkSupportDTO tsDTO in trunkSupportDTOs)
             new TrunkSupport(b, tsDTO);
 
-        // foreach (WebReinforcementDTO wrDTO in trunkSupportDTOs)
+        // foreach (WebReinforcementDTO wrDTO in WebReinforcementDTOs)
         //     new WebReinforcement(b, wrDTO);
 
-        // foreach (HangingWebStringDTO hwsDTO in trunkSupportDTOs)
+        // foreach (HangingWebStringDTO hwsDTO in HangingWebStringDTOs)
         //     new HangingWebString(b, hwsDTO);
 
         return b;

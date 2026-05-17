@@ -127,7 +127,7 @@
                 "x": -1,
                 "y": 4
             },
-            "length": 3,
+            "length": 2,
             "direction": 2,
             "trunkSupports": [
                 {

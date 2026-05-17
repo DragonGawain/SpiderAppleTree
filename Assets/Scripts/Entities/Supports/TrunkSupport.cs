@@ -33,11 +33,17 @@ public class TrunkSupport : ISupport
     {
         // if this support is within the requested bounds, reassign the support to the part of the branch that is left behind.
         if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
+        {
             new TrunkSupport(branch, new(coord, supportValue));
+            // GameManager.DebugLog(
+            //     "<color=blue>Removing trunk support at coord: " + coord + "</color>"
+            // );
+            this.branch.RemoveSupport(this);
+        }
     }
 }
 
-public readonly struct TrunkSupportDTO
+public readonly struct TrunkSupportDTO : ISupportDTO
 {
     public readonly Coord coord;
     public readonly int supportValue;
@@ -53,4 +59,10 @@ public readonly struct TrunkSupportDTO
         this.coord = ts.GetCoord();
         this.supportValue = ts.GetSupportValue();
     }
+
+    public int GetSupportValue() => supportValue;
+
+    public Coord GetCoord() => coord;
+
+    public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT;
 }
