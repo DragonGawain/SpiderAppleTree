@@ -10,6 +10,7 @@ using System.Linq;
 public class Branch : IWalkable
 {
     public event Action<Coord, Coord, Branch> OnBranchSnap;
+    public static event Action OnGlobalBranchSnap;
 
     // Y is NOT readonly! Branches can fall!
     // Y IS in fact readonly. If a branch falls, I will create a new branch instance.
@@ -56,6 +57,10 @@ public class Branch : IWalkable
 
     HashSet<int> verticalWalkables = new();
 
+    // DEBUG
+    readonly int instanceID;
+    static int instanceIDTracker = 0;
+
     /*
     SUPPORT MODEL
     s: support
@@ -72,6 +77,8 @@ public class Branch : IWalkable
 
     public Branch(Coord coord, int length, Direction direction)
     {
+        instanceID = instanceIDTracker++;
+
         this.coord = coord;
         this.length = length;
         this.direction = direction;
@@ -127,14 +134,6 @@ public class Branch : IWalkable
     {
         supportsList.Remove(support);
     }
-
-    // public void UpdateSupports(Coord crd, int delta)
-    // {
-    //     int segmentIndex = CoordToSegmentIndex(crd);
-    //     rawSupports[segmentIndex] += delta;
-
-    //     RecalculateSupports();
-    // }
 
     public void RecalculateSupports()
     {
@@ -334,6 +333,7 @@ public class Branch : IWalkable
                 GameManager.DebugLog(
                     "PRE number of walkables: " + LevelManager.GetActiveLevel().GetWalkables().Count
                 );
+
                 LevelManager levelManager = GameManager
                     .GetManagerSingleton()
                     .GetComponent<LevelManager>();
@@ -378,9 +378,16 @@ public class Branch : IWalkable
                         leftBranch
                     );
                     levelManager.RefreshBranch(leftBranch);
+                    leftBranch.RefreshInteractables();
                 }
                 int midLength = seg;
-                midBranchSegments.Add(new(coord.x + ((midLength - 1) * dir), coord.y));
+                Coord onceLeft = new(coord.x + ((midLength - 1) * dir), coord.y);
+                // we only add the coordinate one to the 'left' of the snap point if it is part of the snapped branch
+                if (
+                    (coord.x <= onceLeft.x && GetBounds().Item2.x >= onceLeft.x)
+                    || (coord.x >= onceLeft.x && GetBounds().Item2.x <= onceLeft.x)
+                )
+                    midBranchSegments.Add(onceLeft);
                 // Add segments to the falling piece until a value that is greater than 0 is found.
                 // Add that segment, then check for supports to the right
                 for (midLength = seg; midLength < length; midLength++)
@@ -420,6 +427,7 @@ public class Branch : IWalkable
                             rightBranch
                         );
                         levelManager.RefreshBranch(rightBranch);
+                        rightBranch.RefreshInteractables();
                     }
                 }
 
@@ -498,6 +506,7 @@ public class Branch : IWalkable
                                 midBranch,
                                 new(new(walkable.GetBounds().Item1.x, y), ISupport.TRUNK_SUPPORT)
                             );
+                            midBranch.verticalWalkables.Add(walkable.GetBounds().Item1.x);
                         }
                     }
                     // Otherwise, we haven't landed on a trunk.
@@ -583,6 +592,7 @@ public class Branch : IWalkable
                         }
                     }
                     levelManager.RefreshBranch(midBranch);
+                    midBranch.RefreshInteractables();
                 }
 
                 GameManager.DebugLog(
@@ -590,10 +600,32 @@ public class Branch : IWalkable
                         + LevelManager.GetActiveLevel().GetWalkables().Count
                 );
 
+                LevelManager.GetActiveLevel().RemoveElementFromLevel(this);
+                OnGlobalBranchSnap.Invoke();
                 return true;
             }
         }
         return false;
+    }
+
+    void RefreshInteractables()
+    {
+        (Coord, Coord) bounds = GetBounds();
+        IInteractable interactable;
+        // Since this is only ever called for branches that are a result of a snap, we know that they will alway face right.
+        // Therefore, the first bound (which is the source) will have a lower x than the other bound.
+        for (int x = bounds.Item1.x; x <= bounds.Item2.x; x++)
+        {
+            LevelManager
+                .GetActiveLevel()
+                .GetInteractables()
+                .TryGetValue(new(x, coord.y), out interactable);
+            if (interactable != null)
+            {
+                if (interactable.GetType() == typeof(Fruit))
+                    interactable.Refresh();
+            }
+        }
     }
 
     public void UpdateWeightMap()
@@ -613,6 +645,8 @@ public class Branch : IWalkable
         // GameManager.DebugLog("actual weight:");
         // for (int i = 0; i < length; i++)
         //     GameManager.DebugLog("" + actualWeight[i]);
+
+        GameManager.DebugLog("Updating branch with id " + instanceID);
 
         int dir = direction == Direction.LEFT ? -1 : 1;
         for (int i = 0; i < length; i++)

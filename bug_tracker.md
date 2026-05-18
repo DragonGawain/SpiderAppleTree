@@ -1,1 +1,3 @@
 - When you step on a branch segment that has a support and there is another support farther to the right, the weight delta is incorrectly halved.
+- Fallen branches do not correctly adjust the trunk segment touching their extremities to being horizontally walkable
+    - This will also apply to trunk supports. Those side touching trunks do not apply a trunk support.

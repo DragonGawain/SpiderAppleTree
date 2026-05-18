@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     Branch occupiedBranch = null;
 
     // default is 50. Mock FU timer => divide value by 50 to determine the number of seconds the animation will take
-    const int MOVE_SPEED = 10;
+    const int MOVE_SPEED = 2;
 
     public void Initialize(InitialLevelDataContainer ldc, Grid gridRef)
     {
@@ -29,6 +29,8 @@ public class Player : MonoBehaviour
         length = ldc.initLength;
         currentPos = ldc.spawnPoint;
         this.gridRef = gridRef;
+
+        Branch.OnGlobalBranchSnap += OnBranchSnap;
     }
 
     public void AlterWeight(int delta) => weight += delta;
@@ -93,5 +95,32 @@ public class Player : MonoBehaviour
             occupiedBranch = null;
 
         InputManager.EnableMovementInputs();
+    }
+
+    public void OnBranchSnap()
+    {
+        LevelManager
+            .GetActiveLevel()
+            .GetWalkables()
+            .TryGetValue(currentPos, out IWalkable walkable);
+        occupiedBranch = null;
+
+        if (walkable == null)
+            Debug.LogWarning(
+                "<color=red><b>THE PLAYER HAS DIED! SQUASHED BY A FALLING BRANCH!</b></color>"
+            );
+        else
+        {
+            if (walkable.GetType() == typeof(Branch))
+            {
+                occupiedBranch = (Branch)walkable;
+                occupiedBranch.UpdateWeightDelta(currentPos, weight);
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        Branch.OnGlobalBranchSnap -= OnBranchSnap;
     }
 }

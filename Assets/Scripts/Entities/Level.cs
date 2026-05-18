@@ -176,6 +176,8 @@ public class Level
 
     public Dictionary<Coord, IWalkable> GetWalkables() => walkables;
 
+    public Dictionary<Coord, IInteractable> GetInteractables() => interactables;
+
     public void AddNewElementToLevel(ILevelElement ile) => uniqueLevelElements.Add(ile);
 
     public void RemoveElementFromLevel(ILevelElement ile) => uniqueLevelElements.Remove(ile);

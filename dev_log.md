@@ -103,3 +103,13 @@
 - Preemptively fixed a bug where I was ignoring the possibility of a snapped branch only having supports to the right of the snap
 - Branches can fall and land on other branches, forming a bridge!
     - Branches falling on top of a trunk should also work, but this is untested.
+
+## May 18 2026
+
+- Continued to refine falling branch calculations
+- Fallen branches now check for any weights on them (as do branch remnants)
+- Branch remnants also check for player weight
+- Added log to inform me when the player should die due to a fallen branch (verify that the check for such a thing is easy)
+- This check is built-in to checking for player weight on the remnants
+- Fixed bug where the player would remember the old branch, causing it to display its would-be support values the next time the player moved
+- Fixed issue where fallen branch segments that are directly on top of trunks were not vertically walkable.

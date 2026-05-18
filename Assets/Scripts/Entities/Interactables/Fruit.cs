@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public enum FruitType
 {
     EMPTY, // no effect
@@ -63,5 +61,13 @@ public class Fruit : IInteractable
             .GetManagerSingleton()
             .GetComponent<LevelManager>()
             .RemoveInteractableFromMap(coord);
+    }
+
+    public void Refresh()
+    {
+        LevelManager.GetActiveLevel().GetWalkables().TryGetValue(coord, out IWalkable target);
+
+        if (target != null && target.GetType() == typeof(Branch))
+            ((Branch)target).UpdateWeightDelta(coord, weight);
     }
 }

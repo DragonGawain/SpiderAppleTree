@@ -156,10 +156,10 @@
                 },
                 {
                     "Coord": {
-                        "x": 4,
+                        "x": 5,
                         "y": 8
                     },
-                    "delta": 5
+                    "delta": 2
                 }
             ]
         },
@@ -173,7 +173,7 @@
             "trunkSupports": [
                 {
                     "Coord": {
-                        "x": 2,
+                        "x": 4,
                         "y": 4
                     },
                     "delta": 6
@@ -225,6 +225,6 @@
         "y": 6
     },
     "initWebCount": 0,
-    "initWeight": 6,
+    "initWeight": 3,
     "initLenght": 0
 }
