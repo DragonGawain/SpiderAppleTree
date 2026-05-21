@@ -113,3 +113,9 @@
 - This check is built-in to checking for player weight on the remnants
 - Fixed bug where the player would remember the old branch, causing it to display its would-be support values the next time the player moved
 - Fixed issue where fallen branch segments that are directly on top of trunks were not vertically walkable.
+
+## May 21 2026
+
+- Completed making trunk supports fully automatic
+- Fixed trunk supports getting added twice for branches affected by a snap
+- A LOT of minor bug fixing/tweaks to branch snapping logic

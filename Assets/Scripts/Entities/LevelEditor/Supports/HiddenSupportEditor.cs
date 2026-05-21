@@ -1,7 +1,4 @@
-using System;
-
-[Obsolete]
-public class TrunkSupportEditor : EditorElement
+public class HiddenSupportEditor : EditorElement
 {
     protected override EditorIdentity GetEditorIdentity() => EditorIdentity.SUPPORT;
 
@@ -9,6 +6,6 @@ public class TrunkSupportEditor : EditorElement
     void Start()
     {
         OnStart();
-        supportValue = ISupport.TRUNK_SUPPORT;
+        supportValue = 2;
     }
 }

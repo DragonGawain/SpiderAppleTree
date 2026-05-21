@@ -4,17 +4,17 @@ public class TrunkSupport : ISupport
     readonly Coord coord;
     readonly int supportValue;
 
-    public TrunkSupport(Branch branch, TrunkSupportDTO dto)
+    public TrunkSupport(Branch branch, TrunkSupportDTO dto, bool suppressRecalculation = false)
     {
         this.branch = branch;
         this.coord = dto.coord;
         this.supportValue = dto.supportValue;
         branch.OnBranchSnap += OnSnap;
 
-        branch.UpdateSupports(this);
+        branch.UpdateSupports(this, suppressRecalculation);
     }
 
-    public TrunkSupport(Coord coord, int supportValue)
+    public TrunkSupport(Coord coord, int supportValue, bool suppressRecalculation = false)
     {
         this.coord = coord;
         this.supportValue = supportValue;
@@ -22,7 +22,7 @@ public class TrunkSupport : ISupport
         branch = (Branch)LevelManager.GetActiveLevel().GetWalkables()[coord];
         branch.OnBranchSnap += OnSnap;
 
-        branch.UpdateSupports(this);
+        branch.UpdateSupports(this, suppressRecalculation);
     }
 
     public int GetSupportValue() => supportValue;
@@ -34,7 +34,7 @@ public class TrunkSupport : ISupport
         // if this support is within the requested bounds, reassign the support to the part of the branch that is left behind.
         if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
         {
-            new TrunkSupport(branch, new(coord, supportValue));
+            // new TrunkSupport(branch, new(coord, supportValue));
             // GameManager.DebugLog(
             //     "<color=blue>Removing trunk support at coord: " + coord + "</color>"
             // );

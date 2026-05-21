@@ -89,6 +89,7 @@ public class Player : MonoBehaviour
         if (target.GetType() == typeof(Branch))
         {
             occupiedBranch = (Branch)target;
+            Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
             occupiedBranch.UpdateWeightDelta(currentPos, weight);
         }
         else
@@ -99,6 +100,7 @@ public class Player : MonoBehaviour
 
     public void OnBranchSnap()
     {
+        Debug.Log("ON GLOBAL BRANCH SNAP");
         LevelManager
             .GetActiveLevel()
             .GetWalkables()
@@ -114,6 +116,7 @@ public class Player : MonoBehaviour
             if (walkable.GetType() == typeof(Branch))
             {
                 occupiedBranch = (Branch)walkable;
+                Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
                 occupiedBranch.UpdateWeightDelta(currentPos, weight);
             }
         }

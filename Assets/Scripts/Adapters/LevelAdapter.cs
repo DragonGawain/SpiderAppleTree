@@ -71,13 +71,15 @@ public class LevelAdapter : IJsonAdapter<Level>
             }
         }
 
+        InitialLevelDataContainer ldc = value.GetInitialLevelDataContainer();
         context.Writer.WriteKey("spawn");
-        context.SerializeValue(value.GetSpawnPoint());
+        context.SerializeValue(ldc.spawnPoint);
         context.Writer.WriteKey("goal");
-        context.SerializeValue(value.GetGoalPoint());
-        context.Writer.WriteKeyValue("initWebCount", value.GetInitWebCount());
-        context.Writer.WriteKeyValue("initWeight", value.GetInitWeight());
-        context.Writer.WriteKeyValue("initLenght", value.GetInitLenght());
+        context.SerializeValue(ldc.goalPoint);
+        context.Writer.WriteKeyValue("initWebCount", ldc.initWebCount);
+        context.Writer.WriteKeyValue("initWeight", ldc.initWeight);
+        context.Writer.WriteKeyValue("initLength", ldc.initLength);
+        context.Writer.WriteKeyValue("trunkSupport", ldc.baseTrunkSupport);
     }
 
     public Level Deserialize(in JsonDeserializationContext<Level> context)
@@ -92,7 +94,8 @@ public class LevelAdapter : IJsonAdapter<Level>
                 context.DeserializeValue<Coord>(context.SerializedValue["goal"]),
                 context.DeserializeValue<int>(context.SerializedValue["initWebCount"]),
                 context.DeserializeValue<int>(context.SerializedValue["initWeight"]),
-                context.DeserializeValue<int>(context.SerializedValue["initLenght"])
+                context.DeserializeValue<int>(context.SerializedValue["initLength"]),
+                context.DeserializeValue<int>(context.SerializedValue["trunkSupport"])
             );
         context.DeserializeValue<List<Trunk>>(context.SerializedValue["trunks"]);
         context.DeserializeValue<List<Branch>>(context.SerializedValue["branches"]);

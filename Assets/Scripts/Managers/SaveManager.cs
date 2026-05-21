@@ -44,6 +44,9 @@ public class SaveManager : MonoBehaviour
     [SerializeField]
     int initLength;
 
+    [SerializeField]
+    int baseTrunkSupport = 6;
+
     public static readonly Dictionary<LevelState, string> levelStatePath =
         new()
         {
@@ -193,6 +196,7 @@ public class SaveManager : MonoBehaviour
 
                     switch (tile.name)
                     {
+                        // case "hidden_support":
                         case "trunk_support":
                             editorElement = editorElements[(EditorIdentity.SUPPORT, new(x, y))];
                             new TrunkSupport(
@@ -209,7 +213,14 @@ public class SaveManager : MonoBehaviour
                 }
             }
         }
-        newLevel.InitializeData(spawnPoint, goalPoint, initWebCount, initWeight, initLength);
+        newLevel.InitializeData(
+            spawnPoint,
+            goalPoint,
+            initWebCount,
+            initWeight,
+            initLength,
+            baseTrunkSupport
+        );
         Debug.Log("<color=blue>Finished building level object!</color>");
         try
         {

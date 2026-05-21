@@ -55,7 +55,8 @@ public class BranchAdapter : IJsonAdapter<Branch>
             new(
                 context.DeserializeValue<Coord>(context.SerializedValue["Coord"]),
                 context.DeserializeValue<int>(context.SerializedValue["length"]),
-                context.DeserializeValue<int>(context.SerializedValue["direction"])
+                context.DeserializeValue<int>(context.SerializedValue["direction"]),
+                false
             );
 
         List<TrunkSupportDTO> trunkSupportDTOs = context.DeserializeValue<List<TrunkSupportDTO>>(

@@ -25,8 +25,9 @@ public class Level
         Coord goalPoint,
         int initWebCount,
         int initWeight,
-        int initLength
-    ) => ldc = new(spawnPoint, goalPoint, initWebCount, initWeight, initLength);
+        int initLength,
+        int baseTrunkSupport
+    ) => ldc = new(spawnPoint, goalPoint, initWebCount, initWeight, initLength, baseTrunkSupport);
 
     public void AddWalkable(Coord coord, IWalkable walkable)
     {
@@ -186,14 +187,6 @@ public class Level
 
     public Coord GetSpawnPoint() => ldc.spawnPoint;
 
-    public Coord GetGoalPoint() => ldc.goalPoint;
-
-    public int GetInitWebCount() => ldc.initWebCount;
-
-    public float GetInitWeight() => ldc.initWeight;
-
-    public int GetInitLenght() => ldc.initLength;
-
     public InitialLevelDataContainer GetInitialLevelDataContainer() => ldc;
 
     public int GetLevelID() => levelID;
@@ -223,14 +216,16 @@ public readonly struct InitialLevelDataContainer
         goalPoint;
     public readonly int initWebCount,
         initLength,
-        initWeight;
+        initWeight,
+        baseTrunkSupport;
 
     public InitialLevelDataContainer(
         Coord spawnPoint,
         Coord goalPoint,
         int initWebCount,
         int initWeight,
-        int initLength
+        int initLength,
+        int baseTrunkSupport
     )
     {
         this.spawnPoint = spawnPoint;
@@ -238,5 +233,6 @@ public readonly struct InitialLevelDataContainer
         this.initWebCount = initWebCount;
         this.initWeight = initWeight;
         this.initLength = initLength;
+        this.baseTrunkSupport = baseTrunkSupport;
     }
 }

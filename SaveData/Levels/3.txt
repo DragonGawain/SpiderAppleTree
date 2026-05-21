@@ -104,7 +104,7 @@
                 "x": 5,
                 "y": 0
             },
-            "height": 7
+            "height": 8
         },
         {
             "Coord": {
@@ -129,15 +129,7 @@
             },
             "length": 2,
             "direction": 2,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": -1,
-                        "y": 4
-                    },
-                    "delta": 6
-                }
-            ]
+            "trunkSupports": [ ]
         },
         {
             "Coord": {
@@ -146,22 +138,7 @@
             },
             "length": 8,
             "direction": 2,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": -1,
-                        "y": 8
-                    },
-                    "delta": 6
-                },
-                {
-                    "Coord": {
-                        "x": 5,
-                        "y": 8
-                    },
-                    "delta": 2
-                }
-            ]
+            "trunkSupports": [ ]
         },
         {
             "Coord": {
@@ -170,15 +147,7 @@
             },
             "length": 3,
             "direction": 0,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": 4,
-                        "y": 4
-                    },
-                    "delta": 6
-                }
-            ]
+            "trunkSupports": [ ]
         },
         {
             "Coord": {
@@ -187,15 +156,7 @@
             },
             "length": 2,
             "direction": 2,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": 6,
-                        "y": 5
-                    },
-                    "delta": 6
-                }
-            ]
+            "trunkSupports": [ ]
         }
     ],
     "fruits": [
@@ -213,7 +174,7 @@
                 "y": 5
             },
             "fruitType": 0,
-            "weight": 3
+            "weight": 2
         }
     ],
     "spawn": {
@@ -225,6 +186,7 @@
         "y": 6
     },
     "initWebCount": 0,
-    "initWeight": 3,
-    "initLenght": 0
+    "initWeight": 2,
+    "initLength": 0,
+    "trunkSupport": 4
 }

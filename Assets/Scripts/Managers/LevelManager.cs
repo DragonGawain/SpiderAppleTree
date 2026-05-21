@@ -118,8 +118,9 @@ public class LevelManager : MonoBehaviour
                 "<color=blue>Successfully finished reading level JSON file! (And therefore the level object has also been created)</color>"
             );
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
+            Debug.Log(e.StackTrace);
             Debug.LogError("Something went wrong when READING the level with id " + levelID + "!");
             throw;
         }
@@ -146,11 +147,6 @@ public class LevelManager : MonoBehaviour
             .First(g => g.Key == typeof(Fruit))
             .Cast<Fruit>()
             .ToList();
-        // foreach (var group in levelElementsGroups)
-        // {
-        // if (group.Key == typeof(Trunk))
-        // {
-
 
         foreach (Trunk t in trunks)
         {
@@ -160,34 +156,15 @@ public class LevelManager : MonoBehaviour
                 walkablesMap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), t_bdy);
             }
         }
-        // }
-        // else if (group.Key == typeof(Branch))
-        // {
+
         foreach (Branch b in branches)
         {
             if (b.direction == Direction.RIGHT)
             {
                 walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
-                // HACK:: this will not always be true. I should be doing the support calc for the src as well.
-                // (This implies that some levels will start with pre-place supports/weights)
-                // numbersMap.SetTile(
-                //     new Vector3Int(b.coord.x, b.coord.y),
-                //     numberTiles[Branch.MAX_BRANCH_SUPPORT - 1]
-                // );
-                // TODO:: half numbers
-                // if (val % 1 != 0) => true if decimal exists
                 for (int x = 1; x < b.length; x++)
                 {
                     walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
-
-                    // support = b.weightDeltas[x];
-                    // nbIndex = Mathf.FloorToInt(support);
-                    // // half numbers:
-                    // // if (nbIndex == support) => T: whole number, F: has a decimal
-                    // numbersMap.SetTile(
-                    //     new Vector3Int(b.coord.x + x, b.coord.y),
-                    //     numberTiles[nbIndex - 1]
-                    // );
                 }
             }
             else
@@ -196,20 +173,11 @@ public class LevelManager : MonoBehaviour
                 for (int x = 1; x < b.length; x++)
                 {
                     walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
-
-                    // support = b.weightDeltas[x];
-                    // nbIndex = Mathf.FloorToInt(support);
-                    // numbersMap.SetTile(
-                    //     new Vector3Int(b.coord.x - x, b.coord.y),
-                    //     numberTiles[nbIndex - 1]
-                    // );
                 }
             }
-            // b.UpdateWeightMap();
+            b.FindTrunkSupports();
         }
-        // }
-        // else if (group.Key == typeof(Fruit))
-        // {
+
         foreach (Fruit f in fruits)
         {
             // tile =  f.fruitType switch
@@ -235,15 +203,11 @@ public class LevelManager : MonoBehaviour
                 }
             );
         }
-        // }
-        // }
 
         loadingLevel = false;
-        // List<Branch> branches = activeLevel
-        //     .GetLevelElements()
-        //     .Where(e => e.GetType() == typeof(Branch))
-        //     .Cast<Branch>()
-        //     .ToList();
+
+        // Recalculating supports is going overboard. I should really only need to update the weight map,
+        // but I'm recalculating supports as a safety net.
         foreach (Branch br in branches)
             br.RecalculateSupports();
 
@@ -352,4 +316,28 @@ public readonly struct Coord
     public readonly Vector3Int ToVector3Int() => new(x, y, 0);
 
     public override string ToString() => $"({x}, {y})";
+
+    // override object.Equals
+    public override bool Equals(object obj)
+    {
+        //
+        // See the full list of guidelines at
+        //   http://go.microsoft.com/fwlink/?LinkID=85237
+        // and also the guidance for operator== at
+        //   http://go.microsoft.com/fwlink/?LinkId=85238
+        //
+
+        if (obj == null || GetType() != obj.GetType())
+            return false;
+
+        // TODO: write your implementation of Equals() here
+        return GetHashCode() == ((Coord)obj).GetHashCode();
+    }
+
+    // override object.GetHashCode
+    public override int GetHashCode()
+    {
+        // TODO: write your implementation of GetHashCode() here
+        return x * 100 + y;
+    }
 }

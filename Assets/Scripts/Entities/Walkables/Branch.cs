@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // It is important that trunks get loaded before branches.
 // This is because when a branch is created, it will check to see if its source is next to a trunk.
 // If it is, then it sets that trunk segment to be horizontally walkable.
 
-using System.Linq;
 
 public class Branch : IWalkable
 {
@@ -58,7 +58,7 @@ public class Branch : IWalkable
     HashSet<int> verticalWalkables = new();
 
     // DEBUG
-    readonly int instanceID;
+    public readonly int instanceID;
     static int instanceIDTracker = 0;
 
     /*
@@ -75,7 +75,7 @@ public class Branch : IWalkable
     b b S b b b S b b S b
     */
 
-    public Branch(Coord coord, int length, Direction direction)
+    public Branch(Coord coord, int length, Direction direction, bool autoTrunkSupport = true)
     {
         instanceID = instanceIDTracker++;
 
@@ -96,38 +96,150 @@ public class Branch : IWalkable
             for (int i = coord.x; i > coord.x - length; i--)
                 LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
 
+        if (autoTrunkSupport)
+            FindTrunkSupports();
+
         // TODO:: Have this constructor spawn in a prefab at the desired location
         // Prefab would only be used for animations. But, animated tiles exist, so I might use those instead.
     }
 
-    public Branch(int x, int y, int length, Direction direction)
-        : this(new Coord(x, y), length, direction) { }
+    public Branch(int x, int y, int length, Direction direction, bool autoTrunkSupport = true)
+        : this(new Coord(x, y), length, direction, autoTrunkSupport) { }
 
-    public Branch(int x, int y, int length, int direction)
-        : this(new Coord(x, y), length, (Direction)direction) { }
+    public Branch(int x, int y, int length, int direction, bool autoTrunkSupport = true)
+        : this(new Coord(x, y), length, (Direction)direction, autoTrunkSupport) { }
 
-    public Branch(Coord coord, int length, int direction)
-        : this(coord, length, (Direction)direction) { }
+    public Branch(Coord coord, int length, int direction, bool autoTrunkSupport = true)
+        : this(coord, length, (Direction)direction, autoTrunkSupport) { }
 
     public bool CanWalkHorizontal(int y, Direction d) => true;
 
     public bool CanWalkVertical(int x, Direction d) =>
         d == Direction.DOWN && verticalWalkables.Contains(x);
 
-    public void UpdateSupports(ISupport support)
+    public void FindTrunkSupports(bool addVerticalConections = false)
     {
+        GameManager.DebugLog("Finding trunk supports for branch id " + instanceID);
+        Coord end = GetBounds().Item2;
+        IWalkable walkable;
+        // dir = RIGHT
+        if (direction == Direction.RIGHT)
+        {
+            // left side
+            LevelManager
+                .GetActiveLevel()
+                .GetWalkables()
+                .TryGetValue(coord.ShiftX(-1), out walkable);
+            if (walkable != null && walkable.GetType() == typeof(Trunk))
+            {
+                GameManager.DebugLog(
+                    "Found left side trunk support for branch id "
+                        + instanceID
+                        + ". Offering support of value "
+                        + LevelManager
+                            .GetActiveLevel()
+                            .GetInitialLevelDataContainer()
+                            .baseTrunkSupport
+                );
+                new TrunkSupport(
+                    coord,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                );
+                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
+            }
+            // right side
+            LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(1), out walkable);
+            if (walkable != null && walkable.GetType() == typeof(Trunk))
+            {
+                new TrunkSupport(
+                    end,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                );
+                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
+            }
+        }
+        // dir = LEFT
+        else
+        {
+            // left side
+            LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(-1), out walkable);
+            if (walkable != null && walkable.GetType() == typeof(Trunk))
+            {
+                new TrunkSupport(
+                    end,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                );
+                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
+            }
+            // right side
+            LevelManager
+                .GetActiveLevel()
+                .GetWalkables()
+                .TryGetValue(coord.ShiftX(1), out walkable);
+            if (walkable != null && walkable.GetType() == typeof(Trunk))
+            {
+                new TrunkSupport(
+                    coord,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                );
+                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
+            }
+        }
+
+        // underneath
+        int minX = coord.x;
+        int maxX = end.x;
+
+        // in place swap
+        if (minX > maxX)
+        {
+            maxX -= minX;
+            minX += maxX;
+            maxX = minX - maxX;
+        }
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            LevelManager
+                .GetActiveLevel()
+                .GetWalkables()
+                .TryGetValue(new(x, coord.y - 1), out walkable);
+            if (walkable != null && walkable.GetType() == typeof(Trunk))
+            {
+                new TrunkSupport(
+                    new(x, coord.y),
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                );
+                if (addVerticalConections)
+                    verticalWalkables.Add(x);
+            }
+        }
+
+        // if (!SaveManager.GetCreatingLevel() && !LevelManager.GetLoadingLevel())
+        RecalculateSupports();
+    }
+
+    public void UpdateSupports(ISupport support, bool suppressRecalculation = false)
+    {
+        GameManager.DebugLog(
+            "<color=orange>adding trunk support for branch of id: " + instanceID + ".</color>"
+        );
         if (!supportsList.Contains(support))
             supportsList.Add(support);
         int segmentIndex = CoordToSegmentIndex(support.GetCoord());
         rawSupports[segmentIndex] += support.GetSupportValue();
-        RecalculateSupports();
+        if (!suppressRecalculation)
+            RecalculateSupports();
     }
 
-    //
-    //
     /// <summary>
     /// THIS METHOD SHOULD ONLY BE CALLED BY SUPPORTS FROM THE `OnBranchSnap` INVOCATION.
-    /// ANY OTHER CALLER IS DOING SOMETHING WRONG THAT WILL LIKELY CAUSE THINGS TO BREAK
+    /// ANY OTHER CALLER IS DOING SOMETHING WRONG THAT WILL LIKELY CAUSE AN ERROR.
     /// </summary>
     /// <param name="support">The ISupport to be removed from the list</param>
     public void RemoveSupport(ISupport support)
@@ -166,7 +278,8 @@ public class Branch : IWalkable
     public void UpdateWeightDelta(Coord crd, int delta)
     {
         weightDeltas[CoordToSegmentIndex(crd)] += delta;
-        RecalculateActualWeight();
+        if (!SaveManager.GetCreatingLevel() && !LevelManager.GetLoadingLevel())
+            RecalculateActualWeight();
     }
 
     void RecalculateActualWeight()
@@ -186,6 +299,14 @@ public class Branch : IWalkable
         }
 
         bool singleSupport = supportIndices.Count == 1;
+
+        GameManager.DebugLog(
+            "<color=orange>nb supports for branch of id: "
+                + instanceID
+                + " => "
+                + supportIndices.Count
+                + ".</color>"
+        );
 
         // FORWARD PASS
 
@@ -218,9 +339,10 @@ public class Branch : IWalkable
                         singleSupport = true;
                     else
                     {
-                        rightSupportIndex = supportIndices[nextSupportIndex];
+                        GameManager.DebugLog("DOT: " + nextSupportIndex);
+                        rightSupportIndex = supportIndices[nextSupportIndex++];
                         nextSupportIndex =
-                            supportIndices.Count > nextSupportIndex ? nextSupportIndex + 1 : -1;
+                            supportIndices.Count == nextSupportIndex ? -1 : nextSupportIndex;
                     }
                 }
             }
@@ -281,7 +403,7 @@ public class Branch : IWalkable
                     {
                         leftSupportIndex = supportIndices[^nextSupportIndex];
                         nextSupportIndex =
-                            supportIndices.Count >= nextSupportIndex ? nextSupportIndex + 1 : -1;
+                            supportIndices.Count > nextSupportIndex ? nextSupportIndex + 1 : -1;
                     }
                 }
             }
@@ -497,17 +619,13 @@ public class Branch : IWalkable
                     if (walkables.Any(w => w.GetType() == typeof(Trunk)))
                     {
                         y++;
-                        midBranch = new(new(minX, y), midBranchSegments.Count, Direction.RIGHT);
-                        foreach (IWalkable walkable in walkables)
-                        {
-                            if (walkable.GetType() != typeof(Trunk))
-                                continue;
-                            new TrunkSupport(
-                                midBranch,
-                                new(new(walkable.GetBounds().Item1.x, y), ISupport.TRUNK_SUPPORT)
-                            );
-                            midBranch.verticalWalkables.Add(walkable.GetBounds().Item1.x);
-                        }
+                        midBranch = new(
+                            new(minX, y),
+                            midBranchSegments.Count,
+                            Direction.RIGHT,
+                            false
+                        );
+                        midBranch.FindTrunkSupports(true);
                     }
                     // Otherwise, we haven't landed on a trunk.
                     // At the moment, the only possibility in this case is that we've landed on at least 1 branch.
@@ -515,21 +633,38 @@ public class Branch : IWalkable
                     {
                         // In this case, the first thing we need to do is expand the search slightly: 1 tile left, and 1 tile right
                         // left scan
+                        // if (
+                        //     LevelManager
+                        //         .GetActiveLevel()
+                        //         .GetWalkables()
+                        //         .ContainsKey(new(minX - 1, y))
+
+                        // )
                         if (
                             LevelManager
                                 .GetActiveLevel()
                                 .GetWalkables()
-                                .ContainsKey(new(minX - 1, y))
+                                .Where(ws => ws.Key.Equals(new Coord(minX - 1, y)))
+                                .Select(kvp => kvp.Value.GetType() == typeof(Branch))
+                                .First()
                         )
                             walkables.Add(
                                 LevelManager.GetActiveLevel().GetWalkables()[new(minX - 1, y)]
                             );
                         // right scan
+                        // if (
+                        //     LevelManager
+                        //         .GetActiveLevel()
+                        //         .GetWalkables()
+                        //         .ContainsKey(new(maxX + 1, y))
+                        // )
                         if (
                             LevelManager
                                 .GetActiveLevel()
                                 .GetWalkables()
-                                .ContainsKey(new(maxX + 1, y))
+                                .Where(ws => ws.Key.Equals(new Coord(maxX + 1, y)))
+                                .Select(kvp => kvp.Value.GetType() == typeof(Branch))
+                                .First()
                         )
                             walkables.Add(
                                 LevelManager.GetActiveLevel().GetWalkables()[new(maxX + 1, y)]
@@ -581,13 +716,18 @@ public class Branch : IWalkable
                         midBranch = new(
                             fallenMidBranchSegments[0],
                             fallenMidBranchSegments.Count,
-                            Direction.RIGHT
+                            Direction.RIGHT,
+                            false
                         );
                         foreach (ISupport s in midSupports)
                         {
                             if (s.GetType() == typeof(TrunkSupport))
                             {
-                                new TrunkSupport(midBranch, new(s.GetCoord(), s.GetSupportValue()));
+                                new TrunkSupport(
+                                    midBranch,
+                                    new(s.GetCoord(), s.GetSupportValue()),
+                                    true
+                                );
                             }
                         }
                     }
