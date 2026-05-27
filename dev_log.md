@@ -138,3 +138,4 @@
 - Finished deleting TrunkSuportEditor file
 - Updated adapter logic/save manager logic to function with updates
 - Upadted adapters so levels can now be saved to file again
+- Changed test level id's (names) to be in the 1000 range. (standard level numbers should not exceed 999)
