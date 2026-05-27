@@ -1,5 +1,7 @@
+using System;
 using Unity.Serialization.Json;
 
+[Obsolete("Trunk supports should no longer be manually made. They are automatically discovered.")]
 public class TrunkSupportAdapter : IJsonAdapter<TrunkSupportDTO>
 {
     // public void Serialize(in JsonSerializationContext<TrunkSupport> context, TrunkSupport value)

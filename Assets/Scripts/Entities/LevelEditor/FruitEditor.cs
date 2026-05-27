@@ -11,6 +11,7 @@ public class FruitEditor : EditorElement
         OnStart();
     }
 
-    public FruitType fruitType;
     public int weight;
+    public int deltaWeight;
+    public int deltaWeb;
 }

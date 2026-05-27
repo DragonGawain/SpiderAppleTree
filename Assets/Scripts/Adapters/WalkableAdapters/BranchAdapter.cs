@@ -19,14 +19,16 @@ public class BranchAdapter : IJsonAdapter<Branch>
 
         foreach (var group in supports)
         {
+            // Trunk supports are to be automatically derived!
+            // Should not be saved/loaded manually!
             if (group.Key == typeof(TrunkSupport))
             {
-                context.Writer.WriteKey("trunkSupports");
-                using (context.Writer.WriteArrayScope())
-                {
-                    foreach (TrunkSupport ts in group)
-                        context.SerializeValue(new TrunkSupportDTO(ts));
-                }
+                // context.Writer.WriteKey("trunkSupports");
+                // using (context.Writer.WriteArrayScope())
+                // {
+                //     foreach (TrunkSupport ts in group)
+                //         context.SerializeValue(new TrunkSupportDTO(ts));
+                // }
             }
             // else if (group.Key == typeof(WebReinforcement))
             // {
@@ -59,17 +61,21 @@ public class BranchAdapter : IJsonAdapter<Branch>
                 false
             );
 
-        List<TrunkSupportDTO> trunkSupportDTOs = context.DeserializeValue<List<TrunkSupportDTO>>(
-            context.SerializedValue["trunkSupports"]
-        );
+        // DELETE_ME
+        //      List<TrunkSupportDTO> trunkSupportDTOs = context.DeserializeValue<List<TrunkSupportDTO>>(
+        //          context.SerializedValue["trunkSupports"]
+        //      );
+
         // List<WebReinforcementDTO> WebReinforcementDTOs = context.DeserializeValue<List<WebReinforcementDTO>>(
         //     context.SerializedValue["webReinforcements"]
         // );
         // List<HangingWebStringDTO> HangingWebStringDTOs = context.DeserializeValue<List<HangingWebStringDTO>>(
         //     context.SerializedValue["hangingWebStrings"]
         // );
-        foreach (TrunkSupportDTO tsDTO in trunkSupportDTOs)
-            new TrunkSupport(b, tsDTO);
+
+        // DELETE_ME
+        //      foreach (TrunkSupportDTO tsDTO in trunkSupportDTOs)
+        //          new TrunkSupport(b, tsDTO);
 
         // foreach (WebReinforcementDTO wrDTO in WebReinforcementDTOs)
         //     new WebReinforcement(b, wrDTO);

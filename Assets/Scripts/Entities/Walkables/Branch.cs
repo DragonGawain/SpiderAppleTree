@@ -20,11 +20,6 @@ public class Branch : IWalkable
     // A branch is a single object. The direction determines in what direction it extends.
     public readonly Direction direction;
 
-    /// <summary>
-    /// This is the amount of weight that the source of a branch can hold.
-    /// </summary>
-    public const int MAX_BRANCH_SUPPORT = 6;
-
     // Supports prevent the branch from snapping.
     // They will most often be positive, otherwise they will be pulling the branch down
     // (which can happen! A string support will drag the upper branch down a bit)
@@ -277,6 +272,10 @@ public class Branch : IWalkable
 
     public void UpdateWeightDelta(Coord crd, int delta)
     {
+        // HACK:: ensure that weightDeltas are never negative.
+        // Not sure if I actually "need" to, because weightD is typically only applied if above 0..
+        // Still, a negative value could cause funkiness if it somehow gets stuck below 0.
+
         weightDeltas[CoordToSegmentIndex(crd)] += delta;
         if (!SaveManager.GetCreatingLevel() && !LevelManager.GetLoadingLevel())
             RecalculateActualWeight();

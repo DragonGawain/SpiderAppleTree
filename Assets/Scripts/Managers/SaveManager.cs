@@ -68,7 +68,7 @@ public class SaveManager : MonoBehaviour
         JsonSerialization.AddGlobalAdapter(new LevelAdapter());
         JsonSerialization.AddGlobalAdapter(new CoordAdapter());
         JsonSerialization.AddGlobalAdapter(new FruitAdapter());
-        JsonSerialization.AddGlobalAdapter(new TrunkSupportAdapter());
+        // JsonSerialization.AddGlobalAdapter(new TrunkSupportAdapter());
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
@@ -166,8 +166,9 @@ public class SaveManager : MonoBehaviour
                             ];
                             new Fruit(
                                 new(x, y),
-                                ((FruitEditor)editorElement).fruitType,
-                                ((FruitEditor)editorElement).weight
+                                ((FruitEditor)editorElement).weight,
+                                ((FruitEditor)editorElement).deltaWeight,
+                                ((FruitEditor)editorElement).deltaWeb
                             );
                             break;
                         default:

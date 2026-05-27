@@ -119,3 +119,14 @@
 - Completed making trunk supports fully automatic
 - Fixed trunk supports getting added twice for branches affected by a snap
 - A LOT of minor bug fixing/tweaks to branch snapping logic
+
+## May 26 2026
+
+- Overhauled save adapters for branch and fruit.
+- Refined level adapter slightly (moved some stuff around so level info is displayed before level elements in the save file)
+- Confirmed that removing the TrunkSupportAdapter is OK (became obsolete - trunk supports are now determined automatically.)
+- Removed FruitType enum. (it may return, but would only change the fruit visually)
+- Updated fruits to apply their changes (weight, web count) to the player.
+- Confirmed that win condition works!
+    - Detects when the player walks onto the goal point, and that all needed fruits have been consumed
+    - Just logs a message to the console. The goal point still isn't even visible.

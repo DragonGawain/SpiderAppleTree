@@ -12,6 +12,7 @@ public class Level
     HashSet<ILevelElement> uniqueLevelElements = new();
     Dictionary<Coord, IWalkable> walkables = new();
     Dictionary<Coord, IInteractable> interactables = new();
+    HashSet<Fruit> neededFruits = new();
     public readonly int levelID;
     InitialLevelDataContainer ldc;
 
@@ -182,6 +183,12 @@ public class Level
     public void AddNewElementToLevel(ILevelElement ile) => uniqueLevelElements.Add(ile);
 
     public void RemoveElementFromLevel(ILevelElement ile) => uniqueLevelElements.Remove(ile);
+
+    public void RegisterNeededFruit(Fruit fruit) => neededFruits.Add(fruit);
+
+    public void ConsumeNeededFruit(Fruit fruit) => neededFruits.Remove(fruit);
+
+    public bool AllFruitsConsumed() => neededFruits.Count == 0;
 
     public HashSet<ILevelElement> GetLevelElements() => uniqueLevelElements;
 

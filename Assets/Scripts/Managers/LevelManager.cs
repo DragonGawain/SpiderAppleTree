@@ -190,18 +190,7 @@ public class LevelManager : MonoBehaviour
             //     _ => throw Exception("ERROR: Unknown FruitType supplied when loading level")
             // };
 
-            interactablesMap.SetTile(
-                f.coord.ToVector3Int(),
-                f.fruitType switch
-                {
-                    FruitType.EMPTY => empty_fruit,
-                    FruitType.WEB => web_fruit,
-                    FruitType.ANTI_WEB => anti_web_fruit,
-                    FruitType.LIGHT => light_fruit,
-                    FruitType.HEAVY => heavy_fruit,
-                    _ => throw new Exception("ERROR: Unknown FruitType supplied when loading level")
-                }
-            );
+            interactablesMap.SetTile(f.coord.ToVector3Int(), empty_fruit);
         }
 
         loadingLevel = false;

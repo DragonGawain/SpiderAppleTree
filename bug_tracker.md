@@ -1,3 +1,5 @@
 - When you step on a branch segment that has a support and there is another support farther to the right, the weight delta is incorrectly halved. => THIS IS NOT A BUG! This is so that mid supports don't take 'double' weight when crossing over them.
 - Fallen branches do not correctly adjust the trunk segment touching their extremities to being horizontally walkable
     - This will also apply to trunk supports. Those side touching trunks do not apply a trunk support.
+- Cannot walk onto branches from underneath via the trunk
+    - This is not necessarily a bug. I won't always want this vertical connected. Need to determine rules/set a var to make this deterministic.

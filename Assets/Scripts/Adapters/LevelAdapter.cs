@@ -24,6 +24,16 @@ public class LevelAdapter : IJsonAdapter<Level>
         using var os = context.Writer.WriteObjectScope();
         context.Writer.WriteKeyValue("levelID", value.GetLevelID());
 
+        InitialLevelDataContainer ldc = value.GetInitialLevelDataContainer();
+        context.Writer.WriteKey("spawn");
+        context.SerializeValue(ldc.spawnPoint);
+        context.Writer.WriteKey("goal");
+        context.SerializeValue(ldc.goalPoint);
+        context.Writer.WriteKeyValue("initWebCount", ldc.initWebCount);
+        context.Writer.WriteKeyValue("initWeight", ldc.initWeight);
+        context.Writer.WriteKeyValue("initLength", ldc.initLength);
+        context.Writer.WriteKeyValue("trunkSupport", ldc.baseTrunkSupport);
+
         IEnumerable<IGrouping<Type, ILevelElement>> elements = value
             .GetLevelElements()
             .GroupBy(e => e.GetType());
@@ -70,16 +80,6 @@ public class LevelAdapter : IJsonAdapter<Level>
                 );
             }
         }
-
-        InitialLevelDataContainer ldc = value.GetInitialLevelDataContainer();
-        context.Writer.WriteKey("spawn");
-        context.SerializeValue(ldc.spawnPoint);
-        context.Writer.WriteKey("goal");
-        context.SerializeValue(ldc.goalPoint);
-        context.Writer.WriteKeyValue("initWebCount", ldc.initWebCount);
-        context.Writer.WriteKeyValue("initWeight", ldc.initWeight);
-        context.Writer.WriteKeyValue("initLength", ldc.initLength);
-        context.Writer.WriteKeyValue("trunkSupport", ldc.baseTrunkSupport);
     }
 
     public Level Deserialize(in JsonDeserializationContext<Level> context)

@@ -33,13 +33,24 @@ public class Player : MonoBehaviour
         Branch.OnGlobalBranchSnap += OnBranchSnap;
     }
 
-    public void AlterWeight(int delta) => weight += delta;
+    public void AlterWeight(int delta)
+    {
+        // We assume that the player's weight has already been accounted for (it should be...)
+        // so, we only need to adjust the branche's weight by the current weight.
+        if (occupiedBranch != null)
+            occupiedBranch.UpdateWeightDelta(currentPos, delta);
+        weight += delta;
+    }
 
     public float GetWeight() => weight;
 
     public void AlterLength(int delta) => length += delta;
 
     public int GetLength() => length;
+
+    public void AlterWeb(int delta) => webCount += delta;
+
+    public int GetWeb() => webCount;
 
     public Coord GetCurentPos() => currentPos;
 
@@ -60,6 +71,14 @@ public class Player : MonoBehaviour
         };
 
         StartCoroutine(SmoothMoveAnimation(oldCoord));
+
+        if (
+            LevelManager.GetActiveLevel().AllFruitsConsumed()
+            && currentPos.Equals(
+                LevelManager.GetActiveLevel().GetInitialLevelDataContainer().goalPoint
+            )
+        )
+            Debug.Log("<color=green>YOU WIN!!!!!</color>");
     }
 
     IEnumerator SmoothMoveAnimation(Coord oldCoord)

@@ -32,8 +32,8 @@ public class GameManager : MonoBehaviour
     public static event Action<int> OnLevelSelect;
 
     // TRACKER VARS
-    static bool snapWarning = false;
-    static Direction lastDir;
+    // static bool snapWarning = false;
+    // static Direction lastDir;
 
     private void Awake()
     {
