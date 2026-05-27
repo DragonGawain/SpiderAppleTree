@@ -186,7 +186,12 @@ public class Level
 
     public void RegisterNeededFruit(Fruit fruit) => neededFruits.Add(fruit);
 
-    public void ConsumeNeededFruit(Fruit fruit) => neededFruits.Remove(fruit);
+    public void ConsumeNeededFruit(Fruit fruit)
+    {
+        neededFruits.Remove(fruit);
+        if (AllFruitsConsumed())
+            LevelManager.goalRef.Activate();
+    }
 
     public bool AllFruitsConsumed() => neededFruits.Count == 0;
 

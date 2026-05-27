@@ -130,3 +130,11 @@
 - Confirmed that win condition works!
     - Detects when the player walks onto the goal point, and that all needed fruits have been consumed
     - Just logs a message to the console. The goal point still isn't even visible.
+
+## May 27 2026
+
+- Pulled placeholder goal sprite from default unity sprites
+- Made goal get coloured green when the conditions to activate it are true (all needed fruit consumed)
+- Finished deleting TrunkSuportEditor file
+- Updated adapter logic/save manager logic to function with updates
+- Upadted adapters so levels can now be saved to file again

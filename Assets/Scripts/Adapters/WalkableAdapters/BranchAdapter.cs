@@ -61,11 +61,6 @@ public class BranchAdapter : IJsonAdapter<Branch>
                 false
             );
 
-        // DELETE_ME
-        //      List<TrunkSupportDTO> trunkSupportDTOs = context.DeserializeValue<List<TrunkSupportDTO>>(
-        //          context.SerializedValue["trunkSupports"]
-        //      );
-
         // List<WebReinforcementDTO> WebReinforcementDTOs = context.DeserializeValue<List<WebReinforcementDTO>>(
         //     context.SerializedValue["webReinforcements"]
         // );
@@ -73,9 +68,7 @@ public class BranchAdapter : IJsonAdapter<Branch>
         //     context.SerializedValue["hangingWebStrings"]
         // );
 
-        // DELETE_ME
-        //      foreach (TrunkSupportDTO tsDTO in trunkSupportDTOs)
-        //          new TrunkSupport(b, tsDTO);
+
 
         // foreach (WebReinforcementDTO wrDTO in WebReinforcementDTOs)
         //     new WebReinforcement(b, wrDTO);

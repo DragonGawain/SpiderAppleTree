@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Mathematics;
 using Unity.Serialization.Json;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,15 +22,23 @@ using UnityEngine.Tilemaps;
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
+    [Header("Tilemaps")]
     [SerializeField]
     Grid grid;
-    public Tilemap walkablesMap;
-    public Tilemap interactablesMap;
-    public Tilemap numbersMap;
+
+    [SerializeField]
+    Tilemap walkablesMap,
+        interactablesMap,
+        numbersMap;
 
     static Grid gridRef;
 
-    public Tile t_src,
+    [Header("Tiles")]
+    [SerializeField]
+    Grid numberPalette;
+
+    [SerializeField]
+    Tile t_src,
         t_bdy,
         b_src_R,
         b_bdy_R,
@@ -42,16 +51,20 @@ public class LevelManager : MonoBehaviour
         light_fruit,
         heavy_fruit;
 
-    [SerializeField]
-    Grid numberPalette;
-
     Tile[] numberTiles;
 
+    [Header("Entities")]
     [SerializeField]
     GameObject playerPrefab;
 
+    [SerializeField]
+    GameObject goalPrefab;
+
+    // REFERENCES
+
     static Level activeLevel;
     static Player playerRef;
+    public static Goal goalRef;
 
     static bool loadingLevel = false;
 
@@ -118,12 +131,21 @@ public class LevelManager : MonoBehaviour
                 "<color=blue>Successfully finished reading level JSON file! (And therefore the level object has also been created)</color>"
             );
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.Log(e.StackTrace);
             Debug.LogError("Something went wrong when READING the level with id " + levelID + "!");
             throw;
         }
+
+        // Create player at appropriate spot
+        playerRef = Instantiate(
+                playerPrefab,
+                grid.CellToWorld(activeLevel.GetSpawnPoint().ToVector3Int())
+                    + new Vector3(0.5f, 0.5f, 0),
+                Quaternion.identity
+            )
+            .GetComponent<Player>();
 
         // Trunk t;
         // Branch b;
@@ -193,6 +215,15 @@ public class LevelManager : MonoBehaviour
             interactablesMap.SetTile(f.coord.ToVector3Int(), empty_fruit);
         }
 
+        goalRef = Instantiate(
+                goalPrefab,
+                grid.CellToWorld(
+                    activeLevel.GetInitialLevelDataContainer().goalPoint.ToVector3Int()
+                ) + new Vector3(0.5f, 0.5f, 0),
+                quaternion.identity
+            )
+            .GetComponent<Goal>();
+
         loadingLevel = false;
 
         // Recalculating supports is going overboard. I should really only need to update the weight map,
@@ -202,17 +233,12 @@ public class LevelManager : MonoBehaviour
 
         Debug.Log("Finished drawing loaded level!");
 
-        // Create player at appropriate spot
-        playerRef = Instantiate(
-                playerPrefab,
-                grid.CellToWorld(activeLevel.GetSpawnPoint().ToVector3Int())
-                    + new Vector3(0.5f, 0.5f, 0),
-                Quaternion.identity
-            )
-            .GetComponent<Player>();
+        // TODO:: Check if the player spawned on a branch and alter branch weight here
 
         playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
         activeLevel.RefreshWalkablesDirections();
+
+        InputManager.EnableMovementInputs();
     }
 
     void ClearLevel()
@@ -223,6 +249,9 @@ public class LevelManager : MonoBehaviour
         if (playerRef != null)
             Destroy(playerRef.gameObject);
         playerRef = null;
+        if (goalRef != null)
+            Destroy(goalRef.gameObject);
+        goalRef = null;
     }
 
     public void ClearBranch(Branch branch)

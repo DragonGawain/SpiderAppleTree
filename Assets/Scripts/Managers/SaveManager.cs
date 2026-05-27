@@ -68,7 +68,6 @@ public class SaveManager : MonoBehaviour
         JsonSerialization.AddGlobalAdapter(new LevelAdapter());
         JsonSerialization.AddGlobalAdapter(new CoordAdapter());
         JsonSerialization.AddGlobalAdapter(new FruitAdapter());
-        // JsonSerialization.AddGlobalAdapter(new TrunkSupportAdapter());
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
@@ -161,14 +160,15 @@ public class SaveManager : MonoBehaviour
                             goalPoint = new(x, y);
                             break;
                         case "fruit":
-                            editorElement = editorElements[
-                                (EditorIdentity.INTERACTABLE, new(x, y))
-                            ];
+                            editorElement =
+                                editorElements[(EditorIdentity.INTERACTABLE, new(x, y))]
+                                as FruitEditor;
                             new Fruit(
                                 new(x, y),
                                 ((FruitEditor)editorElement).weight,
                                 ((FruitEditor)editorElement).deltaWeight,
-                                ((FruitEditor)editorElement).deltaWeb
+                                ((FruitEditor)editorElement).deltaWeb,
+                                ((FruitEditor)editorElement).needed
                             );
                             break;
                         default:
@@ -198,13 +198,14 @@ public class SaveManager : MonoBehaviour
                     switch (tile.name)
                     {
                         // case "hidden_support":
-                        case "trunk_support":
-                            editorElement = editorElements[(EditorIdentity.SUPPORT, new(x, y))];
-                            new TrunkSupport(
-                                new(x, y),
-                                ((TrunkSupportEditor)editorElement).supportValue
-                            );
-                            break;
+                        // trunk support left as a sample case
+                        // case "trunk_support":
+                        //     editorElement = editorElements[(EditorIdentity.SUPPORT, new(x, y))];
+                        //     new TrunkSupport(
+                        //         new(x, y),
+                        //         ((TrunkSupportEditor)editorElement).supportValue
+                        //     );
+                        //     break;
                         default:
                             Debug.LogWarning(
                                 "Unknown support of name " + tile.name + " found at " + loc + "!"
@@ -325,7 +326,7 @@ public class SaveManager : MonoBehaviour
                 + (alt ? "left" : "right")
                 + "!"
         );
-        new Branch(coord, length, alt ? Direction.LEFT : Direction.RIGHT);
+        new Branch(coord, length, alt ? Direction.LEFT : Direction.RIGHT, false);
     }
 
     public void ClearEditor()

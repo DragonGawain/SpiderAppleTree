@@ -14,4 +14,5 @@ public class FruitEditor : EditorElement
     public int weight;
     public int deltaWeight;
     public int deltaWeb;
+    public bool needed;
 }

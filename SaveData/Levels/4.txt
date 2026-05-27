@@ -1,12 +1,31 @@
 {
     "levelID": 4,
+    "spawn": {
+        "x": 0,
+        "y": 0
+    },
+    "goal": {
+        "x": -4,
+        "y": 6
+    },
+    "initWebCount": 0,
+    "initWeight": 2,
+    "initLength": 0,
+    "trunkSupport": 4,
     "trunks": [
+        {
+            "Coord": {
+                "x": -7,
+                "y": 0
+            },
+            "height": 1
+        },
         {
             "Coord": {
                 "x": -6,
                 "y": 0
             },
-            "height": 8
+            "height": 1
         },
         {
             "Coord": {
@@ -24,8 +43,22 @@
         },
         {
             "Coord": {
+                "x": -4,
+                "y": 4
+            },
+            "height": 3
+        },
+        {
+            "Coord": {
                 "x": -3,
                 "y": 0
+            },
+            "height": 1
+        },
+        {
+            "Coord": {
+                "x": -3,
+                "y": 4
             },
             "height": 1
         },
@@ -34,7 +67,7 @@
                 "x": -2,
                 "y": 0
             },
-            "height": 1
+            "height": 9
         },
         {
             "Coord": {
@@ -80,123 +113,80 @@
         },
         {
             "Coord": {
-                "x": 4,
-                "y": 3
-            },
-            "height": 1
-        },
-        {
-            "Coord": {
                 "x": 5,
                 "y": 0
             },
-            "height": 1
+            "height": 7
         },
         {
             "Coord": {
                 "x": 6,
                 "y": 0
             },
-            "height": 9
+            "height": 1
+        },
+        {
+            "Coord": {
+                "x": 7,
+                "y": 0
+            },
+            "height": 1
         }
     ],
     "branches": [
         {
             "Coord": {
-                "x": -5,
-                "y": 3
+                "x": -1,
+                "y": 4
             },
             "length": 3,
-            "direction": 2,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": -5,
-                        "y": 3
-                    },
-                    "delta": 6
-                }
-            ]
+            "direction": 2
         },
         {
             "Coord": {
-                "x": -5,
-                "y": 5
-            },
-            "length": 7,
-            "direction": 2,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": -5,
-                        "y": 5
-                    },
-                    "delta": 9
-                }
-            ]
-        },
-        {
-            "Coord": {
-                "x": 3,
-                "y": 3
-            },
-            "length": 3,
-            "direction": 0,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": 3,
-                        "y": 3
-                    },
-                    "delta": 6
-                }
-            ]
-        },
-        {
-            "Coord": {
-                "x": 5,
+                "x": -1,
                 "y": 8
             },
-            "length": 6,
-            "direction": 0,
-            "trunkSupports": [
-                {
-                    "Coord": {
-                        "x": 5,
-                        "y": 8
-                    },
-                    "delta": 7
-                }
-            ]
+            "length": 8,
+            "direction": 2
+        },
+        {
+            "Coord": {
+                "x": 4,
+                "y": 4
+            },
+            "length": 3,
+            "direction": 0
+        },
+        {
+            "Coord": {
+                "x": 6,
+                "y": 5
+            },
+            "length": 2,
+            "direction": 2
         }
     ],
     "fruits": [
         {
             "Coord": {
-                "x": -3,
-                "y": 5
+                "x": 2,
+                "y": 4
             },
-            "fruitType": 4,
-            "weight": 5
+            "weight": 1,
+            "dweight": -1,
+            "dweb": 0,
+            "needed": true
         },
         {
             "Coord": {
-                "x": 1,
+                "x": 7,
                 "y": 5
             },
-            "fruitType": 1,
-            "weight": -3
+            "weight": 2,
+            "dweight": 0,
+            "dweb": 0,
+            "needed": true
         }
-    ],
-    "spawn": {
-        "x": 0,
-        "y": 0
-    },
-    "goal": {
-        "x": 2,
-        "y": 3
-    },
-    "initWebCount": 0,
-    "initWeight": 2,
-    "initLenght": 0
+    ]
 }
