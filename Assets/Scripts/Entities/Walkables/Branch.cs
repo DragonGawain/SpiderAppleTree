@@ -6,6 +6,7 @@ using System.Linq;
 // This is because when a branch is created, it will check to see if its source is next to a trunk.
 // If it is, then it sets that trunk segment to be horizontally walkable.
 
+// TODO:: REMOVE LEFT FACING BRANCHES!
 
 public class Branch : IWalkable
 {

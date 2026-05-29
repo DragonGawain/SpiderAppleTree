@@ -54,6 +54,11 @@ public class SaveManager : MonoBehaviour
 
     bool isOverwriting = false;
 
+    const int X_BOUND_LEFT = -5;
+    const int X_BOUND_RIGHT = 8;
+    const int Y_BOUND_TOP = 9;
+    const int Y_BOUND_BOTTOM = 0;
+
     private void Awake()
     {
         JsonSerialization.AddGlobalAdapter(new BranchAdapter());
@@ -86,9 +91,9 @@ public class SaveManager : MonoBehaviour
         (initWeight, initWebCount, initLength, baseTrunkSupport) =
             GetComponent<LevelEditorManager>().GetInitialValues();
 
-        for (int x = -10; x <= 10; x++)
+        for (int x = X_BOUND_LEFT; x <= X_BOUND_RIGHT; x++)
         {
-            for (int y = 0; y <= 10; y++)
+            for (int y = Y_BOUND_BOTTOM; y <= Y_BOUND_TOP; y++)
             {
                 loc = new Vector3Int(x, y, 0);
                 // The order in which the maps are scanned is important!
@@ -250,7 +255,7 @@ public class SaveManager : MonoBehaviour
         Coord coord = new(src.x, src.y);
         int height = 1;
         // max height is 8
-        for (int y = src.y + 1; y <= 10; y++)
+        for (int y = src.y + 1; y <= Y_BOUND_TOP; y++)
         {
             if (walkablesMap_editor.HasTile(new Vector3Int(src.x, y, 0)))
             {
@@ -282,7 +287,7 @@ public class SaveManager : MonoBehaviour
         // RIGHT
         if (!alt)
         {
-            for (int x = src.x + 1; x <= 10; x++)
+            for (int x = src.x + 1; x <= X_BOUND_RIGHT; x++)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
@@ -305,7 +310,7 @@ public class SaveManager : MonoBehaviour
         // LEFT
         else
         {
-            for (int x = src.x - 1; x >= -10; x--)
+            for (int x = src.x - 1; x >= X_BOUND_LEFT; x--)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {

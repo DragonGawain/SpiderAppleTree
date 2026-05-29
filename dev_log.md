@@ -164,3 +164,5 @@
     - This also solves the problem of weight update orders. All weight changes are applied before the branch is recalculated. This prevents branch snapping from mid-stages.
     - This fix caused another problem that had to do with branch weight recalculations when there is a snap. When a branch snaps, we've already moved past the post-move phase, so each branch has to call its own recalculations. This includes the (potential) new branch that the player is on.
 - Pulled a picture of a cartoon spider from google images to act as a #temporary character model
+- Redefined the level boundary limits so that there's no overlap with the level editor UI buttons. (If I need more space, I'll deal with it then, but I don't want to start moving the camera. Yet.)
+- Set up boundary variables in saveManager

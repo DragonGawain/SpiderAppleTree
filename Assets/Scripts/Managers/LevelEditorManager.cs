@@ -46,9 +46,26 @@ public class LevelEditorManager : MonoBehaviour
 
     bool selectingTile = false;
 
-    public void TestLevel() { }
+    public void TestLevel()
+    {
+        saveB.SetActive(false);
+        loadB.SetActive(false);
+        initValuesGroup.SetActive(false);
+        testLevelB.SetActive(false);
+        editModeGroup.SetActive(false);
+        contEditB.SetActive(true);
+        CLoseTileSelectPanel();
+    }
 
-    public void ContinueEditingLevel() { }
+    public void ContinueEditingLevel()
+    {
+        saveB.SetActive(true);
+        loadB.SetActive(true);
+        initValuesGroup.SetActive(true);
+        testLevelB.SetActive(true);
+        editModeGroup.SetActive(true);
+        contEditB.SetActive(false);
+    }
 
     public void AddMode()
     {
