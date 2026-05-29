@@ -163,3 +163,4 @@
     - To fix this, I changed the branch weight updating system. Now, when a branch needs to be recalculated, it is added to a set. After all weight modifications are done, all branches will update their weights.
     - This also solves the problem of weight update orders. All weight changes are applied before the branch is recalculated. This prevents branch snapping from mid-stages.
     - This fix caused another problem that had to do with branch weight recalculations when there is a snap. When a branch snaps, we've already moved past the post-move phase, so each branch has to call its own recalculations. This includes the (potential) new branch that the player is on.
+- Pulled a picture of a cartoon spider from google images to act as a #temporary character model
