@@ -266,14 +266,24 @@ public class Branch : IWalkable
         // HACK:: ensure that weightDeltas are never negative.
         // Not sure if I actually "need" to, because weightD is typically only applied if above 0..
         // Still, a negative value could cause funkiness if it somehow gets stuck below 0.
+        GameManager.DebugLog(
+            $"<color=black>Updating weight of branch id {instanceID} at {crd} by {delta} </color>"
+        );
 
         weightDeltas[CoordToSegmentIndex(crd)] += delta;
-        if (!SaveManager.GetCreatingLevel() && !LevelManager.GetLoadingLevel())
-            RecalculateActualWeight();
+        // if (
+        //     !SaveManager.GetCreatingLevel()
+        //     && !LevelManager.GetLoadingLevel()
+        //     && !suppressRecalculation
+        // )
+        //     RecalculateActualWeight();
     }
 
-    void RecalculateActualWeight()
+    public void RecalculateActualWeight()
     {
+        GameManager.DebugLog(
+            $"<color=black>Recalculating actual weight of branch id {instanceID} with source {coord}</color>"
+        );
         List<int> supportIndices = new();
 
         // We start by assuming there is no load on the branch
@@ -290,13 +300,13 @@ public class Branch : IWalkable
 
         bool singleSupport = supportIndices.Count == 1;
 
-        GameManager.DebugLog(
-            "<color=orange>nb supports for branch of id: "
-                + instanceID
-                + " => "
-                + supportIndices.Count
-                + ".</color>"
-        );
+        // GameManager.DebugLog(
+        //     "<color=orange>nb supports for branch of id: "
+        //         + instanceID
+        //         + " => "
+        //         + supportIndices.Count
+        //         + ".</color>"
+        // );
 
         // FORWARD PASS
 
@@ -558,6 +568,7 @@ public class Branch : IWalkable
                 // 3) Flying fruit stabilize the branch height [NOT SURE IF I WILL IMPLEMENT THIS. IT'S A BIT OF SCOPE CREEP]
 
                 // Debug logs: original position of the falling segments
+                // NOTE:: I might want to export the stuff below here to helper methods and switch based on branch typem if that becomes a thing.
                 GameManager.DebugLog("mid branch segment coords: ");
                 foreach (Coord mbs in midBranchSegments)
                 {
@@ -756,6 +767,7 @@ public class Branch : IWalkable
                     interactable.Refresh();
             }
         }
+        RecalculateActualWeight();
     }
 
     public void UpdateWeightMap()

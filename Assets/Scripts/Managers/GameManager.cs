@@ -16,6 +16,7 @@ using UnityEngine;
 [RequireComponent(typeof(InputManager))]
 [RequireComponent(typeof(SaveManager))]
 [RequireComponent(typeof(UIManager))]
+[RequireComponent(typeof(LevelEditorManager))]
 public class GameManager : MonoBehaviour
 {
     enum GameState

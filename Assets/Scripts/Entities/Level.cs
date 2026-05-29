@@ -16,6 +16,8 @@ public class Level
     public readonly int levelID;
     InitialLevelDataContainer ldc;
 
+    HashSet<Branch> pendingRecalculation = new();
+
     public Level(int id)
     {
         this.levelID = id;
@@ -160,6 +162,8 @@ public class Level
             : walkable.CanWalkHorizontal(targetCoord.y, dir);
     }
 
+    public void RegisterPendingRecalculation(Branch branch) => pendingRecalculation.Add(branch);
+
     /// <summary>
     /// Series of checks to be done after a successful move. Namely:
     /// * Collected fruit?
@@ -169,9 +173,15 @@ public class Level
     /// <param name="loc">The current location of the player</param>
     public void PostMove(Coord loc)
     {
-        // TODO:: check for branch stability
+        GameManager.DebugLog("<color=red>POST MOVE</color>");
+        // TODO:: check for branch stability -> by this, I can only assume that I mean the stretch goal of branch tilting?
+        // Possible I meant branch snapping as this note is from before I implemented snapping...
         if (interactables.ContainsKey(loc))
             interactables[loc].Interact();
+
+        foreach (Branch b in pendingRecalculation)
+            b.RecalculateActualWeight();
+        pendingRecalculation.Clear();
     }
 
     public void PostAction() { }

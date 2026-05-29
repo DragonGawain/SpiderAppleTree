@@ -18,6 +18,7 @@ public enum LevelState
 /// Relevant mainly in the creation/editing and loading of level files.
 /// All adapter registrations happen in this script.
 /// </summary>
+[RequireComponent(typeof(LevelEditorManager))]
 public class SaveManager : MonoBehaviour
 {
     public static readonly string levelPath = Path.Combine(@"SaveData", "Levels");
@@ -34,18 +35,10 @@ public class SaveManager : MonoBehaviour
 
     static Dictionary<(EditorIdentity, Coord), EditorElement> editorElements = new();
 
-    [Header("Initial values")]
-    [SerializeField]
-    int initWebCount;
-
-    [SerializeField]
-    int initWeight;
-
-    [SerializeField]
-    int initLength;
-
-    [SerializeField]
-    int baseTrunkSupport = 6;
+    int initWebCount,
+        initWeight,
+        initLength,
+        baseTrunkSupport;
 
     public static readonly Dictionary<LevelState, string> levelStatePath =
         new()
@@ -89,6 +82,10 @@ public class SaveManager : MonoBehaviour
         TileBase tile;
         Vector3Int loc;
         EditorElement editorElement;
+
+        (initWeight, initWebCount, initLength, baseTrunkSupport) =
+            GetComponent<LevelEditorManager>().GetInitialValues();
+
         for (int x = -10; x <= 10; x++)
         {
             for (int y = 0; y <= 10; y++)
@@ -111,17 +108,20 @@ public class SaveManager : MonoBehaviour
                     switch (tile.name)
                     {
                         case "trunk_src":
+                        case "trunk_s":
                             // trunk src
                             // body: 5
                             BuildTrunk(loc);
                             break;
                         case "branch_src_R":
+                        case "branch_s_R":
                             // branch src
                             // body: 8
                             // DIRECTION: RIGHT
                             BuildBranch(loc, false);
                             break;
                         case "branch_src_L":
+                        case "branch_s_L":
                             // alt branch src
                             // body: 4
                             // DIRECTION: LEFT
@@ -160,6 +160,8 @@ public class SaveManager : MonoBehaviour
                             goalPoint = new(x, y);
                             break;
                         case "fruit":
+                        case "fruit_":
+                        case "invis_fruit":
                             editorElement =
                                 editorElements[(EditorIdentity.INTERACTABLE, new(x, y))]
                                 as FruitEditor;
@@ -252,7 +254,8 @@ public class SaveManager : MonoBehaviour
         {
             if (walkablesMap_editor.HasTile(new Vector3Int(src.x, y, 0)))
             {
-                if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
+                // if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
+                if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_b")
                 {
                     height++;
                     continue;
@@ -283,9 +286,13 @@ public class SaveManager : MonoBehaviour
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
+                    // if (
+                    //     walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
+                    //     == "branch_bdy_R"
+                    // )
                     if (
                         walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                        == "branch_bdy_R"
+                        == "branch_b_R"
                     )
                     {
                         length++;
@@ -302,9 +309,13 @@ public class SaveManager : MonoBehaviour
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
+                    // if (
+                    //     walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
+                    //     == "branch_bdy_L"
+                    // )
                     if (
                         walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                        == "branch_bdy_L"
+                        == "branch_b_L"
                     )
                     {
                         length++;

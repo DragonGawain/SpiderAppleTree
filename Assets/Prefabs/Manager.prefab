@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3941536429505506177}
   - component: {fileID: 2547938371655930650}
   - component: {fileID: 4579263343019005996}
+  - component: {fileID: 8773500201263859426}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -48,11 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da86b96ebd09ca84e807b2da31be695f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
-  initWebCount: 0
-  initWeight: 0
-  initLength: 0
   walkablesMap_editor: {fileID: 0}
   interactablesMap_editor: {fileID: 0}
+  supportsMap_editor: {fileID: 0}
 --- !u!114 &7629931106859666369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,20 +68,19 @@ MonoBehaviour:
   walkablesMap: {fileID: 0}
   interactablesMap: {fileID: 0}
   numbersMap: {fileID: 0}
-  t_src: {fileID: 11400000, guid: ee77c302b85c4204bbd761e12f3dc15d, type: 2}
-  t_bdy: {fileID: 11400000, guid: 3575ea5fe1cf81446af01a7d303550c3, type: 2}
-  b_src_R: {fileID: 11400000, guid: 64d83727dcaa28946bd4773529c7fcb5, type: 2}
-  b_bdy_R: {fileID: 11400000, guid: c154d4ab767a00347bd19ba46a222200, type: 2}
-  b_src_L: {fileID: 11400000, guid: e94dbf0cfcef3f14e8951743628c361a, type: 2}
-  b_bdy_L: {fileID: 11400000, guid: d5f68830fa24a244687ec5c6a83d94d4, type: 2}
-  goal: {fileID: 11400000, guid: 51e9040053c534849bc5d8ec6c86bcec, type: 2}
-  empty_fruit: {fileID: 11400000, guid: 46547ddabfdea664b88eda6cc3b6e8d8, type: 2}
-  web_fruit: {fileID: 11400000, guid: 6d0b5ff873e602f468299f4d611f8af1, type: 2}
-  anti_web_fruit: {fileID: 11400000, guid: 42ef6bc9c74fe144189b4b3d8a1313ae, type: 2}
-  light_fruit: {fileID: 11400000, guid: bf8d898451133a14482b08d3dca52d52, type: 2}
-  heavy_fruit: {fileID: 11400000, guid: 85eb4ae05d0ae5f44adbed649ef3c75e, type: 2}
   numberPalette: {fileID: 4971581038957865261, guid: 93d6861a23ca81b40af5af23f40ed1ce, type: 3}
+  t_src: {fileID: 11400000, guid: 423fda08c56424846875268512a3809f, type: 2}
+  t_bdy: {fileID: 11400000, guid: 0cf81ccf23a89024a82a85fbd5cce620, type: 2}
+  b_src_R: {fileID: 11400000, guid: 0b81bd4f3117ffa4fa3292ee4d797626, type: 2}
+  b_bdy_R: {fileID: 11400000, guid: b07da3f832c0088489cd8082be2e48ea, type: 2}
+  b_con_R: {fileID: 11400000, guid: f445c59bf5850794ea028fc75a50d6b3, type: 2}
+  b_src_L: {fileID: 11400000, guid: 2fccf4e5eb8792d4eb44310d470a634e, type: 2}
+  b_bdy_L: {fileID: 11400000, guid: 554a7caae2afa5842bf9a82e93f6f4cc, type: 2}
+  b_con_L: {fileID: 11400000, guid: 6d1c11edf35c95c40a14d2ffa3976008, type: 2}
+  goal: {fileID: 11400000, guid: 51e9040053c534849bc5d8ec6c86bcec, type: 2}
+  fruit: {fileID: 11400000, guid: 1b4b2ff61b486af498547c76b32e0ad9, type: 2}
   playerPrefab: {fileID: 7632484129010134089, guid: 6d742ff819da7bb418b2a0964da5f6a0, type: 3}
+  goalPrefab: {fileID: 2599221701456914316, guid: 90637b338927bf34ca6a2a6b2e383308, type: 3}
 --- !u!114 &3941536429505506177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   webMenu: {fileID: 0}
   defaultWebButton: {fileID: 0}
+  selectedWebButton: {fileID: 0}
 --- !u!114 &2547938371655930650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,3 +120,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5863e8a305c799348830198169fd2697, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
+--- !u!114 &8773500201263859426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6766785728138946027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c1f117e1f3e6944eab3ac4413af898d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelEditorManager
+  walkables_e: {fileID: 0}
+  interactable_e: {fileID: 0}
+  support_e: {fileID: 0}
+  walkables_l: {fileID: 0}
+  interactable_l: {fileID: 0}
+  numbers_l: {fileID: 0}
+  saveB: {fileID: 0}
+  loadB: {fileID: 0}
+  initValuesGroup: {fileID: 0}
+  testLevelB: {fileID: 0}
+  contEditB: {fileID: 0}
+  editModeGroup: {fileID: 0}
+  tileSelectGroup: {fileID: 0}
+  selectedTile: {fileID: 0}
+  editMode: 0
+  targetTilemap: {fileID: 0}

@@ -1,5 +1,5 @@
 {
-    "levelID": 3,
+    "levelID": 1005,
     "spawn": {
         "x": 0,
         "y": 0
@@ -10,8 +10,8 @@
     },
     "initWebCount": 0,
     "initWeight": 2,
-    "initLength": 0,
-    "trunkSupport": 4,
+    "initLength": 1,
+    "trunkSupport": 6,
     "trunks": [
         {
             "Coord": {
@@ -116,7 +116,7 @@
                 "x": 5,
                 "y": 0
             },
-            "height": 8
+            "height": 7
         },
         {
             "Coord": {
@@ -139,7 +139,7 @@
                 "x": -1,
                 "y": 4
             },
-            "length": 2,
+            "length": 3,
             "direction": 2
         },
         {
@@ -152,11 +152,11 @@
         },
         {
             "Coord": {
-                "x": 2,
+                "x": 4,
                 "y": 4
             },
             "length": 3,
-            "direction": 2
+            "direction": 0
         },
         {
             "Coord": {
@@ -176,7 +176,7 @@
             "weight": 1,
             "dweight": -1,
             "dweb": 0,
-            "needed": True
+            "needed": true
         },
         {
             "Coord": {
@@ -184,9 +184,9 @@
                 "y": 5
             },
             "weight": 2,
-            "dweight": 1,
+            "dweight": 0,
             "dweb": 0,
-            "needed": True
+            "needed": true
         }
     ]
 }

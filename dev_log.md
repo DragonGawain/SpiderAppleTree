@@ -150,3 +150,16 @@
 
 - Imported some [tree/branch tile assets](https://assetstore.unity.com/packages/2d/environments/too-cube-forest-the-free-2d-platformer-game-tile-set-117493#asset_quality) from the unity asset store. They'll be better than my coloured squares for now.
 - Started working on a real in-game level editor. I'm gonna want this at some point. I remember a GDC talk from CD Projekt RED about the importance of having good tools, so I'm gonna make me some convenient tools!
+- More level editor work
+    - Sketched a plan for UI interface.
+    - Set up UI interface
+    - Starting scripting (LevelEditorManager.cs)
+- Added LevelEditorManager to required managers (via GameManager RequireComponent)
+- Imported new `fruit` sprite for the fruits. Planning on the fruit tile in the editor being invisible, but spawning a visible `Fruit_editor` gameobject allowing for stat edits, but the fruit tile for the game will have this fruit sprite.
+- Initial level values are now taken from input fields, not `SaveManager` inspector (SerializeField) fields.
+- Started converting things to the new sprites - loaded level uses new trunk, branch, and fruit sprites. Still need to set up connecting branch sprite (for when a branch is supported by a trunk from underneath)
+- Set up so `SaveManager.cs` will recognize the names of the tiles with the new sprites when scanning
+- **Fixed bug where eating a weight changing fruit would leave a negative ghost of itself (that could potentially make a weight delta go negative), as well as would always leave a ghost of the players old weight when consumed on a branch.** (this was a NASTY bug. Kinda tough to fix, and NAZ-TEE in nature!)
+    - To fix this, I changed the branch weight updating system. Now, when a branch needs to be recalculated, it is added to a set. After all weight modifications are done, all branches will update their weights.
+    - This also solves the problem of weight update orders. All weight changes are applied before the branch is recalculated. This prevents branch snapping from mid-stages.
+    - This fix caused another problem that had to do with branch weight recalculations when there is a snap. When a branch snaps, we've already moved past the post-move phase, so each branch has to call its own recalculations. This includes the (potential) new branch that the player is on.

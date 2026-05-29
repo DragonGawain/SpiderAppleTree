@@ -46,7 +46,10 @@ public class Player : MonoBehaviour
         // We assume that the player's weight has already been accounted for (it should be...)
         // so, we only need to adjust the branche's weight by the current weight.
         if (occupiedBranch != null)
+        {
             occupiedBranch.UpdateWeightDelta(currentPos, delta);
+            LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
+        }
         weight += delta;
     }
 
@@ -107,20 +110,29 @@ public class Player : MonoBehaviour
 
         // ensure that player is at the desired position
         transform.position = targetPos;
-        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
 
         IWalkable target = LevelManager.GetActiveLevel().GetWalkables()[currentPos];
 
         if (occupiedBranch != null)
+        {
             occupiedBranch.UpdateWeightDelta(oldCoord, -weight);
+            LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
+        }
+
         if (target.GetType() == typeof(Branch))
         {
             occupiedBranch = (Branch)target;
             Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
             occupiedBranch.UpdateWeightDelta(currentPos, weight);
+            LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
         }
         else
             occupiedBranch = null;
+
+        // postMove includes things like eating fruit, which can alter the weight of the player. Therefore, we need to do it *after* we remove the player's weight from the old position.
+        // If we moved from one branch to another, we need to make sure that we are modifying the correct branch.
+        // postMove also calls for all branches that were (potentially) modified to recalculate their weight values.
+        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
 
         InputManager.EnableMovementInputs();
     }
@@ -149,6 +161,7 @@ public class Player : MonoBehaviour
                 occupiedBranch = (Branch)walkable;
                 Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
                 occupiedBranch.UpdateWeightDelta(currentPos, weight);
+                occupiedBranch.RecalculateActualWeight();
             }
         }
     }

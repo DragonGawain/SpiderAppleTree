@@ -41,7 +41,10 @@ public class Fruit : IInteractable
         LevelManager.GetActiveLevel().GetWalkables().TryGetValue(coord, out IWalkable target);
 
         if (target != null && target.GetType() == typeof(Branch))
+        {
             ((Branch)target).UpdateWeightDelta(coord, -weight);
+            LevelManager.GetActiveLevel().RegisterPendingRecalculation((Branch)target);
+        }
 
         LevelManager.GetActiveLevel().RemoveInteractable(coord);
         GameManager

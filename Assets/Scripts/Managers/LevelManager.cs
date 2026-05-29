@@ -42,14 +42,12 @@ public class LevelManager : MonoBehaviour
         t_bdy,
         b_src_R,
         b_bdy_R,
+        b_con_R,
         b_src_L,
         b_bdy_L,
+        b_con_L,
         goal,
-        empty_fruit,
-        web_fruit,
-        anti_web_fruit,
-        light_fruit,
-        heavy_fruit;
+        fruit;
 
     Tile[] numberTiles;
 
@@ -207,7 +205,7 @@ public class LevelManager : MonoBehaviour
             //     _ => throw Exception("ERROR: Unknown FruitType supplied when loading level")
             // };
 
-            interactablesMap.SetTile(f.coord.ToVector3Int(), empty_fruit);
+            interactablesMap.SetTile(f.coord.ToVector3Int(), fruit);
         }
 
         goalRef = Instantiate(
@@ -288,7 +286,7 @@ public class LevelManager : MonoBehaviour
         if (value % 1 != 0)
             nbToIndex += 10;
 
-        Debug.Log("Placing number of value " + value + " found at index " + nbToIndex);
+        Debug.Log("Placing number of value " + value);
         numbersMap.SetTile(coord.ToVector3Int(), numberTiles[nbToIndex]);
         numbersMap.RefreshTile(coord.ToVector3Int());
     }
