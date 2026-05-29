@@ -145,3 +145,8 @@
 - Disable movement inputs on player death
 - Make it so that movement inputs cannot be re-enabled post death
 - Phasing out LevelStateDictionary cause it's dumb. (Unless that dict is stored to a file, it is useless. Also thinking of abandoning the idea of saving partial/solved level states.)
+
+## May 29 2026
+
+- Imported some [tree/branch tile assets](https://assetstore.unity.com/packages/2d/environments/too-cube-forest-the-free-2d-platformer-game-tile-set-117493#asset_quality) from the unity asset store. They'll be better than my coloured squares for now.
+- Started working on a real in-game level editor. I'm gonna want this at some point. I remember a GDC talk from CD Projekt RED about the importance of having good tools, so I'm gonna make me some convenient tools!

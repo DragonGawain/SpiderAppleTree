@@ -36,6 +36,8 @@ public class Player : MonoBehaviour
         currentPos = ldc.spawnPoint;
         this.gridRef = gridRef;
 
+        alive = true;
+
         Branch.OnGlobalBranchSnap += OnBranchSnap;
     }
 
