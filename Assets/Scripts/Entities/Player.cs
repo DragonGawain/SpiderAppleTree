@@ -22,6 +22,12 @@ public class Player : MonoBehaviour
     // default is 50. Mock FU timer => divide value by 50 to determine the number of seconds the animation will take
     const int MOVE_SPEED = 2;
 
+    static bool alive = true;
+    public static bool Alive
+    {
+        get => alive;
+    }
+
     public void Initialize(InitialLevelDataContainer ldc, Grid gridRef)
     {
         webCount = ldc.initWebCount;
@@ -127,9 +133,13 @@ public class Player : MonoBehaviour
         occupiedBranch = null;
 
         if (walkable == null)
+        {
             Debug.LogWarning(
                 "<color=red><b>THE PLAYER HAS DIED! SQUASHED BY A FALLING BRANCH!</b></color>"
             );
+            alive = false;
+            InputManager.DisableAllInputs();
+        }
         else
         {
             if (walkable.GetType() == typeof(Branch))

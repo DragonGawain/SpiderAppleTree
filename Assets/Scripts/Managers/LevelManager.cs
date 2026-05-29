@@ -116,12 +116,7 @@ public class LevelManager : MonoBehaviour
         {
             using (
                 StreamReader sr =
-                    new(
-                        Path.Combine(
-                            SaveManager.levelStatePath[LevelStateDictionary.levelStates[levelID]],
-                            levelID.ToString() + ".txt"
-                        )
-                    )
+                    new(Path.Combine(SaveManager.levelPath, levelID.ToString() + ".txt"))
             )
             {
                 string json = sr.ReadToEnd();

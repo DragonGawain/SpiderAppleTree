@@ -31,15 +31,10 @@ public class TrunkSupport : ISupport
 
     public void OnSnap(Coord lcrd, Coord rcrd, Branch branch)
     {
-        // if this support is within the requested bounds, reassign the support to the part of the branch that is left behind.
+        // if this support is within the requested bounds, remove it from the list to avoid duplication.
+        // If applicable, the new branch will create a new TrunkSupport.
         if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
-        {
-            // new TrunkSupport(branch, new(coord, supportValue));
-            // GameManager.DebugLog(
-            //     "<color=blue>Removing trunk support at coord: " + coord + "</color>"
-            // );
             this.branch.RemoveSupport(this);
-        }
     }
 }
 

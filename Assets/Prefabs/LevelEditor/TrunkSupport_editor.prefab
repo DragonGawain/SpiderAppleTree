@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1242304017855986132}
   - component: {fileID: 7338056090104564985}
-  - component: {fileID: 6716185271063292544}
   m_Layer: 0
   m_Name: TrunkSupport_editor
   m_TagString: Untagged
@@ -92,15 +91,3 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &6716185271063292544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 476972925386200034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b609754e5892f41b8b4d8f9ed8a199, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TrunkSupportEditor

@@ -139,3 +139,9 @@
 - Updated adapter logic/save manager logic to function with updates
 - Upadted adapters so levels can now be saved to file again
 - Changed test level id's (names) to be in the 1000 range. (standard level numbers should not exceed 999)
+
+## May 28 2026
+
+- Disable movement inputs on player death
+- Make it so that movement inputs cannot be re-enabled post death
+- Phasing out LevelStateDictionary cause it's dumb. (Unless that dict is stored to a file, it is useless. Also thinking of abandoning the idea of saving partial/solved level states.)

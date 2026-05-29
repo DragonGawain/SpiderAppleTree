@@ -127,15 +127,6 @@ public class Branch : IWalkable
                 .TryGetValue(coord.ShiftX(-1), out walkable);
             if (walkable != null && walkable.GetType() == typeof(Trunk))
             {
-                GameManager.DebugLog(
-                    "Found left side trunk support for branch id "
-                        + instanceID
-                        + ". Offering support of value "
-                        + LevelManager
-                            .GetActiveLevel()
-                            .GetInitialLevelDataContainer()
-                            .baseTrunkSupport
-                );
                 new TrunkSupport(
                     coord,
                     LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
@@ -795,6 +786,11 @@ public class Branch : IWalkable
                 .GetComponent<LevelManager>()
                 .UpdateWeightMap(new Coord(coord.x + (i * dir), coord.y), actualWeight[i]);
         }
+    }
+
+    public void ManuallySnapBranch(Coord coord)
+    {
+        // TODO:: for 'heavy branches' (if they become a thing), this is how they will snap all the branches it collides with as it falls
     }
 
     int CoordToSegmentIndex(Coord crd) =>

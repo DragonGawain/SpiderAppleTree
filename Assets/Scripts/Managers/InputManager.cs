@@ -132,7 +132,8 @@ public class InputManager : MonoBehaviour
     public static void EnableMovementInputs()
     {
         DisableAllInputs();
-        inputs.Player.Enable();
+        if (Player.Alive)
+            inputs.Player.Enable();
     }
 
     public static void EnableWebMenuInputs()
