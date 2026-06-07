@@ -2,6 +2,12 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
+public enum InputMap
+{
+    PLAYER,
+    WEB_MENU
+}
+
 /// <summary>
 /// Handles reading inputs.
 /// Does not handle processing of inputs.
@@ -10,32 +16,47 @@ using UnityEngine.InputSystem;
 /// All other maps are auto-disabled when a map enable is called.
 /// </summary>
 [RequireComponent(typeof(UIManager))]
+[RequireComponent(typeof(LevelEditorManager))]
 public class InputManager : MonoBehaviour
 {
     // public static event Action<Coord> OnMoveAttempt;
     static Inputs inputs;
 
     static UIManager uiManagerRef;
+    static LevelEditorManager levelEditorManagerRef;
 
     private void Awake()
     {
         uiManagerRef = GetComponent<UIManager>();
+        levelEditorManagerRef = GetComponent<LevelEditorManager>();
 
         inputs = new Inputs();
-        inputs.Player.Enable();
+        // global inputs should ALWAYS be enabled. It's stuff like opening the pause menu.
+        inputs.Global.Enable();
+        // inputs.Player.Enable();
+        inputs.LevelEditor.Enable();
+
+        // global
+        inputs.Global.Pause.performed += Pause;
+
+        // player
         inputs.Player.MoveUp.performed += MoveUp;
         inputs.Player.MoveRight.performed += MoveRight;
         inputs.Player.MoveDown.performed += MoveDown;
         inputs.Player.MoveLeft.performed += MoveLeft;
         inputs.Player.WebMenu.performed += OpenWebMenu;
-        inputs.Player.Pause.performed += Pause;
 
+        // web menu
         inputs.WebMenu.Up.performed += CycleUp;
         inputs.WebMenu.Right.performed += CycleRight;
         inputs.WebMenu.Down.performed += CycleDown;
         inputs.WebMenu.Left.performed += CycleLeft;
         inputs.WebMenu.Select.performed += PerformWebAction;
         inputs.WebMenu.Cancel.performed += CloseWebMenu;
+
+        // level editor
+        // this triggers on started so that it is where the mouse is when you click, as opposed to where the mouse is when you let go of the click
+        inputs.LevelEditor.Click.started += LevelEditClick;
 
         // DEBUG
 #if UNITY_EDITOR
@@ -45,7 +66,12 @@ public class InputManager : MonoBehaviour
 #endif
     }
 
-    // PLAYER MAP
+    #region global
+    void Pause(InputAction.CallbackContext ctx) { }
+
+    #endregion
+
+    #region player map
     // movement
     void MoveUp(InputAction.CallbackContext ctx)
     {
@@ -87,10 +113,11 @@ public class InputManager : MonoBehaviour
     {
         uiManagerRef.OpenWebMenu();
     }
+    #endregion
 
-    void Pause(InputAction.CallbackContext ctx) { }
 
-    // WEB MENU
+
+    #region web menu
     // cycle
     void CycleUp(InputAction.CallbackContext ctx)
     {
@@ -123,10 +150,35 @@ public class InputManager : MonoBehaviour
         uiManagerRef.CloseWebMenu();
     }
 
+    #endregion
+
+    #region level editor
+    void LevelEditClick(InputAction.CallbackContext ctx)
+    {
+        levelEditorManagerRef.PlaceTileOnCell();
+    }
+    #endregion
+
     public static void DisableAllInputs()
     {
         inputs.Player.Disable();
         inputs.WebMenu.Disable();
+        inputs.LevelEditor.Disable();
+    }
+
+    public static void EnableInputMap(InputMap im)
+    {
+        DisableAllInputs();
+        switch (im)
+        {
+            case InputMap.PLAYER:
+                if (Player.Alive)
+                    inputs.Player.Enable();
+                break;
+            case InputMap.WEB_MENU:
+                inputs.WebMenu.Enable();
+                break;
+        }
     }
 
     public static void EnableMovementInputs()
@@ -142,6 +194,12 @@ public class InputManager : MonoBehaviour
         inputs.WebMenu.Enable();
     }
 
+    public static void EnableEditorInputs()
+    {
+        DisableAllInputs();
+        inputs.LevelEditor.Enable();
+    }
+
     void LogInfo1(InputAction.CallbackContext ctx)
     {
         LevelManager.GetActiveLevel().AnalyzeUniqueElements();
@@ -153,19 +211,26 @@ public class InputManager : MonoBehaviour
 
     void OnDestroy()
     {
+        // global
+        inputs.Global.Pause.performed -= Pause;
+
+        // player
         inputs.Player.MoveUp.performed -= MoveUp;
         inputs.Player.MoveRight.performed -= MoveRight;
         inputs.Player.MoveDown.performed -= MoveDown;
         inputs.Player.MoveLeft.performed -= MoveLeft;
         inputs.Player.WebMenu.performed -= OpenWebMenu;
-        inputs.Player.Pause.performed -= Pause;
 
+        // web menu
         inputs.WebMenu.Up.performed -= CycleUp;
         inputs.WebMenu.Right.performed -= CycleRight;
         inputs.WebMenu.Down.performed -= CycleDown;
         inputs.WebMenu.Left.performed -= CycleLeft;
         inputs.WebMenu.Select.performed -= PerformWebAction;
         inputs.WebMenu.Cancel.performed -= CloseWebMenu;
+
+        // level editor
+        inputs.LevelEditor.Click.started -= LevelEditClick;
 
         // DEBUG
 #if UNITY_EDITOR

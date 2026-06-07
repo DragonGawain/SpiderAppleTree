@@ -166,3 +166,10 @@
 - Pulled a picture of a cartoon spider from google images to act as a #temporary character model
 - Redefined the level boundary limits so that there's no overlap with the level editor UI buttons. (If I need more space, I'll deal with it then, but I don't want to start moving the camera. Yet.)
 - Set up boundary variables in saveManager
+
+## Jue 06 2026
+
+- Set up level id auto-incrementer tickbox attached to the save manager boolean
+- Work on level editor, specifically the 'test level' and 'continue editing level' features.
+- Made the palceholder and input text for initial player values be big. (at default size, they were too small to be legible)
+- Level editor semi functional! Detecting clicks. Can place and erase entities. Next step will be creating interactable editors (fruit editors only at this point), and then having fruits be selectable so that the values can be edited.

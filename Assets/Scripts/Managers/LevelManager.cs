@@ -234,7 +234,7 @@ public class LevelManager : MonoBehaviour
         InputManager.EnableMovementInputs();
     }
 
-    void ClearLevel()
+    public void ClearLevel()
     {
         walkablesMap.ClearAllTiles();
         interactablesMap.ClearAllTiles();
@@ -245,6 +245,7 @@ public class LevelManager : MonoBehaviour
         if (goalRef != null)
             Destroy(goalRef.gameObject);
         goalRef = null;
+        activeLevel = null;
     }
 
     public void ClearBranch(Branch branch)

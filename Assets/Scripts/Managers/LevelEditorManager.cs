@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
@@ -14,10 +15,11 @@ public class LevelEditorManager : MonoBehaviour
 
     [Header("Tilemaps")]
     [SerializeField]
-    Tilemap walkables_e;
+    Grid grid;
 
     [SerializeField]
-    Tilemap interactable_e,
+    Tilemap walkables_e,
+        interactable_e,
         support_e,
         walkables_l,
         interactable_l,
@@ -34,6 +36,13 @@ public class LevelEditorManager : MonoBehaviour
         contEditB,
         editModeGroup,
         tileSelectGroup;
+
+    [Header("Display")]
+    [SerializeField]
+    Image displayImage;
+
+    [SerializeField]
+    TextMeshProUGUI displayText;
 
     // DEBUG: these fields are public only so I can verify stuff in the inspector.
     // This field should be made private
@@ -65,6 +74,7 @@ public class LevelEditorManager : MonoBehaviour
         testLevelB.SetActive(true);
         editModeGroup.SetActive(true);
         contEditB.SetActive(false);
+        InputManager.EnableEditorInputs();
     }
 
     public void AddMode()
@@ -125,5 +135,25 @@ public class LevelEditorManager : MonoBehaviour
             TileType.SUPPORT => support_e,
             TileType.WALKABLE or _ => walkables_e
         };
+        displayImage.sprite = tsb.GetComponent<Image>().sprite;
+        displayImage.color = tsb.GetComponent<Image>().color;
+        displayText.text = tsb.GetComponentInChildren<TextMeshProUGUI>().text;
+    }
+
+    public void PlaceTileOnCell()
+    {
+        // first, determine the location of the click
+
+        Vector3Int mouseCellCoords = grid.WorldToCell(
+            Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
+        );
+        // verify that the click is in bounds
+        if (
+            mouseCellCoords.x >= SaveManager.X_BOUND_LEFT
+            && mouseCellCoords.x <= SaveManager.X_BOUND_RIGHT
+            && mouseCellCoords.y >= SaveManager.Y_BOUND_BOTTOM
+            && mouseCellCoords.y <= SaveManager.Y_BOUND_TOP
+        )
+            targetTilemap.SetTile(mouseCellCoords, selectedTile);
     }
 }

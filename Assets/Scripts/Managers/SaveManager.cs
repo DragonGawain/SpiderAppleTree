@@ -3,6 +3,8 @@ using Unity.Serialization.Json;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine.Tilemaps;
+using TMPro;
+using System.Collections;
 
 public enum LevelState
 {
@@ -19,8 +21,10 @@ public enum LevelState
 /// All adapter registrations happen in this script.
 /// </summary>
 [RequireComponent(typeof(LevelEditorManager))]
+[RequireComponent(typeof(LevelManager))]
 public class SaveManager : MonoBehaviour
 {
+    private static readonly WaitForSecondsRealtime _waitForSecondsRealtime5 = new(5);
     public static readonly string levelPath = Path.Combine(@"SaveData", "Levels");
     public static readonly string solutionPath = Path.Combine(@"SaveData", "Solutions");
     public static readonly string partialPath = Path.Combine(@"SaveData", "Partials");
@@ -52,12 +56,23 @@ public class SaveManager : MonoBehaviour
     public Tilemap interactablesMap_editor;
     public Tilemap supportsMap_editor;
 
+    [SerializeField]
+    GameObject editorMaps,
+        loadMaps;
+
+    [SerializeField]
+    TextMeshProUGUI errorText;
+
+    [SerializeField]
+    GameObject editorObjects;
+
     bool isOverwriting = false;
 
-    const int X_BOUND_LEFT = -5;
-    const int X_BOUND_RIGHT = 8;
-    const int Y_BOUND_TOP = 9;
-    const int Y_BOUND_BOTTOM = 0;
+    public bool autoIncrementId = true;
+    public const int X_BOUND_LEFT = -5;
+    public const int X_BOUND_RIGHT = 8;
+    public const int Y_BOUND_TOP = 9;
+    public const int Y_BOUND_BOTTOM = 0;
 
     private void Awake()
     {
@@ -69,9 +84,43 @@ public class SaveManager : MonoBehaviour
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
+    public void ToggleAutoIncrement() => autoIncrementId = !autoIncrementId;
+
+    public void TestLevel()
+    {
+        try
+        {
+            SaveOrOverwriteLevel(-1);
+        }
+        catch (NonUniqueLevelElementException e)
+        {
+            errorText.text = e.Message;
+            StartCoroutine(FlashErrorText());
+            return;
+        }
+        editorObjects.SetActive(false);
+        editorMaps.SetActive(false);
+        loadMaps.SetActive(true);
+        GameManager.SelectLevel(-1);
+    }
+
+    public void ContinueEditingLevel()
+    {
+        GetComponent<LevelManager>().ClearLevel();
+        editorObjects.SetActive(true);
+        loadMaps.SetActive(false);
+        editorMaps.SetActive(true);
+    }
+
     public void SaveOrOverwriteLevel(int id)
     {
-        if (File.Exists(new(Path.Combine(levelPath, id.ToString() + ".txt"))) && !isOverwriting)
+        if (id != -1 && autoIncrementId)
+            id = Directory.GetFiles(levelPath).Length + 1;
+        if (
+            id != -1
+            && File.Exists(new(Path.Combine(levelPath, id.ToString() + ".txt")))
+            && !isOverwriting
+        )
         {
             Debug.Log(
                 "<color=red>A level with this id already exists! Please click the \"save level\" button again to confirm overwriting.</color>"
@@ -87,6 +136,9 @@ public class SaveManager : MonoBehaviour
         TileBase tile;
         Vector3Int loc;
         EditorElement editorElement;
+
+        bool hasSpawn = false;
+        bool hasGoal = false;
 
         (initWeight, initWebCount, initLength, baseTrunkSupport) =
             GetComponent<LevelEditorManager>().GetInitialValues();
@@ -158,11 +210,17 @@ public class SaveManager : MonoBehaviour
 
                     switch (tile.name)
                     {
-                        case "spawn_point":
+                        case "spawn":
+                            if (hasSpawn)
+                                throw new NonUniqueLevelElementException("Too many spawn points!");
                             spawnPoint = new(x, y);
+                            hasSpawn = true;
                             break;
                         case "goal":
+                            if (hasGoal)
+                                throw new NonUniqueLevelElementException("Too many goal points!");
                             goalPoint = new(x, y);
+                            hasGoal = true;
                             break;
                         case "fruit":
                         case "fruit_":
@@ -222,6 +280,12 @@ public class SaveManager : MonoBehaviour
                 }
             }
         }
+
+        if (!hasSpawn)
+            throw new NonUniqueLevelElementException("spawn point does not exist!");
+        if (!hasGoal)
+            throw new NonUniqueLevelElementException("goal point does not exist!");
+
         newLevel.InitializeData(
             spawnPoint,
             goalPoint,
@@ -356,5 +420,12 @@ public class SaveManager : MonoBehaviour
     public static void RegisterEditorElement(EditorIdentity ei, Coord crd, EditorElement ee)
     {
         editorElements.Add((ei, crd), ee);
+    }
+
+    IEnumerator FlashErrorText()
+    {
+        errorText.enabled = true;
+        yield return _waitForSecondsRealtime5;
+        errorText.enabled = false;
     }
 }

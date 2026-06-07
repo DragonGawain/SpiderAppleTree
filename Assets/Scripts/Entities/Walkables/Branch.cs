@@ -8,6 +8,12 @@ using System.Linq;
 
 // TODO:: REMOVE LEFT FACING BRANCHES!
 
+enum BranchType
+{
+    HEAVY, // can cause cascading breaks
+    WEBBED, // does not consider player weight!
+}
+
 public class Branch : IWalkable
 {
     public event Action<Coord, Coord, Branch> OnBranchSnap;
