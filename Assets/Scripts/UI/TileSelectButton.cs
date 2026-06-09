@@ -24,4 +24,12 @@ public class TileSelectButton : MonoBehaviour
     {
         get => tileType;
     }
+
+    [SerializeField]
+    GameObject editorObj;
+
+    public GameObject EditorObj
+    {
+        get => editorObj;
+    }
 }

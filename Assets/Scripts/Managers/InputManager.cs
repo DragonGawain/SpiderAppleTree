@@ -155,7 +155,7 @@ public class InputManager : MonoBehaviour
     #region level editor
     void LevelEditClick(InputAction.CallbackContext ctx)
     {
-        levelEditorManagerRef.PlaceTileOnCell();
+        levelEditorManagerRef.OnClick();
     }
     #endregion
 

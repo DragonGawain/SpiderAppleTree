@@ -167,9 +167,20 @@
 - Redefined the level boundary limits so that there's no overlap with the level editor UI buttons. (If I need more space, I'll deal with it then, but I don't want to start moving the camera. Yet.)
 - Set up boundary variables in saveManager
 
-## Jue 06 2026
+## June 08 2026
 
 - Set up level id auto-incrementer tickbox attached to the save manager boolean
 - Work on level editor, specifically the 'test level' and 'continue editing level' features.
 - Made the palceholder and input text for initial player values be big. (at default size, they were too small to be legible)
 - Level editor semi functional! Detecting clicks. Can place and erase entities. Next step will be creating interactable editors (fruit editors only at this point), and then having fruits be selectable so that the values can be edited.
+- Removed erase button (erasing is done via 'adding' a null tile)
+- Added icon to inform user what tile they are currently adding.
+- Created FruitEditorController to allow editing of FruitEditors
+- Continued work on Select mode. Select mode will now target a specific selectable tile map (interact/support) based on an enum. Continuously clicking the Select button will cycle the enum.
+- The selected entity icon now also shows which tilemap is being actively targeted when in select mode.
+- Started work on editor controllers/what happens when you click on an editable entity in the level editor
+
+## June 09 2029
+
+- Continued working on editor controllers (really just the `FruitEditorController`, but I'm building the system to be able to expand to handle all potential editor controllers easily)
+- Fruit editor controller working!

@@ -428,4 +428,11 @@ public class SaveManager : MonoBehaviour
         yield return _waitForSecondsRealtime5;
         errorText.enabled = false;
     }
+
+    public static EditorElement GetEditorElementAtCoord(EditorIdentity ei, Coord crd)
+    {
+        if (editorElements.TryGetValue((ei, crd), out EditorElement ee))
+            return ee;
+        return null;
+    }
 }

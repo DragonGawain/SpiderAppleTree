@@ -1,4 +1,7 @@
+using System;
+using System.Net.Sockets;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -6,11 +9,18 @@ using UnityEngine.UI;
 
 public class LevelEditorManager : MonoBehaviour
 {
+    // editing mode. ADD mode includes the ability to erase.
     enum EditMode
     {
         ADD,
-        SELECT,
-        ERASE
+        SELECT
+    }
+
+    // the target tile map of select mode
+    enum SelectTarget
+    {
+        INTERACTABLE,
+        SUPPORT,
     }
 
     [Header("Tilemaps")]
@@ -44,6 +54,10 @@ public class LevelEditorManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI displayText;
 
+    [Header("Miscellaneous")]
+    [SerializeField]
+    Transform editorObjectParent;
+
     // DEBUG: these fields are public only so I can verify stuff in the inspector.
     // This field should be made private
     public Tile selectedTile;
@@ -51,9 +65,17 @@ public class LevelEditorManager : MonoBehaviour
     [SerializeField]
     EditMode editMode = EditMode.ADD;
 
+    [SerializeField]
+    SelectTarget selectTarget = SelectTarget.INTERACTABLE;
+
     public Tilemap targetTilemap;
 
     bool selectingTile = false;
+    GameObject editorObj;
+
+    [Header("EditorControllers")]
+    [SerializeField]
+    FruitEditorController fruitEditorController;
 
     public void TestLevel()
     {
@@ -79,20 +101,24 @@ public class LevelEditorManager : MonoBehaviour
 
     public void AddMode()
     {
+        DisableAllControllers();
         ToggleTileSelectPanel();
         editMode = EditMode.ADD;
     }
 
     public void SelectMode()
     {
+        DisableAllControllers();
+        if (editMode == EditMode.SELECT)
+            selectTarget = (SelectTarget)(
+                ((int)selectTarget + 1) % Enum.GetValues(typeof(SelectTarget)).Length
+            );
+        else
+            selectTarget = SelectTarget.INTERACTABLE;
         editMode = EditMode.SELECT;
         CLoseTileSelectPanel();
-    }
-
-    public void EraseMode()
-    {
-        editMode = EditMode.ERASE;
-        CLoseTileSelectPanel();
+        displayImage.color = new(1, 1, 1, 0);
+        displayText.text = selectTarget.ToString().ToLower();
     }
 
     void OpenTileSelectPanel()
@@ -135,25 +161,79 @@ public class LevelEditorManager : MonoBehaviour
             TileType.SUPPORT => support_e,
             TileType.WALKABLE or _ => walkables_e
         };
+        editorObj = tsb.EditorObj;
         displayImage.sprite = tsb.GetComponent<Image>().sprite;
         displayImage.color = tsb.GetComponent<Image>().color;
         displayText.text = tsb.GetComponentInChildren<TextMeshProUGUI>().text;
     }
 
-    public void PlaceTileOnCell()
+    public void OnClick()
     {
         // first, determine the location of the click
-
         Vector3Int mouseCellCoords = grid.WorldToCell(
             Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
         );
         // verify that the click is in bounds
         if (
-            mouseCellCoords.x >= SaveManager.X_BOUND_LEFT
-            && mouseCellCoords.x <= SaveManager.X_BOUND_RIGHT
-            && mouseCellCoords.y >= SaveManager.Y_BOUND_BOTTOM
-            && mouseCellCoords.y <= SaveManager.Y_BOUND_TOP
+            !(
+                mouseCellCoords.x >= SaveManager.X_BOUND_LEFT
+                && mouseCellCoords.x <= SaveManager.X_BOUND_RIGHT
+                && mouseCellCoords.y >= SaveManager.Y_BOUND_BOTTOM
+                && mouseCellCoords.y <= SaveManager.Y_BOUND_TOP
+            )
         )
-            targetTilemap.SetTile(mouseCellCoords, selectedTile);
+            return;
+        switch (editMode)
+        {
+            case EditMode.ADD:
+                PlaceTileOnCell(mouseCellCoords);
+                break;
+            case EditMode.SELECT:
+                SelectInteractable(mouseCellCoords);
+                break;
+        }
+    }
+
+    void PlaceTileOnCell(Vector3Int mouseCellCoords)
+    {
+        targetTilemap.SetTile(mouseCellCoords, selectedTile);
+        if (editorObj != null)
+        {
+            Instantiate(
+                editorObj,
+                grid.CellToWorld(mouseCellCoords) + new Vector3(0.5f, 0.5f, 0),
+                quaternion.identity,
+                editorObjectParent
+            );
+        }
+    }
+
+    void DisableAllControllers()
+    {
+        fruitEditorController.gameObject.SetActive(false);
+    }
+
+    void SelectInteractable(Vector3Int mouseCellCoords)
+    {
+        DisableAllControllers();
+        if (!(interactable_e.HasTile(mouseCellCoords) || support_e.HasTile(mouseCellCoords)))
+            return;
+        EditorIdentity ei = selectTarget switch
+        {
+            SelectTarget.SUPPORT => EditorIdentity.SUPPORT,
+            SelectTarget.INTERACTABLE or _ => EditorIdentity.INTERACTABLE,
+        };
+
+        EditorElement ee = SaveManager.GetEditorElementAtCoord(
+            ei,
+            new(mouseCellCoords.x, mouseCellCoords.y)
+        );
+        if (ee == null)
+            return;
+        if (ee.GetType() == typeof(FruitEditor))
+        {
+            fruitEditorController.gameObject.SetActive(true);
+            fruitEditorController.SelectFruit((FruitEditor)ee);
+        }
     }
 }
