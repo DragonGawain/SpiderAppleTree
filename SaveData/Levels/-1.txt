@@ -133,16 +133,16 @@
                 "x": -1,
                 "y": 8
             },
-            "length": 8,
+            "length": 9,
             "direction": 2
         },
         {
             "Coord": {
-                "x": 2,
+                "x": 4,
                 "y": 4
             },
             "length": 3,
-            "direction": 2
+            "direction": 0
         },
         {
             "Coord": {

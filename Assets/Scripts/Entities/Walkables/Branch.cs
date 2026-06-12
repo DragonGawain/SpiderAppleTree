@@ -10,6 +10,7 @@ using System.Linq;
 
 enum BranchType
 {
+    NORMAL, // no special effects
     HEAVY, // can cause cascading breaks
     WEBBED, // does not consider player weight!
 }

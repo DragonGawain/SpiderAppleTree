@@ -180,7 +180,16 @@
 - The selected entity icon now also shows which tilemap is being actively targeted when in select mode.
 - Started work on editor controllers/what happens when you click on an editable entity in the level editor
 
-## June 09 2029
+## June 09 2026
 
 - Continued working on editor controllers (really just the `FruitEditorController`, but I'm building the system to be able to expand to handle all potential editor controllers easily)
 - Fruit editor controller working!
+
+## June 10 2026
+
+- Got chatGPT to create sprites for hollow and web logs (yes this was a pain and required editing. In the future, only sak chatGPT for a single sprite at a time)
+- Converted scanning for branches to use a regex instead of a strict exact string comparison
+
+## June 12 2026
+
+- Updated branch discovery algorithm to find branches adjacent to trunks (including on top) as opposed to scanning the tilemap. This allows me to remove the need for source points.

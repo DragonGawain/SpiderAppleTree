@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine.Tilemaps;
 using TMPro;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 public enum LevelState
 {
@@ -170,20 +171,20 @@ public class SaveManager : MonoBehaviour
                             // body: 5
                             BuildTrunk(loc);
                             break;
-                        case "branch_src_R":
-                        case "branch_s_R":
-                            // branch src
-                            // body: 8
-                            // DIRECTION: RIGHT
-                            BuildBranch(loc, false);
-                            break;
-                        case "branch_src_L":
-                        case "branch_s_L":
-                            // alt branch src
-                            // body: 4
-                            // DIRECTION: LEFT
-                            BuildBranch(loc, true);
-                            break;
+                        // case "branch_src_R":
+                        // case "branch_s_R":
+                        //     // branch src
+                        //     // body: 8
+                        //     // DIRECTION: RIGHT
+                        //     BuildBranch(loc, false);
+                        //     break;
+                        // case "branch_src_L":
+                        // case "branch_s_L":
+                        //     // alt branch src
+                        //     // body: 4
+                        //     // DIRECTION: LEFT
+                        //     BuildBranch(loc, true);
+                        //     break;
                         // case "web_string":
                         //     break;
                         // case "web_support":
@@ -317,21 +318,113 @@ public class SaveManager : MonoBehaviour
     void BuildTrunk(Vector3Int src)
     {
         Coord coord = new(src.x, src.y);
-        int height = 1;
+        int height = 0;
+        string branchRegex = "^branch.*";
         // max height is 8
-        for (int y = src.y + 1; y <= Y_BOUND_TOP; y++)
+        for (int y = src.y; y <= Y_BOUND_TOP; y++)
         {
             if (walkablesMap_editor.HasTile(new Vector3Int(src.x, y, 0)))
             {
                 // if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_bdy")
-                if (walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name == "trunk_b")
+                if (
+                    Regex.IsMatch(
+                        walkablesMap_editor.GetTile(new Vector3Int(src.x, y, 0)).name,
+                        "^trunk"
+                    )
+                )
                 {
                     height++;
+
+                    // scan left/right of target trunk segment for branches
+                    // scan left
+                    if (walkablesMap_editor.HasTile(new Vector3Int(src.x - 1, y, 0)))
+                        if (
+                            !newLevel.GetWalkables().ContainsKey(new(src.x - 1, y))
+                            && Regex.IsMatch(
+                                walkablesMap_editor.GetTile(new Vector3Int(src.x - 1, y, 0)).name,
+                                branchRegex
+                            )
+                        )
+                            BuildBranch(new(src.x - 1, y, 0), true);
+
+                    // scan right
+                    if (walkablesMap_editor.HasTile(new Vector3Int(src.x + 1, y, 0)))
+                        if (
+                            !newLevel.GetWalkables().ContainsKey(new(src.x + 1, y))
+                            && Regex.IsMatch(
+                                walkablesMap_editor.GetTile(new Vector3Int(src.x + 1, y, 0)).name,
+                                branchRegex
+                            )
+                        )
+                            BuildBranch(new(src.x + 1, y, 0), false);
                     continue;
                 }
             }
             break;
         }
+        // after we reach the top of the tree, we scan the top
+        if (walkablesMap_editor.HasTile(new Vector3Int(src.x, height + 1, 0)))
+            if (
+                !newLevel.GetWalkables().ContainsKey(new(src.x, height + 1))
+                && Regex.IsMatch(
+                    walkablesMap_editor.GetTile(new Vector3Int(src.x, height + 1, 0)).name,
+                    branchRegex
+                )
+            )
+            {
+                int xSrc = src.x;
+                if (
+                    Regex.IsMatch(
+                        walkablesMap_editor.GetTile(new Vector3Int(src.x, height + 1, 0)).name,
+                        "alt$"
+                    )
+                )
+                {
+                    for (int x = src.x + 1; x <= X_BOUND_RIGHT; x++)
+                    {
+                        if (walkablesMap_editor.HasTile(new Vector3Int(x, height + 1, 0)))
+                        {
+                            if (
+                                Regex.IsMatch(
+                                    walkablesMap_editor
+                                        .GetTile(new Vector3Int(x, height + 1, 0))
+                                        .name,
+                                    "^branch.*alt$"
+                                )
+                            )
+                            {
+                                xSrc = x;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
+                    BuildBranch(new(xSrc, height + 1), true);
+                }
+                else
+                {
+                    for (int x = src.x - 1; x >= X_BOUND_LEFT; x--)
+                    {
+                        if (walkablesMap_editor.HasTile(new Vector3Int(x, height + 1, 0)))
+                        {
+                            if (
+                                Regex.IsMatch(
+                                    walkablesMap_editor
+                                        .GetTile(new Vector3Int(x, height + 1, 0))
+                                        .name,
+                                    "^branch.*_$"
+                                )
+                            )
+                            {
+                                xSrc = x;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
+                    BuildBranch(new(xSrc, height + 1), false);
+                }
+            }
         Debug.Log(
             "Building trunk sourced at ("
                 + coord.x
@@ -344,6 +437,11 @@ public class SaveManager : MonoBehaviour
         new Trunk(coord, height);
     }
 
+    /// <summary>
+    /// Build a branch
+    /// </summary>
+    /// <param name="src">The coordinate of the tile that is the source of the branch</param>
+    /// <param name="alt">The direction the branch is facing. false => right, true => left</param>
     void BuildBranch(Vector3Int src, bool alt)
     {
         Coord coord = new(src.x, src.y);
@@ -351,17 +449,20 @@ public class SaveManager : MonoBehaviour
         // RIGHT
         if (!alt)
         {
+            string regex = "^branch.*_$";
             for (int x = src.x + 1; x <= X_BOUND_RIGHT; x++)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
                     // if (
                     //     walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                    //     == "branch_bdy_R"
+                    //     == "branch_b_R"
                     // )
                     if (
-                        walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                        == "branch_b_R"
+                        Regex.IsMatch(
+                            walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name,
+                            regex
+                        )
                     )
                     {
                         length++;
@@ -374,17 +475,20 @@ public class SaveManager : MonoBehaviour
         // LEFT
         else
         {
+            string regex = "^branch.*alt$";
             for (int x = src.x - 1; x >= X_BOUND_LEFT; x--)
             {
                 if (walkablesMap_editor.HasTile(new Vector3Int(x, src.y, 0)))
                 {
                     // if (
                     //     walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                    //     == "branch_bdy_L"
+                    //     == "branch_b_L"
                     // )
                     if (
-                        walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name
-                        == "branch_b_L"
+                        Regex.IsMatch(
+                            walkablesMap_editor.GetTile(new Vector3Int(x, src.y, 0)).name,
+                            regex
+                        )
                     )
                     {
                         length++;
