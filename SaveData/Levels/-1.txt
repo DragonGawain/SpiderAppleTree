@@ -11,7 +11,7 @@
     "initWebCount": 0,
     "initWeight": 2,
     "initLength": 1,
-    "trunkSupport": 4,
+    "trunkSupport": 6,
     "trunks": [
         {
             "Coord": {
