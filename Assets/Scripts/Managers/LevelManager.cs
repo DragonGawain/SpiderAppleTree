@@ -140,6 +140,17 @@ public class LevelManager : MonoBehaviour
             )
             .GetComponent<Player>();
 
+        // NOTE:: ok, so, here's the dealio. This is flaky. Is a branch snaps in level creation,
+        // depending on if the tile that the player is under has been placed or not, the player may instantly die.
+        // Since trunks are loaded in before branches, if the player is on a trunk, this will never happen.
+        // I just need to be aware of this.
+
+        // HOWEVER! If a branch snaps and the player has not yet been initialized, that will cause a null ref error
+        // because the branch snapping invokes the OnGlobalBranchSnap event which only the player is subscribed to,
+        // and the player should always be subscribed to that. The error throwing is good in most cases, just not
+        // really in the initialization of the level.
+        playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
+
         // Trunk t;
         // Branch b;
         // Fruit f;
@@ -174,22 +185,23 @@ public class LevelManager : MonoBehaviour
 
         foreach (Branch b in branches)
         {
-            if (b.direction == Direction.RIGHT)
+            // HACK:: branch direction is now always RIGHT
+            // if (b.direction == Direction.RIGHT)
+            // {
+            walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
+            for (int x = 1; x < b.length; x++)
             {
-                walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
-                for (int x = 1; x < b.length; x++)
-                {
-                    walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
-                }
+                walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
             }
-            else
-            {
-                walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_L);
-                for (int x = 1; x < b.length; x++)
-                {
-                    walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
-                }
-            }
+            // }
+            // else
+            // {
+            //     walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_L);
+            //     for (int x = 1; x < b.length; x++)
+            //     {
+            //         walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
+            //     }
+            // }
             b.FindTrunkSupports();
         }
 
@@ -227,8 +239,8 @@ public class LevelManager : MonoBehaviour
         Debug.Log("Finished drawing loaded level!");
 
         // TODO:: Check if the player spawned on a branch and alter branch weight here
+        // (the player used to be initialized here - 16-10-2026 update)
 
-        playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
         activeLevel.RefreshWalkablesDirections();
 
         InputManager.EnableMovementInputs();
@@ -250,14 +262,10 @@ public class LevelManager : MonoBehaviour
 
     public void ClearBranch(Branch branch)
     {
-        int dir = branch.direction == Direction.LEFT ? -1 : 1;
         for (int i = 0; i < branch.length; i++)
         {
-            walkablesMap.SetTile(
-                new Vector3Int(branch.coord.x + (i * dir), branch.coord.y, 0),
-                null
-            );
-            numbersMap.SetTile(new Vector3Int(branch.coord.x + (i * dir), branch.coord.y, 0), null);
+            walkablesMap.SetTile(new Vector3Int(branch.coord.x + i, branch.coord.y, 0), null);
+            numbersMap.SetTile(new Vector3Int(branch.coord.x + i, branch.coord.y, 0), null);
         }
     }
 
@@ -265,18 +273,19 @@ public class LevelManager : MonoBehaviour
     {
         ClearBranch(branch);
 
-        if (branch.direction == Direction.RIGHT)
-        {
-            walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_R);
-            for (int x = 1; x < branch.length; x++)
-                walkablesMap.SetTile(new Vector3Int(branch.coord.x + x, branch.coord.y), b_bdy_R);
-        }
-        else
-        {
-            walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_L);
-            for (int x = 1; x < branch.length; x++)
-                walkablesMap.SetTile(new Vector3Int(branch.coord.x - x, branch.coord.y), b_bdy_L);
-        }
+        // HACK:: branch direction is now always RIGHT
+        // if (branch.direction == Direction.RIGHT)
+        // {
+        walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_R);
+        for (int x = 1; x < branch.length; x++)
+            walkablesMap.SetTile(new Vector3Int(branch.coord.x + x, branch.coord.y), b_bdy_R);
+        // }
+        // else
+        // {
+        //     walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_L);
+        //     for (int x = 1; x < branch.length; x++)
+        //         walkablesMap.SetTile(new Vector3Int(branch.coord.x - x, branch.coord.y), b_bdy_L);
+        // }
 
         branch.RecalculateSupports();
     }

@@ -26,7 +26,7 @@ public class Branch : IWalkable
     public readonly int length;
 
     // A branch is a single object. The direction determines in what direction it extends.
-    public readonly Direction direction;
+    // public readonly Direction direction;
 
     // Supports prevent the branch from snapping.
     // They will most often be positive, otherwise they will be pulling the branch down
@@ -64,6 +64,9 @@ public class Branch : IWalkable
     public readonly int instanceID;
     static int instanceIDTracker = 0;
 
+    [Obsolete]
+    Direction direction = Direction.RIGHT;
+
     /*
     SUPPORT MODEL
     s: support
@@ -84,7 +87,7 @@ public class Branch : IWalkable
 
         this.coord = coord;
         this.length = length;
-        this.direction = direction;
+        // this.direction = direction;
 
         rawSupports = new int[length];
         weightDeltas = new int[length];
@@ -115,6 +118,9 @@ public class Branch : IWalkable
     public Branch(Coord coord, int length, int direction, bool autoTrunkSupport = true)
         : this(coord, length, (Direction)direction, autoTrunkSupport) { }
 
+    public Branch(Coord coord, int length, bool autoTrunkSupport = true)
+        : this(coord, length, Direction.RIGHT, autoTrunkSupport) { }
+
     public bool CanWalkHorizontal(int y, Direction d) => true;
 
     public bool CanWalkVertical(int x, Direction d) =>
@@ -124,64 +130,31 @@ public class Branch : IWalkable
     {
         GameManager.DebugLog("Finding trunk supports for branch id " + instanceID);
         Coord end = GetBounds().Item2;
-        IWalkable walkable;
-        // dir = RIGHT
-        if (direction == Direction.RIGHT)
+
+        // left side
+        LevelManager
+            .GetActiveLevel()
+            .GetWalkables()
+            .TryGetValue(coord.ShiftX(-1), out IWalkable walkable);
+        if (walkable != null && walkable.GetType() == typeof(Trunk))
         {
-            // left side
-            LevelManager
-                .GetActiveLevel()
-                .GetWalkables()
-                .TryGetValue(coord.ShiftX(-1), out walkable);
-            if (walkable != null && walkable.GetType() == typeof(Trunk))
-            {
-                new TrunkSupport(
-                    coord,
-                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                    true
-                );
-                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
-            }
-            // right side
-            LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(1), out walkable);
-            if (walkable != null && walkable.GetType() == typeof(Trunk))
-            {
-                new TrunkSupport(
-                    end,
-                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                    true
-                );
-                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
-            }
+            new TrunkSupport(
+                coord,
+                LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                true
+            );
+            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
         }
-        // dir = LEFT
-        else
+        // right side
+        LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(1), out walkable);
+        if (walkable != null && walkable.GetType() == typeof(Trunk))
         {
-            // left side
-            LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(-1), out walkable);
-            if (walkable != null && walkable.GetType() == typeof(Trunk))
-            {
-                new TrunkSupport(
-                    end,
-                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                    true
-                );
-                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
-            }
-            // right side
-            LevelManager
-                .GetActiveLevel()
-                .GetWalkables()
-                .TryGetValue(coord.ShiftX(1), out walkable);
-            if (walkable != null && walkable.GetType() == typeof(Trunk))
-            {
-                new TrunkSupport(
-                    coord,
-                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                    true
-                );
-                ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
-            }
+            new TrunkSupport(
+                end,
+                LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                true
+            );
+            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
         }
 
         // underneath
@@ -472,7 +445,8 @@ public class Branch : IWalkable
                 LevelManager.GetActiveLevel().RemoveWalkable(this);
                 levelManager.ClearBranch(this);
 
-                int dir = direction == Direction.LEFT ? -1 : 1;
+                // DELETE_ME int dir = direction == Direction.LEFT ? -1 : 1;
+
 
                 // Step 1: set up for the creation of up to 3 new branches (left, mid (falling), right)
                 Branch leftBranch,
@@ -498,31 +472,26 @@ public class Branch : IWalkable
                 {
                     // create leftBranch piece, only if it would exist.
                     // We don't assume the entire branch falls if this is false because it's possible that the only supports are on the right
-                    leftBranch = new(coord, seg - 1, direction);
+                    leftBranch = new(coord, seg - 1);
                     OnBranchSnap?.Invoke(
                         leftBranch.coord,
-                        new(
-                            leftBranch.coord.x + ((leftBranch.length - 1) * dir),
-                            leftBranch.coord.y
-                        ),
+                        new(leftBranch.coord.x + (leftBranch.length - 1), leftBranch.coord.y),
                         leftBranch
                     );
                     levelManager.RefreshBranch(leftBranch);
                     leftBranch.RefreshInteractables();
                 }
+                // middle section is the falling section!
                 int midLength = seg;
-                Coord onceLeft = new(coord.x + ((midLength - 1) * dir), coord.y);
-                // we only add the coordinate one to the 'left' of the snap point if it is part of the snapped branch
-                if (
-                    (coord.x <= onceLeft.x && GetBounds().Item2.x >= onceLeft.x)
-                    || (coord.x >= onceLeft.x && GetBounds().Item2.x <= onceLeft.x)
-                )
+                Coord onceLeft = new(coord.x + (midLength - 1), coord.y);
+                // we only add the coordinate one to the left of the snap point if it is part of the snapped branch
+                if (coord.x <= onceLeft.x && onceLeft.x <= GetBounds().Item2.x)
                     midBranchSegments.Add(onceLeft);
                 // Add segments to the falling piece until a value that is greater than 0 is found.
                 // Add that segment, then check for supports to the right
-                for (midLength = seg; midLength < length; midLength++)
+                for (; midLength < length; midLength++)
                 {
-                    midBranchSegments.Add(new(coord.x + (midLength * dir), coord.y));
+                    midBranchSegments.Add(new(coord.x + midLength, coord.y));
                     if (actualWeight[midLength] > 0)
                         break;
                 }
@@ -534,7 +503,7 @@ public class Branch : IWalkable
                 if (!right)
                 {
                     for (; midLength < length; midLength++)
-                        midBranchSegments.Add(new(coord.x + (midLength * dir), coord.y));
+                        midBranchSegments.Add(new(coord.x + midLength, coord.y));
                 }
                 // If yes, create the right segment
                 else
@@ -543,15 +512,11 @@ public class Branch : IWalkable
                     if (length - midLength > 0)
                     {
                         // create rightBranch piece
-                        rightBranch = new(
-                            new(coord.x + (midLength * dir), coord.y),
-                            length - midLength,
-                            direction
-                        );
+                        rightBranch = new(new(coord.x + midLength, coord.y), length - midLength);
                         OnBranchSnap?.Invoke(
                             rightBranch.coord,
                             new(
-                                rightBranch.coord.x + ((rightBranch.length - 1) * dir),
+                                rightBranch.coord.x + (rightBranch.length - 1),
                                 rightBranch.coord.y
                             ),
                             rightBranch
@@ -751,6 +716,11 @@ public class Branch : IWalkable
 
                 LevelManager.GetActiveLevel().RemoveElementFromLevel(this);
                 OnGlobalBranchSnap.Invoke();
+                GameManager.DebugLog(
+                    "<color=red>Branch snap completed successfully. A branch with original origin of "
+                        + coord
+                        + " been snapped and recalculated.</color>"
+                );
                 return true;
             }
         }
@@ -798,13 +768,12 @@ public class Branch : IWalkable
 
         GameManager.DebugLog("Updating branch with id " + instanceID);
 
-        int dir = direction == Direction.LEFT ? -1 : 1;
         for (int i = 0; i < length; i++)
         {
             GameManager
                 .GetManagerSingleton()
                 .GetComponent<LevelManager>()
-                .UpdateWeightMap(new Coord(coord.x + (i * dir), coord.y), actualWeight[i]);
+                .UpdateWeightMap(new Coord(coord.x + i, coord.y), actualWeight[i]);
         }
     }
 
@@ -813,12 +782,9 @@ public class Branch : IWalkable
         // TODO:: for 'heavy branches' (if they become a thing), this is how they will snap all the branches it collides with as it falls
     }
 
-    int CoordToSegmentIndex(Coord crd) =>
-        direction == Direction.LEFT ? coord.x - crd.x : crd.x - coord.x;
+    int CoordToSegmentIndex(Coord crd) => crd.x - coord.x;
 
-    Coord SegmentIndexToCoord(int index) =>
-        direction == Direction.LEFT ? new(coord.x - index, coord.y) : new(coord.x + index, coord.y);
+    Coord SegmentIndexToCoord(int index) => new(coord.x + index, coord.y);
 
-    public (Coord, Coord) GetBounds() =>
-        (coord, new(coord.x + ((length - 1) * (direction == Direction.LEFT ? -1 : 1)), coord.y));
+    public (Coord, Coord) GetBounds() => (coord, new(coord.x + length - 1, coord.y));
 }

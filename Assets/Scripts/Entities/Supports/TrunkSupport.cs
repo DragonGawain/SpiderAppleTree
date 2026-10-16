@@ -1,3 +1,6 @@
+/// <summary>
+/// This support is for trunk supports that support branch segments that are horizontally adjacent to the trunk segment.
+/// </summary>
 public class TrunkSupport : ISupport
 {
     readonly Branch branch;

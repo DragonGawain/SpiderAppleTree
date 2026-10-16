@@ -11,7 +11,8 @@ public class BranchAdapter : IJsonAdapter<Branch>
         context.Writer.WriteKey("Coord");
         context.SerializeValue(value.coord);
         context.Writer.WriteKeyValue("length", value.length);
-        context.Writer.WriteKeyValue("direction", (int)value.direction);
+        // DELETE
+        context.Writer.WriteKeyValue("direction", 2);
 
         IEnumerable<IGrouping<Type, ISupport>> supports = value.supportsList.GroupBy(
             s => s.GetType()

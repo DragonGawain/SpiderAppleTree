@@ -152,11 +152,11 @@
         },
         {
             "Coord": {
-                "x": 4,
+                "x": 2,
                 "y": 4
             },
             "length": 3,
-            "direction": 0
+            "direction": 2
         },
         {
             "Coord": {

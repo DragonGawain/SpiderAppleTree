@@ -193,3 +193,8 @@
 ## June 12 2026
 
 - Updated branch discovery algorithm to find branches adjacent to trunks (including on top) as opposed to scanning the tilemap. This allows me to remove the need for source points.
+
+## Oct 16 2026
+
+- I return to this project! I was encouraged to return to it during the Concordia COsmic Jam (for which I was a mentor).
+- This update mostly removes left facing branches. The direction is still there for legacy things, but will soon be removed fully.
