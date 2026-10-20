@@ -23,4 +23,6 @@ public class HangingWebString : ISupport
     {
         throw new System.NotImplementedException();
     }
+
+    public SupportType GetSupportType() => SupportType.HANGING_WEB_STRING;
 }

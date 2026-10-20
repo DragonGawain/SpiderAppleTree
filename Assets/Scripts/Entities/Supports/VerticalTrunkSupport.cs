@@ -43,4 +43,6 @@ public class VerticalTrunkSupport : ISupport
         if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
             this.branch.RemoveSupport(this);
     }
+
+    public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT_V;
 }

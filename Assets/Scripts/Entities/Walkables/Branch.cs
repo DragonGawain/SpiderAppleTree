@@ -64,9 +64,6 @@ public class Branch : IWalkable
     public readonly int instanceID;
     static int instanceIDTracker = 0;
 
-    [Obsolete]
-    Direction direction = Direction.RIGHT;
-
     /*
     SUPPORT MODEL
     s: support

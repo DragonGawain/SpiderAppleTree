@@ -185,23 +185,10 @@ public class LevelManager : MonoBehaviour
 
         foreach (Branch b in branches)
         {
-            // HACK:: branch direction is now always RIGHT
-            // if (b.direction == Direction.RIGHT)
-            // {
             walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
             for (int x = 1; x < b.length; x++)
-            {
                 walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
-            }
-            // }
-            // else
-            // {
-            //     walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_L);
-            //     for (int x = 1; x < b.length; x++)
-            //     {
-            //         walkablesMap.SetTile(new Vector3Int(b.coord.x - x, b.coord.y), b_bdy_L);
-            //     }
-            // }
+
             b.FindTrunkSupports();
         }
 
@@ -273,19 +260,9 @@ public class LevelManager : MonoBehaviour
     {
         ClearBranch(branch);
 
-        // HACK:: branch direction is now always RIGHT
-        // if (branch.direction == Direction.RIGHT)
-        // {
         walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_R);
         for (int x = 1; x < branch.length; x++)
             walkablesMap.SetTile(new Vector3Int(branch.coord.x + x, branch.coord.y), b_bdy_R);
-        // }
-        // else
-        // {
-        //     walkablesMap.SetTile(new Vector3Int(branch.coord.x, branch.coord.y), b_src_L);
-        //     for (int x = 1; x < branch.length; x++)
-        //         walkablesMap.SetTile(new Vector3Int(branch.coord.x - x, branch.coord.y), b_bdy_L);
-        // }
 
         branch.RecalculateSupports();
     }
@@ -358,7 +335,8 @@ public readonly struct Coord
     // override object.GetHashCode
     public override int GetHashCode()
     {
-        // TODO: write your implementation of GetHashCode() here
+        // This assumes that I'llnever have a level that is 100 tiles tall.
+        // This is a reasonable assumption.
         return x * 100 + y;
     }
 }

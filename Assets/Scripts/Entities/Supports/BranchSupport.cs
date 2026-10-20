@@ -26,4 +26,6 @@ public class BranchSupport : ISupport
     {
         throw new System.NotImplementedException();
     }
+
+    public SupportType GetSupportType() => SupportType.BRANCH_SUPPORT;
 }

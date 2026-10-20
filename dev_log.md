@@ -198,3 +198,11 @@
 
 - I return to this project! I was encouraged to return to it during the Concordia COsmic Jam (for which I was a mentor).
 - This update mostly removes left facing branches. The direction is still there for legacy things, but will soon be removed fully.
+
+## Oct 20 2026
+
+- Added new dictionary to `Level.cs`for all supports.
+- Placed supports will need to be saved in the level file, but for the moment, since all my supports are from tree trunks and those are dynamically calculated, I don't need to deal with that yet.
+    - I'm thinking of changing things such that trunk supports are calculated when the level is saved to file and are then loaded in so I don't need to recalculate them.
+- Moved `SupprtType` enum to `ISupport` from `ISupportDTO`.
+- Added new method to `ISuport` interface -> all implementors must also have a `GetSupportType` method which returns an enum value.

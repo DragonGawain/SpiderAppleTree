@@ -39,6 +39,8 @@ public class TrunkSupport : ISupport
         if (coord.y == lcrd.y && lcrd.x <= coord.x && rcrd.x >= coord.x)
             this.branch.RemoveSupport(this);
     }
+
+    public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT_H;
 }
 
 public readonly struct TrunkSupportDTO : ISupportDTO
@@ -62,5 +64,5 @@ public readonly struct TrunkSupportDTO : ISupportDTO
 
     public Coord GetCoord() => coord;
 
-    public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT;
+    public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT_H;
 }
