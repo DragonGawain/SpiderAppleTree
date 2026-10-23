@@ -421,6 +421,7 @@ public class Branch : IWalkable
         }
     }
 
+    // TODO:: Instead of a branch falling all at once, it should fall downwards one cell every turn until it rests on in its target position.
     bool BranchSnapCheck(List<int> supportIndices)
     {
         for (int seg = 0; seg < length; seg++)

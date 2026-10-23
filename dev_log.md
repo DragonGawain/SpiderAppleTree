@@ -206,3 +206,11 @@
     - I'm thinking of changing things such that trunk supports are calculated when the level is saved to file and are then loaded in so I don't need to recalculate them.
 - Moved `SupprtType` enum to `ISupport` from `ISupportDTO`.
 - Added new method to `ISuport` interface -> all implementors must also have a `GetSupportType` method which returns an enum value.
+
+## Oct 23 2026
+
+- Last night I got the excellent feedback of "who cares about real life physics? Just make the mechanics the way you want to!" at the IGA playtest. It truly was excellent feedback!
+- Increased player scale from 0.35 to 0.5
+- Changed how the level detects trunks and branches.
+    - Instead of switching on tile name, I am scanning each cell and comparing the name to a regex (or rather, a set of regexes in an IF stack)
+    - To prevent duplicates from being added (i.e. detecting different segments of the same trunk/branch as unique), I introduced a placement matrix. This is a 2D array that contains a cell for every tile on the tilemap. If an entity is detected in a tile, every tile that walkabale occupies is reflected in the placementMatrix. If the placementMatrix detects that a walkabale already exists in a particular cell, that tile is not checked for a walkable.

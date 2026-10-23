@@ -241,3 +241,7 @@ _scene changes to background of spider with a bindle in front of a tall tree_ "A
 - To make my coding life a bit easier, the tree is somewhat magical! When a bridge is formed between branches, the tree springs to life and ties the branch segments together, making a new branch.
     - The alternative is that if you have a bridge being supported from both sides and one side snaps, then I'd need what was once the bridge to fall as well, and that sounds somewhat complicated. S
     - So for now at least, I'm just going to have it all merge into a single cohesive branch, and if I need to change that in the future, so be it.
+
+# oct 22 2026 - IGA playtest fest feedback
+
+- I can do whatever I want, as long as I indicate it.
