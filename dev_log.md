@@ -214,3 +214,12 @@
 - Changed how the level detects trunks and branches.
     - Instead of switching on tile name, I am scanning each cell and comparing the name to a regex (or rather, a set of regexes in an IF stack)
     - To prevent duplicates from being added (i.e. detecting different segments of the same trunk/branch as unique), I introduced a placement matrix. This is a 2D array that contains a cell for every tile on the tilemap. If an entity is detected in a tile, every tile that walkabale occupies is reflected in the placementMatrix. If the placementMatrix detects that a walkabale already exists in a particular cell, that tile is not checked for a walkable.
+
+## Oct 25 2026
+
+- Updated LevelEditorManager to close all EditorObjects (i.e. fruit editors) when a level is tested.
+- Fully removed Direction field from Branch.
+- Changed how the IsWalkable check works. Instead of storing "this walkable can be walked on from the left", I now store "this walkabale can be walked on if it is the target location and the player is moving right". Semantically, these two checks are identical (to be walking from the left side, the player will be moving right). The difference is that the inversion happens at the source of walkability instead of needing to invert the movement direction.
+- Added ability to log warnings and errors via the `GameManager.DebugLog` method.
+- Cleaned up branch weight calculations a LOT
+- Fixed bug in the LevelEditorManager that made it so that you could not edit the values of interactables because the edit fields would disappear onclick. Added boolean that prevents disabling editor fields if the mouse is hovering one of them.

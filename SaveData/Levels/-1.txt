@@ -166,7 +166,7 @@
                 "y": 5
             },
             "weight": 2,
-            "dweight": 0,
+            "dweight": 1,
             "dweb": 0,
             "needed": true
         }

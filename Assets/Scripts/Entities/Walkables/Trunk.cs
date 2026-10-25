@@ -19,6 +19,11 @@ public class Trunk : IWalkable
         for (int i = coord.y; i < coord.y + height; i++)
             LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
 
+        // When a level is loaded, the last step is to refresh the walkable directions.
+        // For trunks, this means clearing all the walkable directions and rebuilding them.
+        // So, why am I adding these walkable directions here?
+        // The only reason I can think of is if I create new trunks mid-level...
+        // But in that case, wouldn't I generally want to refresh all the walkables anyway?
         horizontalWalkables.Add((coord.y, Direction.LEFT));
         horizontalWalkables.Add((coord.y, Direction.RIGHT));
 

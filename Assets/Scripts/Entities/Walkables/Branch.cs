@@ -13,6 +13,7 @@ enum BranchType
     NORMAL, // no special effects
     HEAVY, // can cause cascading breaks
     WEBBED, // does not consider player weight!
+    HOLLOW, // Lands on top of other branches (as opposed to merging with them)
 }
 
 public class Branch : IWalkable
@@ -78,13 +79,12 @@ public class Branch : IWalkable
     b b S b b b S b b S b
     */
 
-    public Branch(Coord coord, int length, Direction direction, bool autoTrunkSupport = true)
+    public Branch(Coord coord, int length, bool autoTrunkSupport = true)
     {
         instanceID = instanceIDTracker++;
 
         this.coord = coord;
         this.length = length;
-        // this.direction = direction;
 
         rawSupports = new int[length];
         weightDeltas = new int[length];
@@ -92,12 +92,9 @@ public class Branch : IWalkable
         actualWeight = new float[length];
 
         LevelManager.GetActiveLevel().AddNewElementToLevel(this);
-        if (direction == Direction.RIGHT)
-            for (int i = coord.x; i < coord.x + length; i++)
-                LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
-        else
-            for (int i = coord.x; i > coord.x - length; i--)
-                LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
+
+        for (int i = coord.x; i < coord.x + length; i++)
+            LevelManager.GetActiveLevel().AddWalkable(new Coord(i, coord.y), this);
 
         if (autoTrunkSupport)
             FindTrunkSupports();
@@ -106,29 +103,20 @@ public class Branch : IWalkable
         // Prefab would only be used for animations. But, animated tiles exist, so I might use those instead.
     }
 
-    public Branch(int x, int y, int length, Direction direction, bool autoTrunkSupport = true)
-        : this(new Coord(x, y), length, direction, autoTrunkSupport) { }
-
-    public Branch(int x, int y, int length, int direction, bool autoTrunkSupport = true)
-        : this(new Coord(x, y), length, (Direction)direction, autoTrunkSupport) { }
-
-    public Branch(Coord coord, int length, int direction, bool autoTrunkSupport = true)
-        : this(coord, length, (Direction)direction, autoTrunkSupport) { }
-
-    public Branch(Coord coord, int length, bool autoTrunkSupport = true)
-        : this(coord, length, Direction.RIGHT, autoTrunkSupport) { }
+    public Branch(int x, int y, int length, bool autoTrunkSupport = true)
+        : this(new Coord(x, y), length, autoTrunkSupport) { }
 
     public bool CanWalkHorizontal(int y, Direction d) => true;
 
     public bool CanWalkVertical(int x, Direction d) =>
-        d == Direction.DOWN && verticalWalkables.Contains(x);
+        d == Direction.UP && verticalWalkables.Contains(x);
 
     public void FindTrunkSupports(bool addVerticalConections = false)
     {
         GameManager.DebugLog("Finding trunk supports for branch id " + instanceID);
         Coord end = GetBounds().Item2;
 
-        // left side
+        // left side of branch
         LevelManager
             .GetActiveLevel()
             .GetWalkables()
@@ -140,9 +128,9 @@ public class Branch : IWalkable
                 LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
                 true
             );
-            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
+            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
         }
-        // right side
+        // right side of branch
         LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(1), out walkable);
         if (walkable != null && walkable.GetType() == typeof(Trunk))
         {
@@ -151,7 +139,7 @@ public class Branch : IWalkable
                 LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
                 true
             );
-            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
+            ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
         }
 
         // underneath
@@ -159,6 +147,8 @@ public class Branch : IWalkable
         int maxX = end.x;
 
         // in place swap
+        // Since branches now always face right, this in place swap should no longer be needed.
+        // I'll leave it in as a safeguard though.
         if (minX > maxX)
         {
             maxX -= minX;
@@ -174,6 +164,7 @@ public class Branch : IWalkable
                 .TryGetValue(new(x, coord.y - 1), out walkable);
             if (walkable != null && walkable.GetType() == typeof(Trunk))
             {
+                // TODO:: change to veritcal trunk support
                 new TrunkSupport(
                     new(x, coord.y),
                     LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
@@ -219,22 +210,13 @@ public class Branch : IWalkable
 
         // forward pass (doesn't matter which side is "forward" and which is "backward")
         for (int i = 1; i < length; i++)
-        {
             if (rawSupports[i] == 0)
-            {
                 calculatededSupports[i] = calculatededSupports[i - 1] - 1;
-            }
-        }
 
         // backward pass
         for (int i = length - 2; i >= 0; i--)
-        {
             if (rawSupports[i] == 0 && calculatededSupports[i] < calculatededSupports[i + 1])
-            {
-                calculatededSupports[i] =
-                    Math.Max(calculatededSupports[i + 1], calculatededSupports[i]) - 1;
-            }
-        }
+                calculatededSupports[i] = calculatededSupports[i + 1] - 1;
 
         RecalculateActualWeight();
     }
@@ -276,131 +258,86 @@ public class Branch : IWalkable
                 supportIndices.Add(i);
         }
 
-        bool singleSupport = supportIndices.Count == 1;
+        int currentSupportIndexIndex = 0;
 
-        // GameManager.DebugLog(
-        //     "<color=orange>nb supports for branch of id: "
-        //         + instanceID
-        //         + " => "
-        //         + supportIndices.Count
-        //         + ".</color>"
-        // );
+        // These are the indices of the segment with support.
+        int leftSupportIndex = -1;
+        int specialSupportIndex = -1;
+        int rightSupportIndex = supportIndices[currentSupportIndexIndex++];
 
-        // FORWARD PASS
-
-        // by default, I'm assuming all branches face to the right.
-        // This is because arrays are 0 indexed and visually described as extending to the right.
-        // If a branch is left facing, we simply flip the world coordinate. The segment index is identical.
-        int leftSupportIndex = supportIndices[0];
-        int rightSupportIndex = -1;
-        int nextSupportIndex = -1;
-        if (!singleSupport)
-            rightSupportIndex = supportIndices[1];
-        if (supportIndices.Count > 2)
-            nextSupportIndex = 2;
-
-        float half; // I don't want to need to keep recalculating the half. Division is expensive!
-
-        // Then, we scan the weightDeltas.
-        // When we find a wd, we need to determine the following:
-        // 1: are the supports to the left, the right, or both?
-        // 2: based on the closest supports, what are the segments that this weight affects?
-        for (int i = 0; i < length; i++)
+        // loop through each SEGment of the branch. seg is the index of the segment.
+        for (int seg = 0; seg < length; seg++)
         {
-            // If the current segment is the right support segment, shift over the registered support indices
-            if (!singleSupport) // short circuit
+            // We start scanning the branch. Since all branches face right,
+            // we know that we start at the leftmost segment and move to the right.
+
+            // Step 1: Determine the supports for this branch segment.
+            // There are 4 cases:
+            // Cases are determined by two factors: support(s) in direction (L/R), branch segment has a support (on/off)
+            // Depending on the case, we calculate as either SINGLE, DUAL, or DUAL_SPEC
+            // Case 1: Only left support (off)                  (SINGLE)
+            // Case 2: Only right support (off)                 (SINGLE)
+            // Case 3: Support to both left and right (off)     (DUAL)
+            // Case 4: ~~Support to either left or right~~ (on) (DUAL_SPEC)
+
+            // Do the index shuffle!
+            // If there was a special, shift it to the left
+            if (specialSupportIndex != -1)
             {
-                if (i == rightSupportIndex)
-                {
-                    leftSupportIndex = i;
-                    if (nextSupportIndex == -1)
-                        singleSupport = true;
-                    else
-                    {
-                        GameManager.DebugLog("DOT: " + nextSupportIndex);
-                        rightSupportIndex = supportIndices[nextSupportIndex++];
-                        nextSupportIndex =
-                            supportIndices.Count == nextSupportIndex ? -1 : nextSupportIndex;
-                    }
-                }
+                leftSupportIndex = specialSupportIndex;
+                specialSupportIndex = -1;
             }
-            // weight delta found!
-            if (weightDeltas[i] > 0)
+            // If the right support index is the current support index, shuffle the indices
+            if (rightSupportIndex == seg)
             {
-                // step 1: determine load bearing supports
-                if (singleSupport)
-                {
-                    // only leftSupportIndex matters
-                    for (int j = leftSupportIndex; j <= i; j++)
-                        actualWeight[j] -= weightDeltas[i];
-                }
-                else
-                {
-                    // half weight moves to both supports
-                    half = weightDeltas[i] / 2f;
-                    // If the weight is on the mid-support, the weight should only apply to the supported segment.
-                    // The weight should still be halved though due to the existance of a support farther down the branch.
-                    // If there were no other supports to the right, singleSupport would be true.
-                    if (i == leftSupportIndex)
-                        actualWeight[i] -= half;
-                    else
-                        for (int j = leftSupportIndex; j <= rightSupportIndex; j++)
-                            actualWeight[j] -= half;
-                }
+                specialSupportIndex = rightSupportIndex;
+                rightSupportIndex =
+                    supportIndices.Count > currentSupportIndexIndex
+                        ? supportIndices[currentSupportIndexIndex++]
+                        : -1;
+            }
+
+            // We need to do the index shuffle for every branch segment,
+            // but beyond this point, we only care about segments with a positive weight delta.
+            if (weightDeltas[seg] == 0)
+                continue;
+
+            // Case 4: On a support => DUAL_SPEC (half weight to ONLY the supported segment)
+            if (specialSupportIndex != -1)
+            {
+                // Apply half the weight to this segment only. No cascading!
+                actualWeight[seg] -= weightDeltas[seg] / 2f;
+            }
+            // Case 3: Support to both sides. Not on a support. => DUAL
+            else if (leftSupportIndex != -1 && rightSupportIndex != -1)
+            {
+                float half = weightDeltas[seg] / 2f;
+                for (int i = leftSupportIndex; i <= rightSupportIndex; i++)
+                    actualWeight[i] -= half;
+            }
+            // Case 2: Support only to the right (SINGLE)
+            else if (leftSupportIndex == -1 && rightSupportIndex != -1)
+            {
+                for (int i = seg; i <= rightSupportIndex; i++)
+                    actualWeight[i] -= weightDeltas[seg];
+            }
+            // Case 1: Support only to the left ((SINGLE))
+            else if (leftSupportIndex != -1 && rightSupportIndex == -1)
+            {
+                for (int i = leftSupportIndex; i <= seg; i++)
+                    actualWeight[i] -= weightDeltas[seg];
+            }
+            else
+            {
+                GameManager.DebugLog(
+                    $"A branch segment without any supports has been found at coord {coord}.",
+                    GameManager.LogType.ERROR
+                );
             }
         }
 
-        // BACKWARD PASS
-        // Account for supports that are supporting segments to their left.
-        // i.e. what if a branch only has one support and it's not at index 0?
-        rightSupportIndex = supportIndices[^1]; // this should be referencing the rightmost support
-        leftSupportIndex = -1;
-        nextSupportIndex = -1;
-
-        singleSupport = supportIndices.Count == 1;
-        if (!singleSupport)
-            leftSupportIndex = supportIndices[^2];
-        if (supportIndices.Count > 2)
-            nextSupportIndex = 3;
-
-        // Then, we scan the weightDeltas.
-        // When we find a wd, we need to determine the following:
-        // 1: are the supports to the left, the right, or both?
-        // 2: based on the closest supports, what are the segments that this weight affects?
-        for (int i = length - 1; i >= 0; i--)
-        {
-            // If the current segment is the LEFT support segment, shift over the registered support indices
-            if (!singleSupport) // short circuit
-            {
-                if (i == leftSupportIndex)
-                {
-                    rightSupportIndex = i;
-                    if (nextSupportIndex == -1)
-                        singleSupport = true;
-                    else
-                    {
-                        leftSupportIndex = supportIndices[^nextSupportIndex];
-                        nextSupportIndex =
-                            supportIndices.Count > nextSupportIndex ? nextSupportIndex + 1 : -1;
-                    }
-                }
-            }
-            // weight delta found!
-            if (weightDeltas[i] > 0)
-            {
-                // step 1: determine load bearing supports
-                // We don't want to factor in if the weight is directly on the support segment.
-                // That has already been accounted for in the forward pass.
-                if (singleSupport && i != rightSupportIndex)
-                {
-                    // only rightSupportIndex matters
-                    for (int j = rightSupportIndex; j >= i; j--)
-                        actualWeight[j] -= weightDeltas[i];
-                }
-                // If it is NOT single support, then the weight has already been factored in during the forward pass!
-            }
-        }
-
+        // Old notes
+        // ----------
         // TODO:: verify mid-support true minimum accepted weights
         // This means that if a mid support has a support value of X, the neighbouring segments should display a maximum capacity of X as well.
         // (I'm not doing this now. Set this up when mid-supports start to exist for real)
@@ -411,6 +348,7 @@ public class Branch : IWalkable
 
         // TODO:: Determine if branch should snap
         // This check should be disabled during level load and only activated once level load is completed.
+        // ----------
 
         // If we are creating the level, we shouldn't update the weight map
         // We should also only check for branch snapping if we are not saving/loading a level.
@@ -421,7 +359,8 @@ public class Branch : IWalkable
         }
     }
 
-    // TODO:: Instead of a branch falling all at once, it should fall downwards one cell every turn until it rests on in its target position.
+    // TODO:: Instead of a branch falling all at once, it should fall downwards two cells every turn until it rests on in its target position.
+    // Branches fall two cells at a time because webrella would go down 1 cell at a time, and branches should fall faster than the webrella
     bool BranchSnapCheck(List<int> supportIndices)
     {
         for (int seg = 0; seg < length; seg++)
@@ -591,12 +530,7 @@ public class Branch : IWalkable
                     if (walkables.Any(w => w.GetType() == typeof(Trunk)))
                     {
                         y++;
-                        midBranch = new(
-                            new(minX, y),
-                            midBranchSegments.Count,
-                            Direction.RIGHT,
-                            false
-                        );
+                        midBranch = new(new(minX, y), midBranchSegments.Count, false);
                         midBranch.FindTrunkSupports(true);
                     }
                     // Otherwise, we haven't landed on a trunk.
@@ -688,7 +622,6 @@ public class Branch : IWalkable
                         midBranch = new(
                             fallenMidBranchSegments[0],
                             fallenMidBranchSegments.Count,
-                            Direction.RIGHT,
                             false
                         );
                         foreach (ISupport s in midSupports)

@@ -61,6 +61,7 @@ public class LevelEditorManager : MonoBehaviour
     // DEBUG: these fields are public only so I can verify stuff in the inspector.
     // This field should be made private
     public Tile selectedTile;
+    public bool editingValues = false;
 
     [SerializeField]
     EditMode editMode = EditMode.ADD;
@@ -85,7 +86,8 @@ public class LevelEditorManager : MonoBehaviour
         testLevelB.SetActive(false);
         editModeGroup.SetActive(false);
         contEditB.SetActive(true);
-        CLoseTileSelectPanel();
+        CloseTileSelectPanel();
+        DisableAllControllers();
     }
 
     public void ContinueEditingLevel()
@@ -116,7 +118,7 @@ public class LevelEditorManager : MonoBehaviour
         else
             selectTarget = SelectTarget.INTERACTABLE;
         editMode = EditMode.SELECT;
-        CLoseTileSelectPanel();
+        CloseTileSelectPanel();
         displayImage.color = new(1, 1, 1, 0);
         displayText.text = selectTarget.ToString().ToLower();
     }
@@ -127,7 +129,7 @@ public class LevelEditorManager : MonoBehaviour
         ToggleTileSelectPanel();
     }
 
-    void CLoseTileSelectPanel()
+    void CloseTileSelectPanel()
     {
         selectingTile = true;
         ToggleTileSelectPanel();
@@ -153,7 +155,7 @@ public class LevelEditorManager : MonoBehaviour
 
     public void SetSelectedTile(TileSelectButton tsb)
     {
-        CLoseTileSelectPanel();
+        CloseTileSelectPanel();
         selectedTile = tsb.Tile;
         targetTilemap = tsb.TileType switch
         {
@@ -215,6 +217,8 @@ public class LevelEditorManager : MonoBehaviour
 
     void SelectInteractable(Vector3Int mouseCellCoords)
     {
+        if (editingValues)
+            return;
         DisableAllControllers();
         if (!(interactable_e.HasTile(mouseCellCoords) || support_e.HasTile(mouseCellCoords)))
             return;
@@ -236,4 +240,6 @@ public class LevelEditorManager : MonoBehaviour
             fruitEditorController.SelectFruit((FruitEditor)ee);
         }
     }
+
+    public void SetEditingValues(bool val) => editingValues = val;
 }

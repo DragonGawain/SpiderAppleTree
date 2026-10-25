@@ -142,23 +142,52 @@ public class Level
                 if (walkables.TryGetValue(new Coord(x - 1, y), out w))
                 {
                     if (w.GetType() == typeof(Branch))
-                        t.AddHorizontalConnection(y, Direction.LEFT);
+                        t.AddHorizontalConnection(y, Direction.RIGHT);
                     else if (w.GetType() == typeof(Trunk))
                         if (((Trunk)w).coord.y == y)
-                            t.AddHorizontalConnection(y, Direction.LEFT);
+                            t.AddHorizontalConnection(y, Direction.RIGHT);
                 }
 
                 // RIGHT
                 if (walkables.TryGetValue(new Coord(x + 1, y), out w))
                 {
                     if (w.GetType() == typeof(Branch))
-                        t.AddHorizontalConnection(y, Direction.RIGHT);
+                        t.AddHorizontalConnection(y, Direction.LEFT);
                     else if (w.GetType() == typeof(Trunk))
                         if (((Trunk)w).coord.y == y)
-                            t.AddHorizontalConnection(y, Direction.RIGHT);
+                            t.AddHorizontalConnection(y, Direction.LEFT);
                 }
             }
         }
+
+        // List<Branch> branches = uniqueLevelElements.Where(e => e is Branch).Cast<Branch>().ToList();
+        // foreach (Branch b in branches)
+        // {
+        //     y = b.coord.y;
+        //     t.ClearHorizontalConnections();
+        //     for (y = t.coord.y + 1; y < t.coord.y + t.height; y++)
+        //     {
+        //         // LEFT
+        //         if (walkables.TryGetValue(new Coord(x - 1, y), out w))
+        //         {
+        //             if (w.GetType() == typeof(Branch))
+        //                 t.AddHorizontalConnection(y, Direction.RIGHT);
+        //             else if (w.GetType() == typeof(Trunk))
+        //                 if (((Trunk)w).coord.y == y)
+        //                     t.AddHorizontalConnection(y, Direction.RIGHT);
+        //         }
+
+        //         // RIGHT
+        //         if (walkables.TryGetValue(new Coord(x + 1, y), out w))
+        //         {
+        //             if (w.GetType() == typeof(Branch))
+        //                 t.AddHorizontalConnection(y, Direction.LEFT);
+        //             else if (w.GetType() == typeof(Trunk))
+        //                 if (((Trunk)w).coord.y == y)
+        //                     t.AddHorizontalConnection(y, Direction.LEFT);
+        //         }
+        //     }
+        // }
 
         /* Branches:: Segment is VERT walkable on side if adjacent to:
         1. web string (not made yet)
@@ -178,15 +207,17 @@ public class Level
         // Webrella auto-deactivates if you land on a walkable
         Coord targetCoord = dir switch
         {
-            Direction.UP => new(currentPos.x, currentPos.y - 1),
-            Direction.RIGHT => new(currentPos.x - 1, currentPos.y),
-            Direction.DOWN => new(currentPos.x, currentPos.y + 1),
-            Direction.LEFT => new(currentPos.x + 1, currentPos.y),
+            Direction.UP => new(currentPos.x, currentPos.y + 1),
+            Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
+            Direction.DOWN => new(currentPos.x, currentPos.y - 1),
+            Direction.LEFT => new(currentPos.x - 1, currentPos.y),
             _
                 => throw new Exception(
                     "ERROR: Attempted to move the player in an undefined Direction"
                 )
         };
+
+        GameManager.DebugLog(dir + ", " + targetCoord);
 
         // Debug.Log("Walkable at target? " + walkables.ContainsKey(targetCoord));
 

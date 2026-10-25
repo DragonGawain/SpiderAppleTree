@@ -189,7 +189,7 @@ public class LevelManager : MonoBehaviour
             for (int x = 1; x < b.length; x++)
                 walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
 
-            b.FindTrunkSupports();
+            b.FindTrunkSupports(true);
         }
 
         foreach (Fruit f in fruits)
