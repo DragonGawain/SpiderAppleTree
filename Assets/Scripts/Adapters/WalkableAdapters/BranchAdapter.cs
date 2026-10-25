@@ -11,7 +11,6 @@ public class BranchAdapter : IJsonAdapter<Branch>
         context.Writer.WriteKey("Coord");
         context.SerializeValue(value.coord);
         context.Writer.WriteKeyValue("length", value.length);
-        context.Writer.WriteKeyValue("direction", (int)value.direction);
 
         IEnumerable<IGrouping<Type, ISupport>> supports = value.supportsList.GroupBy(
             s => s.GetType()
@@ -57,7 +56,6 @@ public class BranchAdapter : IJsonAdapter<Branch>
             new(
                 context.DeserializeValue<Coord>(context.SerializedValue["Coord"]),
                 context.DeserializeValue<int>(context.SerializedValue["length"]),
-                context.DeserializeValue<int>(context.SerializedValue["direction"]),
                 false
             );
 

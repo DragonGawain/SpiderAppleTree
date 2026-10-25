@@ -148,6 +148,7 @@ public class Player : MonoBehaviour
 
         if (walkable == null)
         {
+            // TODO:: if available, webrella should automatically activate in this scenario.
             Debug.LogWarning(
                 "<color=red><b>THE PLAYER HAS DIED! SQUASHED BY A FALLING BRANCH!</b></color>"
             );

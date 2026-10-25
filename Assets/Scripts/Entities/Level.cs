@@ -12,6 +12,8 @@ public class Level
     HashSet<ILevelElement> uniqueLevelElements = new();
     Dictionary<Coord, IWalkable> walkables = new();
     Dictionary<Coord, IInteractable> interactables = new();
+    Dictionary<Coord, Dictionary<SupportType, ISupport>> supports = new();
+
     HashSet<Fruit> neededFruits = new();
     public readonly int levelID;
     InitialLevelDataContainer ldc;
@@ -40,24 +42,6 @@ public class Level
         walkables.Add(coord, walkable);
     }
 
-    public void ModifyIsWalkable(Coord oldC, Coord newC, IWalkable walkable)
-    {
-        walkables.Remove(oldC);
-        walkables.Add(newC, walkable);
-    }
-
-    public void AddInteractable(Coord coord, IInteractable interactable)
-    {
-        interactables.Add(coord, interactable);
-        uniqueLevelElements.Add(interactable);
-    }
-
-    public void RemoveInteractable(Coord coord)
-    {
-        uniqueLevelElements.Remove(interactables[coord]);
-        interactables.Remove(coord);
-    }
-
     // Alias: OnBranchSnap
     public void RemoveWalkable(IWalkable walkabale)
     {
@@ -76,6 +60,66 @@ public class Level
         else if (bounds.Item1.y > bounds.Item2.y)
             for (int y = bounds.Item2.y; y <= bounds.Item1.y; y++)
                 walkables.Remove(new(bounds.Item1.x, y));
+    }
+
+    public void ModifyIsWalkable(Coord oldC, Coord newC, IWalkable walkable)
+    {
+        walkables.Remove(oldC);
+        walkables.Add(newC, walkable);
+    }
+
+    public void AddInteractable(Coord coord, IInteractable interactable)
+    {
+        interactables.Add(coord, interactable);
+        uniqueLevelElements.Add(interactable);
+    }
+
+    public void RemoveInteractable(Coord coord)
+    {
+        uniqueLevelElements.Remove(interactables[coord]);
+        interactables.Remove(coord);
+    }
+
+    public void AddSupport(Coord coord, ISupport support)
+    {
+        // If there is no inner dict at that coord (i.e. this is the first support being added at this coord), create the inner dict.
+        if (!supports.ContainsKey(coord))
+            supports.Add(coord, new());
+
+        Dictionary<SupportType, ISupport> inner = supports[coord];
+        if (inner.ContainsKey(support.GetSupportType()))
+        {
+            GameManager.DebugLog(
+                "There is already a support of the type "
+                    + support.GetSupportType()
+                    + " at the location "
+                    + coord
+                    + "!"
+            );
+            return;
+        }
+        inner.Add(support.GetSupportType(), support);
+        uniqueLevelElements.Add(support);
+    }
+
+    // Alias. We only care about the support type for removals.
+    public void RemoveSupport(Coord coord, ISupport support) =>
+        RemoveSupport(coord, support.GetSupportType());
+
+    public void RemoveSupport(Coord coord, SupportType supportType)
+    {
+        if (!supports.ContainsKey(coord))
+        {
+            GameManager.DebugLog("There are no supports at location " + coord + "! Aborting.");
+            return;
+        }
+        Dictionary<SupportType, ISupport> inner = supports[coord];
+        uniqueLevelElements.Remove(inner[supportType]);
+        inner.Remove(supportType);
+
+        // If there are no more supports at that location, clean up the parent dictionary by removing the location.
+        if (inner.Count == 0)
+            supports.Remove(coord);
     }
 
     public void RefreshWalkablesDirections()
@@ -98,23 +142,52 @@ public class Level
                 if (walkables.TryGetValue(new Coord(x - 1, y), out w))
                 {
                     if (w.GetType() == typeof(Branch))
-                        t.AddHorizontalConnection(y, Direction.LEFT);
+                        t.AddHorizontalConnection(y, Direction.RIGHT);
                     else if (w.GetType() == typeof(Trunk))
                         if (((Trunk)w).coord.y == y)
-                            t.AddHorizontalConnection(y, Direction.LEFT);
+                            t.AddHorizontalConnection(y, Direction.RIGHT);
                 }
 
                 // RIGHT
                 if (walkables.TryGetValue(new Coord(x + 1, y), out w))
                 {
                     if (w.GetType() == typeof(Branch))
-                        t.AddHorizontalConnection(y, Direction.RIGHT);
+                        t.AddHorizontalConnection(y, Direction.LEFT);
                     else if (w.GetType() == typeof(Trunk))
                         if (((Trunk)w).coord.y == y)
-                            t.AddHorizontalConnection(y, Direction.RIGHT);
+                            t.AddHorizontalConnection(y, Direction.LEFT);
                 }
             }
         }
+
+        // List<Branch> branches = uniqueLevelElements.Where(e => e is Branch).Cast<Branch>().ToList();
+        // foreach (Branch b in branches)
+        // {
+        //     y = b.coord.y;
+        //     t.ClearHorizontalConnections();
+        //     for (y = t.coord.y + 1; y < t.coord.y + t.height; y++)
+        //     {
+        //         // LEFT
+        //         if (walkables.TryGetValue(new Coord(x - 1, y), out w))
+        //         {
+        //             if (w.GetType() == typeof(Branch))
+        //                 t.AddHorizontalConnection(y, Direction.RIGHT);
+        //             else if (w.GetType() == typeof(Trunk))
+        //                 if (((Trunk)w).coord.y == y)
+        //                     t.AddHorizontalConnection(y, Direction.RIGHT);
+        //         }
+
+        //         // RIGHT
+        //         if (walkables.TryGetValue(new Coord(x + 1, y), out w))
+        //         {
+        //             if (w.GetType() == typeof(Branch))
+        //                 t.AddHorizontalConnection(y, Direction.LEFT);
+        //             else if (w.GetType() == typeof(Trunk))
+        //                 if (((Trunk)w).coord.y == y)
+        //                     t.AddHorizontalConnection(y, Direction.LEFT);
+        //         }
+        //     }
+        // }
 
         /* Branches:: Segment is VERT walkable on side if adjacent to:
         1. web string (not made yet)
@@ -134,15 +207,17 @@ public class Level
         // Webrella auto-deactivates if you land on a walkable
         Coord targetCoord = dir switch
         {
-            Direction.UP => new(currentPos.x, currentPos.y - 1),
-            Direction.RIGHT => new(currentPos.x - 1, currentPos.y),
-            Direction.DOWN => new(currentPos.x, currentPos.y + 1),
-            Direction.LEFT => new(currentPos.x + 1, currentPos.y),
+            Direction.UP => new(currentPos.x, currentPos.y + 1),
+            Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
+            Direction.DOWN => new(currentPos.x, currentPos.y - 1),
+            Direction.LEFT => new(currentPos.x - 1, currentPos.y),
             _
                 => throw new Exception(
                     "ERROR: Attempted to move the player in an undefined Direction"
                 )
         };
+
+        GameManager.DebugLog(dir + ", " + targetCoord);
 
         // Debug.Log("Walkable at target? " + walkables.ContainsKey(targetCoord));
 

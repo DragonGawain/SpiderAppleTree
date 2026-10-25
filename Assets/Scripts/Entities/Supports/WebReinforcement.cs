@@ -13,4 +13,6 @@ public class WebReinforcement : ISupport
     {
         throw new System.NotImplementedException();
     }
+
+    public SupportType GetSupportType() => SupportType.WEB_REINFORCEMENT;
 }

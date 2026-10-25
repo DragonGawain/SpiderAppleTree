@@ -125,32 +125,28 @@
                 "x": -1,
                 "y": 4
             },
-            "length": 2,
-            "direction": 2
+            "length": 2
         },
         {
             "Coord": {
                 "x": -1,
                 "y": 8
             },
-            "length": 9,
-            "direction": 2
+            "length": 9
         },
         {
             "Coord": {
-                "x": 4,
+                "x": 2,
                 "y": 4
             },
-            "length": 3,
-            "direction": 0
+            "length": 3
         },
         {
             "Coord": {
                 "x": 6,
                 "y": 5
             },
-            "length": 2,
-            "direction": 2
+            "length": 2
         }
     ],
     "fruits": [
@@ -170,7 +166,7 @@
                 "y": 5
             },
             "weight": 2,
-            "dweight": 0,
+            "dweight": 1,
             "dweb": 0,
             "needed": true
         }

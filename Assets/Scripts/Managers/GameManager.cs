@@ -64,8 +64,31 @@ public class GameManager : MonoBehaviour
         // This is really only valuable if I don't create an undo stack.
     }
 
-    public static void DebugLog(string msg)
+    /// <summary>
+    /// Allows for console logging from non-monobehaviour classes
+    /// </summary>
+    /// <param name="msg">The message</param>
+    /// <param name="logType">Log type. 0: std, 1: warn, 2: err</param>
+    public static void DebugLog(string msg, LogType logType = LogType.STD)
     {
-        Debug.Log(msg);
+        switch (logType)
+        {
+            case LogType.STD:
+                Debug.Log(msg);
+                break;
+            case LogType.WARN:
+                Debug.LogWarning(msg);
+                break;
+            case LogType.ERROR:
+                Debug.LogError(msg);
+                break;
+        }
+    }
+
+    public enum LogType
+    {
+        STD,
+        WARN,
+        ERROR
     }
 }

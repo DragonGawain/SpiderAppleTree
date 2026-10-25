@@ -1,3 +1,8 @@
+/// <summary>
+/// The weight will be displayed by the number of leaves on the fruit. ex: 2 leaves = +2.
+/// Positive/negative can be colour/wings?
+/// (Might also consider putting the number on the fruit itself for large numbers, but that might get confusing with the branch support number...)
+/// </summary>
 public class Fruit : IInteractable
 {
     public readonly Coord coord;

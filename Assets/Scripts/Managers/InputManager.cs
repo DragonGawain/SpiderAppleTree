@@ -98,10 +98,7 @@ public class InputManager : MonoBehaviour
         if (
             LevelManager
                 .GetActiveLevel()
-                .IsWalkable(
-                    LevelManager.GetPlayerRef().GetCurentPos(),
-                    (Direction)(((int)dir + 2) % 4)
-                )
+                .IsWalkable(LevelManager.GetPlayerRef().GetCurentPos(), dir)
         )
         {
             LevelManager.GetPlayerRef().Move(dir);
