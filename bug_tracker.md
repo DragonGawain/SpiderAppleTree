@@ -3,3 +3,5 @@
     - This will also apply to trunk supports. Those side touching trunks do not apply a trunk support.
 - Cannot walk onto branches from underneath via the trunk
     - This is not necessarily a bug. I won't always want this vertical connected. Need to determine rules/set a var to make this deterministic.
+
+- Erasing an interactable (fruit) in the level editor does not remove the associated editor.

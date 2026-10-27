@@ -170,5 +170,6 @@
             "dweb": 0,
             "needed": True
         }
-    ]
+    ],
+    "levels": []
 }

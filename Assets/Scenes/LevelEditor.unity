@@ -1466,7 +1466,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1003
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -14073,6 +14073,10 @@ PrefabInstance:
       propertyPath: grid
       value: 
       objectReference: {fileID: 97679944}
+    - target: {fileID: 7629931106859666369, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
+      propertyPath: levelEntry
+      value: 
+      objectReference: {fileID: 11400000, guid: 6204695e19b161b42b77b405ef9578c6, type: 2}
     - target: {fileID: 7629931106859666369, guid: 9de525e22e5b6bf4f8c9fbfab24c68a6, type: 3}
       propertyPath: numbersMap
       value: 

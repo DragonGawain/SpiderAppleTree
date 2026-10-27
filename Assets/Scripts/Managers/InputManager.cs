@@ -25,6 +25,8 @@ public class InputManager : MonoBehaviour
     static UIManager uiManagerRef;
     static LevelEditorManager levelEditorManagerRef;
 
+    static LevelEntry hoveredLevel = null;
+
     private void Awake()
     {
         uiManagerRef = GetComponent<UIManager>();
@@ -57,6 +59,13 @@ public class InputManager : MonoBehaviour
         // level editor
         // this triggers on started so that it is where the mouse is when you click, as opposed to where the mouse is when you let go of the click
         inputs.LevelEditor.Click.started += LevelEditClick;
+
+        // world map
+        inputs.WorldMap.MoveUp.performed += MoveUp;
+        inputs.WorldMap.MoveRight.performed += MoveRight;
+        inputs.WorldMap.MoveDown.performed += MoveDown;
+        inputs.WorldMap.MoveLeft.performed += MoveLeft;
+        inputs.WorldMap.Interact.performed += SelectLevel;
 
         // DEBUG
 #if UNITY_EDITOR
@@ -102,6 +111,7 @@ public class InputManager : MonoBehaviour
         )
         {
             LevelManager.GetPlayerRef().Move(dir);
+            hoveredLevel = null;
         }
     }
 
@@ -111,8 +121,6 @@ public class InputManager : MonoBehaviour
         uiManagerRef.OpenWebMenu();
     }
     #endregion
-
-
 
     #region web menu
     // cycle
@@ -156,11 +164,23 @@ public class InputManager : MonoBehaviour
     }
     #endregion
 
+    #region world map
+
+    public static void SetHoveredLevel(LevelEntry le) => hoveredLevel = le;
+
+    // includes movement from 'player map' region
+    void SelectLevel(InputAction.CallbackContext ctx)
+    {
+        hoveredLevel?.EnterLevel();
+    }
+    #endregion
+
     public static void DisableAllInputs()
     {
         inputs.Player.Disable();
         inputs.WebMenu.Disable();
         inputs.LevelEditor.Disable();
+        inputs.WorldMap.Disable();
     }
 
     public static void EnableInputMap(InputMap im)
@@ -197,6 +217,12 @@ public class InputManager : MonoBehaviour
         inputs.LevelEditor.Enable();
     }
 
+    public static void EnableWorldInputs()
+    {
+        DisableAllInputs();
+        inputs.WorldMap.Enable();
+    }
+
     void LogInfo1(InputAction.CallbackContext ctx)
     {
         LevelManager.GetActiveLevel().AnalyzeUniqueElements();
@@ -228,6 +254,13 @@ public class InputManager : MonoBehaviour
 
         // level editor
         inputs.LevelEditor.Click.started -= LevelEditClick;
+
+        // world map
+        inputs.WorldMap.MoveUp.performed -= MoveUp;
+        inputs.WorldMap.MoveRight.performed -= MoveRight;
+        inputs.WorldMap.MoveDown.performed -= MoveDown;
+        inputs.WorldMap.MoveLeft.performed -= MoveLeft;
+        inputs.WorldMap.Interact.performed -= SelectLevel;
 
         // DEBUG
 #if UNITY_EDITOR

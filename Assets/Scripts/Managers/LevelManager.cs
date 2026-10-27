@@ -47,7 +47,8 @@ public class LevelManager : MonoBehaviour
         b_bdy_L,
         b_con_L,
         goal,
-        fruit;
+        fruit,
+        levelEntry;
 
     Tile[] numberTiles;
 
@@ -149,6 +150,11 @@ public class LevelManager : MonoBehaviour
         // because the branch snapping invokes the OnGlobalBranchSnap event which only the player is subscribed to,
         // and the player should always be subscribed to that. The error throwing is good in most cases, just not
         // really in the initialization of the level.
+
+        // The above flakiness has been supressed.
+        // The player no longer interacts with branch snapping while the level is being loaded.
+        // Post load, we simulate a branch snapping (by just telling the player that it happened) and allow the player
+        // to perform standard branch snapping checks at the start of the level. [26-10-27]
         playerRef.Initialize(activeLevel.GetInitialLevelDataContainer(), grid);
 
         // Trunk t;
@@ -169,10 +175,17 @@ public class LevelManager : MonoBehaviour
             .First(g => g.Key == typeof(Branch))
             .Cast<Branch>()
             .ToList();
-        List<Fruit> fruits = levelElementsGroups
-            .First(g => g.Key == typeof(Fruit))
-            .Cast<Fruit>()
-            .ToList();
+
+        // HACK:: For any level element that may not exist, it is important that we check for existance!
+        List<Fruit> fruits = new();
+        if (levelElementsGroups.Any(g => g.Key == typeof(Fruit)))
+            fruits = levelElementsGroups.First(g => g.Key == typeof(Fruit)).Cast<Fruit>().ToList();
+        List<LevelEntry> levels = new();
+        if (levelElementsGroups.Any(g => g.Key == typeof(LevelEntry)))
+            levels = levelElementsGroups
+                .First(g => g.Key == typeof(LevelEntry))
+                .Cast<LevelEntry>()
+                .ToList();
 
         foreach (Trunk t in trunks)
         {
@@ -207,6 +220,11 @@ public class LevelManager : MonoBehaviour
             interactablesMap.SetTile(f.coord.ToVector3Int(), fruit);
         }
 
+        foreach (LevelEntry le in levels)
+        {
+            interactablesMap.SetTile(le.coord.ToVector3Int(), levelEntry);
+        }
+
         goalRef = Instantiate(
                 goalPrefab,
                 grid.CellToWorld(
@@ -230,7 +248,20 @@ public class LevelManager : MonoBehaviour
 
         activeLevel.RefreshWalkablesDirections();
 
-        InputManager.EnableMovementInputs();
+        if (levelID == 0)
+        {
+            InputManager.EnableWorldInputs();
+            GameManager.inWorldMap = true;
+        }
+        else
+        {
+            InputManager.EnableMovementInputs();
+            GameManager.inWorldMap = false;
+        }
+
+        // After the level is done being loaded, we call OnBranchSnap on the player as it was supressed beforehand.
+        // This will allow us to have levels where the player starts with the webrella deplyed!
+        playerRef.OnBranchSnap();
     }
 
     public void ClearLevel()
@@ -239,7 +270,10 @@ public class LevelManager : MonoBehaviour
         interactablesMap.ClearAllTiles();
         numbersMap.ClearAllTiles();
         if (playerRef != null)
+        {
+            playerRef.ManuallyUnsubscribeEvents();
             Destroy(playerRef.gameObject);
+        }
         playerRef = null;
         if (goalRef != null)
             Destroy(goalRef.gameObject);

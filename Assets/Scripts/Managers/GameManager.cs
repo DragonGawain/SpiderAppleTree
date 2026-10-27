@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
 
     static GameManager singleton;
 
+    public static bool inWorldMap = false;
+
     // EVENTS
     public static event Action<int> OnLevelSelect;
 

@@ -184,5 +184,6 @@
             "dweb": 0,
             "needed": true
         }
-    ]
+    ],
+    "levels": []
 }

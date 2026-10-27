@@ -38,6 +38,13 @@ public class LevelAdapter : IJsonAdapter<Level>
             .GetLevelElements()
             .GroupBy(e => e.GetType());
 
+        // It is guaranteed that any given level will have both trunks and branches.
+        // However, it is possible for a level to not have any fruits (or some other level element).
+        // In these cases, we still need to add the context array scope so that deserialization can work properly.
+
+        bool fruits = false;
+        bool levels = false;
+
         foreach (var group in elements)
         {
             if (group.Key == typeof(Branch))
@@ -60,11 +67,22 @@ public class LevelAdapter : IJsonAdapter<Level>
             }
             else if (group.Key == typeof(Fruit))
             {
+                fruits = true;
                 context.Writer.WriteKey("fruits");
                 using (context.Writer.WriteArrayScope())
                 {
                     foreach (Fruit f in group)
                         context.SerializeValue(f);
+                }
+            }
+            else if (group.Key == typeof(LevelEntry))
+            {
+                levels = true;
+                context.Writer.WriteKey("levels");
+                using (context.Writer.WriteArrayScope())
+                {
+                    foreach (LevelEntry l in group)
+                        context.SerializeValue(l);
                 }
             }
             // case WebString:
@@ -74,11 +92,22 @@ public class LevelAdapter : IJsonAdapter<Level>
             else
             {
                 Debug.Log(
-                    "<color=red>Unknown type of walkable supplied when serializing walkables! Supplied walkable: "
+                    "<color=red>Unknown type of level element supplied when serializing level elements! Supplied level element: "
                         + group.Key
                         + "</color>"
                 );
             }
+        }
+
+        if (!fruits)
+        {
+            context.Writer.WriteKey("fruits");
+            using (context.Writer.WriteArrayScope()) { }
+        }
+        if (!levels)
+        {
+            context.Writer.WriteKey("levels");
+            using (context.Writer.WriteArrayScope()) { }
         }
     }
 
@@ -100,6 +129,7 @@ public class LevelAdapter : IJsonAdapter<Level>
         context.DeserializeValue<List<Trunk>>(context.SerializedValue["trunks"]);
         context.DeserializeValue<List<Branch>>(context.SerializedValue["branches"]);
         context.DeserializeValue<List<Fruit>>(context.SerializedValue["fruits"]);
+        context.DeserializeValue<List<LevelEntry>>(context.SerializedValue["levels"]);
 
         return null;
     }

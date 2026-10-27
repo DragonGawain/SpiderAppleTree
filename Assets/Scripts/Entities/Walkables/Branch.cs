@@ -382,9 +382,6 @@ public class Branch : IWalkable
                 LevelManager.GetActiveLevel().RemoveWalkable(this);
                 levelManager.ClearBranch(this);
 
-                // DELETE_ME int dir = direction == Direction.LEFT ? -1 : 1;
-
-
                 // Step 1: set up for the creation of up to 3 new branches (left, mid (falling), right)
                 Branch leftBranch,
                     midBranch,
@@ -715,7 +712,7 @@ public class Branch : IWalkable
 
     int CoordToSegmentIndex(Coord crd) => crd.x - coord.x;
 
-    Coord SegmentIndexToCoord(int index) => new(coord.x + index, coord.y);
+    public Coord SegmentIndexToCoord(int index) => new(coord.x + index, coord.y);
 
     public (Coord, Coord) GetBounds() => (coord, new(coord.x + length - 1, coord.y));
 }

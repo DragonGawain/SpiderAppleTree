@@ -86,6 +86,7 @@ public class SaveManager : MonoBehaviour
         JsonSerialization.AddGlobalAdapter(new LevelAdapter());
         JsonSerialization.AddGlobalAdapter(new CoordAdapter());
         JsonSerialization.AddGlobalAdapter(new FruitAdapter());
+        JsonSerialization.AddGlobalAdapter(new LevelEntryAdapater());
         // JsonSerialization.AddGlobalAdapter(new GameAdapter());
     }
 
@@ -146,8 +147,8 @@ public class SaveManager : MonoBehaviour
         bool hasGoal = false;
 
         placementMatrix = new int[
-            Math.Abs(X_BOUND_LEFT) + X_BOUND_RIGHT,
-            Math.Abs(Y_BOUND_BOTTOM) + Y_BOUND_TOP
+            Math.Abs(X_BOUND_LEFT) + X_BOUND_RIGHT + 1,
+            Math.Abs(Y_BOUND_BOTTOM) + Y_BOUND_TOP + 1
         ];
 
         // DEBUG:: view placement matrix (pre)

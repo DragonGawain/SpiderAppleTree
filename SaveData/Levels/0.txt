@@ -1,0 +1,113 @@
+{
+    "levelID": 5,
+    "spawn": {
+        "x": 0,
+        "y": 0
+    },
+    "goal": {
+        "x": -4,
+        "y": 6
+    },
+    "initWebCount": 0,
+    "initWeight": 1,
+    "initLength": 1,
+    "trunkSupport": 6,
+    "branches": [
+        {
+            "Coord": {
+                "x": -2,
+                "y": 1
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": -2,
+                "y": 3
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": -2,
+                "y": 5
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": -2,
+                "y": 7
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": -2,
+                "y": 9
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": 1,
+                "y": 1
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": 1,
+                "y": 3
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": 1,
+                "y": 5
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": 1,
+                "y": 7
+            },
+            "length": 2
+        },
+        {
+            "Coord": {
+                "x": 1,
+                "y": 9
+            },
+            "length": 2
+        }
+    ],
+    "trunks": [
+        {
+            "Coord": {
+                "x": 0,
+                "y": 0
+            },
+            "height": 10
+        }
+    ],
+    "fruits": [],
+    "levels": [
+        {
+            "Coord": {
+                "x": -2,
+                "y": 1
+            },
+            "levelID": 1003
+        },
+        {
+            "Coord": {
+                "x": 2,
+                "y": 1
+            },
+            "levelID": 1005
+        }
+    ]
+}

@@ -223,3 +223,17 @@
 - Added ability to log warnings and errors via the `GameManager.DebugLog` method.
 - Cleaned up branch weight calculations a LOT
 - Fixed bug in the LevelEditorManager that made it so that you could not edit the values of interactables because the edit fields would disappear onclick. Added boolean that prevents disabling editor fields if the mouse is hovering one of them.
+
+## Oct 27 2026
+
+- Started working on world map things
+- Created a level for the world map with id 0.
+- Created new IInteractable `LevelEntry` to store the position of each level on the world map
+- Created new InputActions moveset for the world map. It subscribes to the same movement calls as the standard movement map, and has a special 'interact' keybind to enter levels.
+- Fixed bug that had to do with have none of an element in the level. When loading levels, I simply need an existence check. (this is for fruits and levels, the new IInteractable)
+    - Along the same lines, I need to ensure that the empty array exists in the json file. If the empty array doesn't exist, the level will not be able to deserialize properly.
+- Added LevelEntryAdapter to the adapter registry in SaveManager.
+- Added override to prevent the level input mappings from activating when loading the world map.
+- Added public static bool `inWorldMap` to the GameManager to track which input map should be enabled when a player's smooth move is finished.
+- Since `OnDestroy` is called last in the order of execution, destroying the player and instantiating the new player on level load results in the old player object being deleted immediately, but the unsibscription that happens in `OnDestroy` is delayed until the end of the execution order. This means that the rest of the call is completed before this crucial cleanup happens. Therefore, when loading into a new level, if there is a branch snapping right at level load (which I want to be possible!), it will cause issues unless there is a walkable in the level at the coordinates where the level is in the world map.
+    - To fix this, I can either call `DestroyImmediate` (which is strongly NOT recommended), or I can move the unsubscription to another place. i.e. manually unsubscribing so it happens in the call stack instead of being delayed until `OnDestroy` is called. I leave the unsubscription in `OnDestroy` as well as a safety net, but it should never be needed once this fix is applied.

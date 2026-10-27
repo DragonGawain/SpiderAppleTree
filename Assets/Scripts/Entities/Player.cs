@@ -83,13 +83,18 @@ public class Player : MonoBehaviour
 
         StartCoroutine(SmoothMoveAnimation(oldCoord));
 
+        // Level win detection!
         if (
             LevelManager.GetActiveLevel().AllFruitsConsumed()
             && currentPos.Equals(
                 LevelManager.GetActiveLevel().GetInitialLevelDataContainer().goalPoint
             )
         )
+        {
             Debug.Log("<color=green>YOU WIN!!!!!</color>");
+            GameManager.SelectLevel(0); // 0 is the level id for the world map
+            InputManager.EnableWorldInputs();
+        }
     }
 
     IEnumerator SmoothMoveAnimation(Coord oldCoord)
@@ -134,17 +139,39 @@ public class Player : MonoBehaviour
         // postMove also calls for all branches that were (potentially) modified to recalculate their weight values.
         LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
 
-        InputManager.EnableMovementInputs();
+        if (GameManager.inWorldMap)
+            InputManager.EnableWorldInputs();
+        else
+            InputManager.EnableMovementInputs();
+    }
+
+    public void RefreshPlayerWalkabale()
+    {
+        //
     }
 
     public void OnBranchSnap()
     {
-        Debug.Log("ON GLOBAL BRANCH SNAP");
+        Debug.Log("<color=green>LOGGING TRACE:</color>");
+        Debug.Log(System.Environment.StackTrace);
+        if (LevelManager.GetLoadingLevel())
+            return;
+        Debug.Log(
+            "ON GLOBAL BRANCH SNAP " + gameObject.GetInstanceID() + ", at loc: " + currentPos
+        );
         LevelManager
             .GetActiveLevel()
             .GetWalkables()
             .TryGetValue(currentPos, out IWalkable walkable);
         occupiedBranch = null;
+        Debug.Log(walkable);
+
+        Dictionary<Coord, IWalkable> walkables = LevelManager.GetActiveLevel().GetWalkables();
+
+        // foreach (Coord key in walkables.Keys)
+        // {
+        //     Debug.Log(key);
+        // }
 
         if (walkable == null)
         {
@@ -165,6 +192,12 @@ public class Player : MonoBehaviour
                 occupiedBranch.RecalculateActualWeight();
             }
         }
+    }
+
+    public void ManuallyUnsubscribeEvents()
+    {
+        // See devlog from 26-10-27 for why this exists :mathulTired:
+        Branch.OnGlobalBranchSnap -= OnBranchSnap;
     }
 
     void OnDestroy()
