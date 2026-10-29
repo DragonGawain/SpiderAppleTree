@@ -255,3 +255,12 @@ _scene changes to background of spider with a bindle in front of a tall tree_ "A
     - Since the nb leaves is modifiable, it means the apple body and the leaves are seperated. Therefore, the body can be an inner child or something and I can independently modify the colour of the apple without touching the colour of the leaves. This will make it easy to have different colour schemes for various forms of colour blindness.
 - Apples that support branches should have wings.
 - How do I indicate if an apple will make the player heavier or ligher? (I don't want it to be tied to if an apple has wings or not, but that would be the simplest and clearest...)
+
+## Webrella
+
+- You have X amount of webrellas (shows up as little parachute icon in top right corner?)
+- You can invest web to make more
+    - This separation allows starting with webrellas while also limiting amount of string available in the level
+
+- Not the biggest fan of the idea cause it crimps the auto-deploy when on when snap thought...
+    - In fact, the autodeplot should maybe be the _only_ way to deploy the webrella...
