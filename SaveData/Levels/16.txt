@@ -1,0 +1,49 @@
+{
+    "levelID": 16,
+    "spawn": {
+        "x": -1,
+        "y": 0
+    },
+    "goal": {
+        "x": 2,
+        "y": 0
+    },
+    "initWebCount": 0,
+    "initWeight": 2,
+    "initLength": 1,
+    "trunkSupport": 6,
+    "trunks": [
+        {
+            "Coord": {
+                "x": -1,
+                "y": 0
+            },
+            "height": 4
+        },
+        {
+            "Coord": {
+                "x": 0,
+                "y": 0
+            },
+            "height": 4
+        },
+        {
+            "Coord": {
+                "x": 2,
+                "y": 0
+            },
+            "height": 4
+        }
+    ],
+    "branches": [
+        {
+            "Coord": {
+                "x": 1,
+                "y": 3
+            },
+            "length": 1
+        }
+    ],
+    "fruits": [],
+    "levels": []
+}

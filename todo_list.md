@@ -4,3 +4,4 @@
 
 - Upon level completion, player spawn point should be set to where the level is
 - Hook up main menu to level editor transition
+- Right click in level editor => erase on the current selected tilemap

@@ -252,3 +252,4 @@
 - Set up a system so that EditorObjects are cleaned up when the object that they correspond to is erased from the level editor.
 - Fixed some bugs with the fruit editor.
 - Made fruits needed by default.
+- Supressed level win returning you to world map if it is from the test level

@@ -188,6 +188,13 @@ public class Branch : IWalkable
             supportsList.Add(support);
         int segmentIndex = CoordToSegmentIndex(support.GetCoord());
         rawSupports[segmentIndex] += support.GetSupportValue();
+
+        // HACK
+        // DEBUG
+        // FIXME
+        // This exists to deal with branch weight overflow. It shouldn't need to exist.
+        if (rawSupports[segmentIndex] > 9)
+            rawSupports[segmentIndex] = 9;
         if (!suppressRecalculation)
             RecalculateSupports();
     }

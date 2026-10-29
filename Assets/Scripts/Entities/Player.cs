@@ -92,8 +92,11 @@ public class Player : MonoBehaviour
         )
         {
             Debug.Log("<color=green>YOU WIN!!!!!</color>");
-            GameManager.SelectLevel(0); // 0 is the level id for the world map
-            InputManager.EnableWorldInputs();
+            if (LevelManager.GetActiveLevel().GetLevelID() != -1)
+            {
+                GameManager.SelectLevel(0); // 0 is the level id for the world map
+                InputManager.EnableWorldInputs();
+            }
         }
     }
 

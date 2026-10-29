@@ -188,6 +188,10 @@
 
 ### Screen wraparound?
 
+### Trapdoors
+
+- One time walkabale branches
+
 # THOUGHTS
 
 - The shorter a branch is, the higher its initial support value should be.

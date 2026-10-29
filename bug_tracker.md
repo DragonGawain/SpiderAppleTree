@@ -1,7 +1,6 @@
-- When you step on a branch segment that has a support and there is another support farther to the right, the weight delta is incorrectly halved. => THIS IS NOT A BUG! This is so that mid supports don't take 'double' weight when crossing over them.
 - Fallen branches do not correctly adjust the trunk segment touching their extremities to being horizontally walkable
     - This will also apply to trunk supports. Those side touching trunks do not apply a trunk support.
-- Cannot walk onto branches from underneath via the trunk
-    - This is not necessarily a bug. I won't always want this vertical connected. Need to determine rules/set a var to make this deterministic.
 
-- Erasing an interactable (fruit) in the level editor does not remove the associated editor.
+- Branch support overflow! Easiest way to reproduce: have a branch that is 1 segment long with trunks on both sides. This makes both trunk supports give support, leading to a support value of 12. But my current highest support value is 9, so this overflows to 2.5.
+    - This is currently suppressed by setting maximum raw support to 9, but this might need to be fixed better.
+- Portal does not swirl if there are no fruit in the level

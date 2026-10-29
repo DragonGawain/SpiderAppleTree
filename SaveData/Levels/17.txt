@@ -1,0 +1,35 @@
+{
+    "levelID": 17,
+    "spawn": {
+        "x": 0,
+        "y": 0
+    },
+    "goal": {
+        "x": 0,
+        "y": 7
+    },
+    "initWebCount": 0,
+    "initWeight": 2,
+    "initLength": 1,
+    "trunkSupport": 4,
+    "branches": [
+        {
+            "Coord": {
+                "x": -5,
+                "y": 5
+            },
+            "length": 5
+        }
+    ],
+    "trunks": [
+        {
+            "Coord": {
+                "x": 0,
+                "y": 0
+            },
+            "height": 8
+        }
+    ],
+    "fruits": [],
+    "levels": []
+}
