@@ -191,9 +191,7 @@ public class LevelManager : MonoBehaviour
         {
             walkablesMap.SetTile(new Vector3Int(t.coord.x, t.coord.y), t_src);
             for (int y = 1; y < t.height; y++)
-            {
                 walkablesMap.SetTile(new Vector3Int(t.coord.x, t.coord.y + y), t_bdy);
-            }
         }
 
         foreach (Branch b in branches)
@@ -225,14 +223,19 @@ public class LevelManager : MonoBehaviour
             interactablesMap.SetTile(le.coord.ToVector3Int(), levelEntry);
         }
 
-        goalRef = Instantiate(
-                goalPrefab,
-                grid.CellToWorld(
-                    activeLevel.GetInitialLevelDataContainer().goalPoint.ToVector3Int()
-                ) + new Vector3(0.5f, 0.5f, 0),
-                quaternion.identity
-            )
-            .GetComponent<Goal>();
+        // The world map should not have a goal point, but the save file needs it.
+        // Solution: we just won't spawn in the goal!
+        // However, since the win check is position based, we need to ensure that the goal point can never be reached.
+        // This simply means giving it a negative y value!
+        if (levelID != 0)
+            goalRef = Instantiate(
+                    goalPrefab,
+                    grid.CellToWorld(
+                        activeLevel.GetInitialLevelDataContainer().goalPoint.ToVector3Int()
+                    ) + new Vector3(0.5f, 0.5f, 0),
+                    quaternion.identity
+                )
+                .GetComponent<Goal>();
 
         loadingLevel = false;
 

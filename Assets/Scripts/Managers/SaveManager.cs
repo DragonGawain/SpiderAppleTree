@@ -120,8 +120,9 @@ public class SaveManager : MonoBehaviour
 
     public void SaveOrOverwriteLevel(int id)
     {
+        // 26-10-29: I'm reserving the first 10 level ID's for special things. Such as multiple world maps.
         if (id != -1 && autoIncrementId)
-            id = Directory.GetFiles(levelPath).Length + 1;
+            id = Directory.GetFiles(levelPath).Length + 11;
         if (
             id != -1
             && File.Exists(new(Path.Combine(levelPath, id.ToString() + ".txt")))
