@@ -237,3 +237,12 @@
 - Added public static bool `inWorldMap` to the GameManager to track which input map should be enabled when a player's smooth move is finished.
 - Since `OnDestroy` is called last in the order of execution, destroying the player and instantiating the new player on level load results in the old player object being deleted immediately, but the unsibscription that happens in `OnDestroy` is delayed until the end of the execution order. This means that the rest of the call is completed before this crucial cleanup happens. Therefore, when loading into a new level, if there is a branch snapping right at level load (which I want to be possible!), it will cause issues unless there is a walkable in the level at the coordinates where the level is in the world map.
     - To fix this, I can either call `DestroyImmediate` (which is strongly NOT recommended), or I can move the unsubscription to another place. i.e. manually unsubscribing so it happens in the call stack instead of being delayed until `OnDestroy` is called. I leave the unsubscription in `OnDestroy` as well as a safety net, but it should never be needed once this fix is applied.
+
+## Oct 29 2026
+
+- Created new scene. I've more or less decided that the whole game will be in a single scene. (Probably bad practice, but it's sooo much easier, and since the game is so lightweight (just loading JSONs), it should be fine...)
+- Started working on main menu
+- Created simple main meny background with some PNGs I found on the internet. I tried to avoid taking ones that looked AI made.
+- Hooked up buttons for play, settings, credits, and quit.
+- All menu sections (main, settings, credits) and empty parents with a vertical layout group to make layout management simple.
+    - This is also an internal restriction. I've learnt from coding cards (and life) that I have a habit of being verbose. Restricting my UI to simple button lists should improve readability a lot.

@@ -66,6 +66,11 @@ public class GameManager : MonoBehaviour
         // This is really only valuable if I don't create an undo stack.
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
     /// <summary>
     /// Allows for console logging from non-monobehaviour classes
     /// </summary>

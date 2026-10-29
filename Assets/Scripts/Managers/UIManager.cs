@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,9 +17,19 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     WebMenuButton defaultWebButton;
-
     public WebMenuButton selectedWebButton;
 
+    [UnitHeaderInspectable("MainMenu")]
+    [SerializeField]
+    GameObject mainMenuGroup;
+
+    [SerializeField]
+    GameObject settingsGroup;
+
+    [SerializeField]
+    GameObject creditsGroup;
+
+    #region Web menu
     public void SetWebMenuButton(WebMenuButton webButton)
     {
         // selectedWebButton.gameObject.GetComponentInChildren<TMP
@@ -55,4 +66,34 @@ public class UIManager : MonoBehaviour
             .colors.normalColor;
         InputManager.EnableMovementInputs();
     }
+    #endregion
+
+    #region Main menu
+
+    public void DisableAllGroups()
+    {
+        mainMenuGroup.SetActive(false);
+        settingsGroup.SetActive(false);
+        creditsGroup.SetActive(false);
+    }
+
+    public void OpenMainMenu()
+    {
+        DisableAllGroups();
+        mainMenuGroup.SetActive(true);
+    }
+
+    public void OpenSettings()
+    {
+        DisableAllGroups();
+        settingsGroup.SetActive(true);
+    }
+
+    public void OpenCredits()
+    {
+        DisableAllGroups();
+        creditsGroup.SetActive(true);
+    }
+
+    #endregion
 }
