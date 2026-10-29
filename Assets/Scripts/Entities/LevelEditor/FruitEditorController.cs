@@ -21,6 +21,11 @@ public class FruitEditorController : MonoBehaviour
         ((TextMeshProUGUI)deltaWeightIF.placeholder).text = fe.deltaWeight.ToString();
         ((TextMeshProUGUI)deltaWebIF.placeholder).text = fe.deltaWeb.ToString();
         neededT.isOn = fe.needed;
+
+        // Clean up any existing text
+        weightIF.text = "";
+        deltaWeightIF.text = "";
+        deltaWebIF.text = "";
     }
 
     public void OnChangeWeight() =>

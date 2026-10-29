@@ -345,6 +345,12 @@ public readonly struct Coord
         this.y = y;
     }
 
+    public Coord(Vector3Int v)
+    {
+        x = v.x;
+        y = v.y;
+    }
+
     public readonly int x;
     public readonly int y;
 

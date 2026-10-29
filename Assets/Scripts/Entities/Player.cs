@@ -152,8 +152,8 @@ public class Player : MonoBehaviour
 
     public void OnBranchSnap()
     {
-        Debug.Log("<color=green>LOGGING TRACE:</color>");
-        Debug.Log(System.Environment.StackTrace);
+        // Debug.Log("<color=green>LOGGING TRACE:</color>");
+        // Debug.Log(System.Environment.StackTrace);
         if (LevelManager.GetLoadingLevel())
             return;
         Debug.Log(

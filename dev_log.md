@@ -249,3 +249,6 @@
 - Added more menu groups for in game pause menu and level editor pause menu. All of these are similar but have small differences. I might make a single menu for them and enable/disable certain things, but it might also just be easier to have distinct menus, so I'm prepping for that route.
 - Play game button from main menu now loads the world map (level 0).
 - The goal point on the map level is now both hidden (not instatiated) and innaccessible (y value of -1). This has effectively removed the goal point from the world map level.
+- Set up a system so that EditorObjects are cleaned up when the object that they correspond to is erased from the level editor.
+- Fixed some bugs with the fruit editor.
+- Made fruits needed by default.

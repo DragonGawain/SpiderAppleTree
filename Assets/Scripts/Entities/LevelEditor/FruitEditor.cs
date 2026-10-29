@@ -9,10 +9,22 @@ public class FruitEditor : EditorElement
     {
         coord = LevelManager.WorldSpaceToCoord(transform.position);
         OnStart();
+        SaveManager.RemoveInteractable += OnLevelEditorRemove;
     }
 
     public int weight;
     public int deltaWeight;
     public int deltaWeb;
-    public bool needed;
+    public bool needed = true;
+
+    void OnLevelEditorRemove(Coord crd)
+    {
+        if (crd.Equals(coord))
+            Destroy(this.gameObject);
+    }
+
+    void OnDestroy()
+    {
+        SaveManager.RemoveInteractable -= OnLevelEditorRemove;
+    }
 }

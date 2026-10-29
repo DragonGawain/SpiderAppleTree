@@ -70,6 +70,12 @@ public class SaveManager : MonoBehaviour
 
     bool isOverwriting = false;
 
+    // These action get fired when an interactable/support are erased in the level editor.
+    // The point of them is to have the corresponding editor objects remove themselves
+
+    public static event Action<Coord> RemoveInteractable;
+    public static event Action<Coord> RemoveSupport;
+
     public bool autoIncrementId = true;
     public const int X_BOUND_LEFT = -5;
     public const int X_BOUND_RIGHT = 8;
@@ -474,5 +480,25 @@ public class SaveManager : MonoBehaviour
         if (editorElements.TryGetValue((ei, crd), out EditorElement ee))
             return ee;
         return null;
+    }
+
+    public static bool RemoveEditorElementAtCoord(EditorIdentity ei, Coord crd)
+    {
+        if (editorElements.Remove((ei, crd)))
+        {
+            // The editor elements (especially the support elements) check for null propagation.
+            // Just because the entity exists, it does not mean that a corresponding GameObject exists!
+            switch (ei)
+            {
+                case EditorIdentity.INTERACTABLE:
+                    RemoveInteractable?.Invoke(crd);
+                    break;
+                case EditorIdentity.SUPPORT:
+                    RemoveSupport?.Invoke(crd);
+                    break;
+            }
+            return true;
+        }
+        return false;
     }
 }

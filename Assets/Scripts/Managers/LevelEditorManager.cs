@@ -198,6 +198,14 @@ public class LevelEditorManager : MonoBehaviour
 
     void PlaceTileOnCell(Vector3Int mouseCellCoords)
     {
+        if (targetTilemap == interactable_e && interactable_e.HasTile(mouseCellCoords))
+            SaveManager.RemoveEditorElementAtCoord(
+                EditorIdentity.INTERACTABLE,
+                new(mouseCellCoords)
+            );
+        if (targetTilemap == support_e && support_e.HasTile(mouseCellCoords))
+            SaveManager.RemoveEditorElementAtCoord(EditorIdentity.SUPPORT, new(mouseCellCoords));
+
         targetTilemap.SetTile(mouseCellCoords, selectedTile);
         if (editorObj != null)
         {
@@ -228,10 +236,7 @@ public class LevelEditorManager : MonoBehaviour
             SelectTarget.INTERACTABLE or _ => EditorIdentity.INTERACTABLE,
         };
 
-        EditorElement ee = SaveManager.GetEditorElementAtCoord(
-            ei,
-            new(mouseCellCoords.x, mouseCellCoords.y)
-        );
+        EditorElement ee = SaveManager.GetEditorElementAtCoord(ei, new(mouseCellCoords));
         if (ee == null)
             return;
         if (ee.GetType() == typeof(FruitEditor))
