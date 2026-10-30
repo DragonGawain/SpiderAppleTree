@@ -114,8 +114,9 @@ public class LevelManager : MonoBehaviour
         try
         {
             using (
-                StreamReader sr =
-                    new(Path.Combine(SaveManager.levelPath, levelID.ToString() + ".txt"))
+                StreamReader sr = new(
+                    Path.Combine(SaveManager.levelPath, levelID.ToString() + ".txt")
+                )
             )
             {
                 string json = sr.ReadToEnd();
@@ -355,6 +356,8 @@ public readonly struct Coord
     public readonly int y;
 
     public readonly Vector3Int ToVector3Int() => new(x, y, 0);
+
+    public Vector3 ToWorldSpace() => new(x + 0.5f, y + 0.5f, 0);
 
     public override string ToString() => $"({x}, {y})";
 

@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
         get => alive;
     }
 
+    public static event Action PostMove;
+
     public void Initialize(InitialLevelDataContainer ldc, Grid gridRef)
     {
         webCount = ldc.initWebCount;
@@ -75,10 +77,9 @@ public class Player : MonoBehaviour
             Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
             Direction.DOWN => new(currentPos.x, currentPos.y - 1),
             Direction.LEFT => new(currentPos.x - 1, currentPos.y),
-            _
-                => throw new Exception(
-                    "ERROR: Attempted to move the player in an undefined Direction"
-                )
+            _ => throw new Exception(
+                "ERROR: Attempted to move the player in an undefined Direction"
+            ),
         };
 
         StartCoroutine(SmoothMoveAnimation(oldCoord));
@@ -140,7 +141,9 @@ public class Player : MonoBehaviour
         // postMove includes things like eating fruit, which can alter the weight of the player. Therefore, we need to do it *after* we remove the player's weight from the old position.
         // If we moved from one branch to another, we need to make sure that we are modifying the correct branch.
         // postMove also calls for all branches that were (potentially) modified to recalculate their weight values.
-        LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
+        // LevelManager.GetActiveLevel().PostMove(LevelManager.GetPlayerRef().GetCurentPos());
+
+        PostMove?.Invoke();
 
         if (GameManager.inWorldMap)
             InputManager.EnableWorldInputs();

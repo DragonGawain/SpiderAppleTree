@@ -60,6 +60,11 @@ public class Branch : IWalkable
     public readonly List<ISupport> supportsList = new();
 
     HashSet<int> verticalWalkables = new();
+    bool isFalling;
+
+    const float BRANCH_FALL_SPEED = 2f;
+
+    // EntityVisualizer vis;
 
     // DEBUG
     public readonly int instanceID;
@@ -79,12 +84,13 @@ public class Branch : IWalkable
     b b S b b b S b b S b
     */
 
-    public Branch(Coord coord, int length, bool autoTrunkSupport = true)
+    public Branch(Coord coord, int length, bool autoTrunkSupport = true, bool isFalling = false)
     {
         instanceID = instanceIDTracker++;
 
         this.coord = coord;
         this.length = length;
+        this.isFalling = isFalling;
 
         rawSupports = new int[length];
         weightDeltas = new int[length];
@@ -98,6 +104,13 @@ public class Branch : IWalkable
 
         if (autoTrunkSupport)
             FindTrunkSupports();
+
+        if (isFalling)
+        {
+            //EntityVisualizer vis = Instantiate(GameManager.entityVisualizerObj, coord.ToWorldSpace(), Quaternion.identity /*,parent??*/);
+            // vis.SetUp(`this` or something? idk)
+            Player.PostMove += BranchFalling;
+        }
 
         // TODO:: Have this constructor spawn in a prefab at the desired location
         // Prefab would only be used for animations. But, animated tiles exist, so I might use those instead.
@@ -660,6 +673,24 @@ public class Branch : IWalkable
             }
         }
         return false;
+    }
+
+    void BranchFalling()
+    {
+        // Spawn visualizer
+        // Remove branch
+        // Move visualizer down 1 cell
+        // Check if space bellow (second fall):
+        // FALSE:
+        //      Unsibscribe from BranchFalling
+        // TRUE:
+        //      Move visualizer down 1 cell
+        // Check if space bellow (next fall):
+        // FALSE:
+        //      Unsibscribe from BranchFalling
+        // TRUE: (nothing)
+
+        // Place branch tiles (tilemapping)
     }
 
     void RefreshInteractables()

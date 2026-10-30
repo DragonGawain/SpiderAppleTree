@@ -23,6 +23,7 @@ public class Level
     public Level(int id)
     {
         this.levelID = id;
+        Player.PostMove += PostMove;
     }
 
     public void InitializeData(
@@ -211,10 +212,9 @@ public class Level
             Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
             Direction.DOWN => new(currentPos.x, currentPos.y - 1),
             Direction.LEFT => new(currentPos.x - 1, currentPos.y),
-            _
-                => throw new Exception(
-                    "ERROR: Attempted to move the player in an undefined Direction"
-                )
+            _ => throw new Exception(
+                "ERROR: Attempted to move the player in an undefined Direction"
+            ),
         };
 
         GameManager.DebugLog(dir + ", " + targetCoord);
@@ -246,8 +246,9 @@ public class Level
     /// * Branch stable? (Did a branch fall)
     /// </summary>
     /// <param name="loc">The current location of the player</param>
-    public void PostMove(Coord loc)
+    public void PostMove()
     {
+        Coord loc = LevelManager.GetPlayerRef().GetCurentPos();
         GameManager.DebugLog("<color=red>POST MOVE</color>");
         // TODO:: check for branch stability -> by this, I can only assume that I mean the stretch goal of branch tilting?
         // Possible I meant branch snapping as this note is from before I implemented snapping...
@@ -287,6 +288,11 @@ public class Level
     public InitialLevelDataContainer GetInitialLevelDataContainer() => ldc;
 
     public int GetLevelID() => levelID;
+
+    ~Level()
+    {
+        Player.PostMove -= PostMove;
+    }
 
     // DEBUG
 

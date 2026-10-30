@@ -260,3 +260,9 @@
 - Added click and drag level editor functionality, allowing for easier placement of multiple of the same entity.
 - Made it so that if you attempt to place an entity on top of that same entity in the level editor, it does not get replaced.
     - This is important for stuff like fruit as it means the values won't be reset to default.
+- Replaced direct `Level.PostMove()` call with an event action. This is to enable branch falling on PostMove as well.
+- Started working on EntityVisualizer for 'animating' falling branches
+    - Branches are just tiles, so they cannot be translated directly. EntityVisualizer is designed to be generic for any movement animations that are needed.
+    - Entity visualizer is NOT designed for minute animations (i.e. shaking trunks, etc)
+- Added method to Coord: `ToWorldSpace()` to transform the tilemap coordinates into world space coordinates.
+- Some planning stuff (notes)
