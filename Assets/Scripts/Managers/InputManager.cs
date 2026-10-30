@@ -21,11 +21,12 @@ public class InputManager : MonoBehaviour
 {
     // public static event Action<Coord> OnMoveAttempt;
     static Inputs inputs;
-
     static UIManager uiManagerRef;
     static LevelEditorManager levelEditorManagerRef;
-
     static LevelEntry hoveredLevel = null;
+    static bool shiftPressed = false;
+    static bool clickPressed = false;
+    static bool rightClickPressed = false;
 
     private void Awake()
     {
@@ -59,6 +60,11 @@ public class InputManager : MonoBehaviour
         // level editor
         // this triggers on started so that it is where the mouse is when you click, as opposed to where the mouse is when you let go of the click
         inputs.LevelEditor.Click.started += LevelEditClick;
+        inputs.LevelEditor.Click.canceled += LevelEditUnclick;
+        inputs.LevelEditor.RightClick.started += LevelEditRightClick;
+        inputs.LevelEditor.RightClick.canceled += LevelEditUnrightClick;
+        inputs.LevelEditor.Shift.started += LevelEditShiftOn;
+        inputs.LevelEditor.Shift.canceled += LevelEditShiftOff;
 
         // world map
         inputs.WorldMap.MoveUp.performed += MoveUp;
@@ -160,8 +166,47 @@ public class InputManager : MonoBehaviour
     #region level editor
     void LevelEditClick(InputAction.CallbackContext ctx)
     {
-        levelEditorManagerRef.OnClick();
+        rightClickPressed = false;
+        if (shiftPressed)
+            levelEditorManagerRef.OnClick();
+        else
+            clickPressed = true;
     }
+
+    void LevelEditUnclick(InputAction.CallbackContext ctx)
+    {
+        clickPressed = false;
+    }
+
+    void LevelEditRightClick(InputAction.CallbackContext ctx)
+    {
+        clickPressed = false;
+        if (shiftPressed)
+            levelEditorManagerRef.OnRightClick();
+        else
+            rightClickPressed = true;
+    }
+
+    void LevelEditUnrightClick(InputAction.CallbackContext ctx)
+    {
+        rightClickPressed = false;
+    }
+
+    void LevelEditShiftOn(InputAction.CallbackContext ctx)
+    {
+        shiftPressed = true;
+    }
+
+    void LevelEditShiftOff(InputAction.CallbackContext ctx)
+    {
+        shiftPressed = false;
+    }
+
+    public static bool GetShiftPressed() => shiftPressed;
+
+    public static bool GetClickPressed() => clickPressed;
+
+    public static bool GetRightClickPressed() => rightClickPressed;
     #endregion
 
     #region world map
@@ -214,6 +259,8 @@ public class InputManager : MonoBehaviour
     public static void EnableEditorInputs()
     {
         DisableAllInputs();
+        shiftPressed = false;
+        clickPressed = false;
         inputs.LevelEditor.Enable();
     }
 
@@ -254,6 +301,11 @@ public class InputManager : MonoBehaviour
 
         // level editor
         inputs.LevelEditor.Click.started -= LevelEditClick;
+        inputs.LevelEditor.Click.canceled -= LevelEditUnclick;
+        inputs.LevelEditor.RightClick.started -= LevelEditRightClick;
+        inputs.LevelEditor.RightClick.canceled -= LevelEditUnrightClick;
+        inputs.LevelEditor.Shift.started -= LevelEditShiftOn;
+        inputs.LevelEditor.Shift.canceled -= LevelEditShiftOff;
 
         // world map
         inputs.WorldMap.MoveUp.performed -= MoveUp;

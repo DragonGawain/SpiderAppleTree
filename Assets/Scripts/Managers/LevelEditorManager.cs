@@ -77,6 +77,8 @@ public class LevelEditorManager : MonoBehaviour
     [Header("EditorControllers")]
     [SerializeField]
     FruitEditorController fruitEditorController;
+    Vector3Int mcc; // mouse cell coords
+    Vector3Int mccNew; // mouse cell coords
 
     public void TestLevel()
     {
@@ -169,21 +171,26 @@ public class LevelEditorManager : MonoBehaviour
         displayText.text = tsb.GetComponentInChildren<TextMeshProUGUI>().text;
     }
 
+    bool VerifyClickInBounds(Vector3Int mouseCellCoords)
+    {
+        // verify that the click is in bounds
+        return (
+            (
+                mouseCellCoords.x >= SaveManager.X_BOUND_LEFT
+                && mouseCellCoords.x <= SaveManager.X_BOUND_RIGHT
+                && mouseCellCoords.y >= SaveManager.Y_BOUND_BOTTOM
+                && mouseCellCoords.y <= SaveManager.Y_BOUND_TOP
+            )
+        );
+    }
+
     public void OnClick()
     {
         // first, determine the location of the click
         Vector3Int mouseCellCoords = grid.WorldToCell(
             Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
         );
-        // verify that the click is in bounds
-        if (
-            !(
-                mouseCellCoords.x >= SaveManager.X_BOUND_LEFT
-                && mouseCellCoords.x <= SaveManager.X_BOUND_RIGHT
-                && mouseCellCoords.y >= SaveManager.Y_BOUND_BOTTOM
-                && mouseCellCoords.y <= SaveManager.Y_BOUND_TOP
-            )
-        )
+        if (!VerifyClickInBounds(mouseCellCoords))
             return;
         switch (editMode)
         {
@@ -194,6 +201,23 @@ public class LevelEditorManager : MonoBehaviour
                 SelectInteractable(mouseCellCoords);
                 break;
         }
+    }
+
+    public void OnRightClick()
+    {
+        // first, determine the location of the click
+        Vector3Int mouseCellCoords = grid.WorldToCell(
+            Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
+        );
+        if (!VerifyClickInBounds(mouseCellCoords))
+            return;
+        Tile selectedTileMem = selectedTile;
+        GameObject editorObjMem = editorObj;
+        selectedTile = null;
+        editorObj = null;
+        PlaceTileOnCell(mouseCellCoords);
+        selectedTile = selectedTileMem;
+        editorObj = editorObjMem;
     }
 
     void PlaceTileOnCell(Vector3Int mouseCellCoords)
@@ -247,4 +271,30 @@ public class LevelEditorManager : MonoBehaviour
     }
 
     public void SetEditingValues(bool val) => editingValues = val;
+
+    void Update()
+    {
+        if (InputManager.GetClickPressed())
+        {
+            mccNew = grid.WorldToCell(
+                Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
+            );
+            if (!mccNew.Equals(mcc))
+            {
+                mcc = mccNew;
+                OnClick();
+            }
+        }
+        else if (InputManager.GetRightClickPressed())
+        {
+            mccNew = grid.WorldToCell(
+                Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue())
+            );
+            if (!mccNew.Equals(mcc))
+            {
+                mcc = mccNew;
+                OnRightClick();
+            }
+        }
+    }
 }

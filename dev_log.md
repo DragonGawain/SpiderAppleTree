@@ -253,3 +253,8 @@
 - Fixed some bugs with the fruit editor.
 - Made fruits needed by default.
 - Supressed level win returning you to world map if it is from the test level
+
+## Oct 30 2026
+
+- Added level editor functionality to right click to act as an eraser for the tilemap of the selected object
+- Added click and drag level editor functionality, allowing for easier placement of multiple of the same entity.

@@ -1180,6 +1180,24 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""d0954120-e8a7-44b9-94d2-ec20c5233a3b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""608f1d0c-3e0d-4f62-bae0-b9389a75f284"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1202,6 +1220,39 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MousePos_UNUSED"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97f037f0-19ea-4cf2-bdbe-76a14d5817e6"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cbebd6f1-755d-47c8-a93f-72c8a2f78745"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b607b26-0276-4250-b835-a563620e571d"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1548,6 +1599,8 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_LevelEditor = asset.FindActionMap("LevelEditor", throwIfNotFound: true);
         m_LevelEditor_Click = m_LevelEditor.FindAction("Click", throwIfNotFound: true);
         m_LevelEditor_MousePos_UNUSED = m_LevelEditor.FindAction("MousePos_UNUSED", throwIfNotFound: true);
+        m_LevelEditor_Shift = m_LevelEditor.FindAction("Shift", throwIfNotFound: true);
+        m_LevelEditor_RightClick = m_LevelEditor.FindAction("RightClick", throwIfNotFound: true);
         // WorldMap
         m_WorldMap = asset.FindActionMap("WorldMap", throwIfNotFound: true);
         m_WorldMap_MoveUp = m_WorldMap.FindAction("MoveUp", throwIfNotFound: true);
@@ -2257,6 +2310,8 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private List<ILevelEditorActions> m_LevelEditorActionsCallbackInterfaces = new List<ILevelEditorActions>();
     private readonly InputAction m_LevelEditor_Click;
     private readonly InputAction m_LevelEditor_MousePos_UNUSED;
+    private readonly InputAction m_LevelEditor_Shift;
+    private readonly InputAction m_LevelEditor_RightClick;
     /// <summary>
     /// Provides access to input actions defined in input action map "LevelEditor".
     /// </summary>
@@ -2276,6 +2331,14 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "LevelEditor/MousePos_UNUSED".
         /// </summary>
         public InputAction @MousePos_UNUSED => m_Wrapper.m_LevelEditor_MousePos_UNUSED;
+        /// <summary>
+        /// Provides access to the underlying input action "LevelEditor/Shift".
+        /// </summary>
+        public InputAction @Shift => m_Wrapper.m_LevelEditor_Shift;
+        /// <summary>
+        /// Provides access to the underlying input action "LevelEditor/RightClick".
+        /// </summary>
+        public InputAction @RightClick => m_Wrapper.m_LevelEditor_RightClick;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2308,6 +2371,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @MousePos_UNUSED.started += instance.OnMousePos_UNUSED;
             @MousePos_UNUSED.performed += instance.OnMousePos_UNUSED;
             @MousePos_UNUSED.canceled += instance.OnMousePos_UNUSED;
+            @Shift.started += instance.OnShift;
+            @Shift.performed += instance.OnShift;
+            @Shift.canceled += instance.OnShift;
+            @RightClick.started += instance.OnRightClick;
+            @RightClick.performed += instance.OnRightClick;
+            @RightClick.canceled += instance.OnRightClick;
         }
 
         /// <summary>
@@ -2325,6 +2394,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @MousePos_UNUSED.started -= instance.OnMousePos_UNUSED;
             @MousePos_UNUSED.performed -= instance.OnMousePos_UNUSED;
             @MousePos_UNUSED.canceled -= instance.OnMousePos_UNUSED;
+            @Shift.started -= instance.OnShift;
+            @Shift.performed -= instance.OnShift;
+            @Shift.canceled -= instance.OnShift;
+            @RightClick.started -= instance.OnRightClick;
+            @RightClick.performed -= instance.OnRightClick;
+            @RightClick.canceled -= instance.OnRightClick;
         }
 
         /// <summary>
@@ -2791,6 +2866,20 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMousePos_UNUSED(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Shift" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShift(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RightClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRightClick(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "WorldMap" which allows adding and removing callbacks.
