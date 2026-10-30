@@ -258,3 +258,5 @@
 
 - Added level editor functionality to right click to act as an eraser for the tilemap of the selected object
 - Added click and drag level editor functionality, allowing for easier placement of multiple of the same entity.
+- Made it so that if you attempt to place an entity on top of that same entity in the level editor, it does not get replaced.
+    - This is important for stuff like fruit as it means the values won't be reset to default.

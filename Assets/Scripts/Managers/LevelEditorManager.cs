@@ -222,6 +222,15 @@ public class LevelEditorManager : MonoBehaviour
 
     void PlaceTileOnCell(Vector3Int mouseCellCoords)
     {
+        // If there already exists this same entity at the clicked location, don't replace it.
+        // This is important for interactables, as you don't want to accidentally reset the values!
+        // I have no plans for an undo in the editor (though it would actually be pretty easy to do? (compared to undo for the main game))
+        if (
+            targetTilemap.HasTile(mouseCellCoords)
+            && targetTilemap.GetTile(mouseCellCoords) == selectedTile
+        )
+            return;
+
         if (targetTilemap == interactable_e && interactable_e.HasTile(mouseCellCoords))
             SaveManager.RemoveEditorElementAtCoord(
                 EditorIdentity.INTERACTABLE,
@@ -296,5 +305,7 @@ public class LevelEditorManager : MonoBehaviour
                 OnRightClick();
             }
         }
+        else
+            mcc.z = -1; // This ensure that the next click will consider the first click "new", even if the mouse hasn't moved.
     }
 }
