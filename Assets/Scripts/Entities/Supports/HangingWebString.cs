@@ -46,6 +46,8 @@ public class HangingWebString : ISupport, IWalkable
 
     public SupportType GetSupportType() => SupportType.HANGING_WEB_STRING;
 
+    public bool IsAutoSupport() => false;
+
     public (Coord, Coord) GetBounds()
     {
         // Convetnion states that we provide coords left, right OR lower, upper. (shouldn't matter either way, but conventions are nice!)

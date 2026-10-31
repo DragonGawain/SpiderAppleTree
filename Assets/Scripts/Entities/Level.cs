@@ -43,6 +43,25 @@ public class Level
         walkables.Add(coord, walkable);
     }
 
+    public void AddWalkable(IWalkable walkable)
+    {
+        (Coord, Coord) bounds = walkable.GetBounds();
+        // vertical walkable
+        if (bounds.Item1.x == bounds.Item2.x)
+            for (int y = 0; y <= bounds.Item2.y - bounds.Item1.y; y++)
+                walkables.Add(bounds.Item1.ShiftY(y), walkable);
+        // horizontal walkable
+        else if (bounds.Item1.y == bounds.Item2.y)
+            for (int x = 0; x <= bounds.Item2.x - bounds.Item1.x; x++)
+                walkables.Add(bounds.Item1.ShiftX(x), walkable);
+        else
+            GameManager.DebugLog(
+                $"Attempted to add an IWalkable of type {walkable.GetType()}, but the IWalkable is not straight! Coord 1: {bounds.Item1}. Coord 2: {bounds.Item2}.",
+                GameManager.LogType.ERROR
+            );
+        AddNewElementToLevel(walkable);
+    }
+
     // Alias: OnBranchSnap
     public void RemoveWalkable(IWalkable walkabale)
     {
@@ -61,6 +80,8 @@ public class Level
         else if (bounds.Item1.y > bounds.Item2.y)
             for (int y = bounds.Item2.y; y <= bounds.Item1.y; y++)
                 walkables.Remove(new(bounds.Item1.x, y));
+        else
+            walkables.Remove(new(bounds.Item1.x, bounds.Item1.y));
     }
 
     public void ModifyIsWalkable(Coord oldC, Coord newC, IWalkable walkable)
@@ -81,8 +102,9 @@ public class Level
         interactables.Remove(coord);
     }
 
-    public void AddSupport(Coord coord, ISupport support)
+    public void AddSupport(ISupport support)
     {
+        Coord coord = support.GetCoord();
         // If there is no inner dict at that coord (i.e. this is the first support being added at this coord), create the inner dict.
         if (!supports.ContainsKey(coord))
             supports.Add(coord, new());
@@ -104,10 +126,10 @@ public class Level
     }
 
     // Alias. We only care about the support type for removals.
-    public void RemoveSupport(Coord coord, ISupport support) =>
-        RemoveSupport(coord, support.GetSupportType());
+    public void RemoveSupport(ISupport support) =>
+        RemoveSupport(support.GetCoord(), support.GetSupportType());
 
-    public void RemoveSupport(Coord coord, SupportType supportType)
+    void RemoveSupport(Coord coord, SupportType supportType)
     {
         if (!supports.ContainsKey(coord))
         {
@@ -212,9 +234,10 @@ public class Level
             Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
             Direction.DOWN => new(currentPos.x, currentPos.y - 1),
             Direction.LEFT => new(currentPos.x - 1, currentPos.y),
-            _ => throw new Exception(
-                "ERROR: Attempted to move the player in an undefined Direction"
-            ),
+            _
+                => throw new Exception(
+                    "ERROR: Attempted to move the player in an undefined Direction"
+                ),
         };
 
         GameManager.DebugLog(dir + ", " + targetCoord);
@@ -289,7 +312,7 @@ public class Level
 
     public int GetLevelID() => levelID;
 
-    ~Level()
+    public void UnloadLevel()
     {
         Player.PostMove -= PostMove;
     }

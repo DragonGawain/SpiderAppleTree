@@ -76,4 +76,6 @@ public class Fruit : IInteractable
         if (target != null && target.GetType() == typeof(Branch))
             ((Branch)target).UpdateWeightDelta(coord, weight);
     }
+
+    public Coord GetCoord() => coord;
 }

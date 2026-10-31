@@ -77,9 +77,10 @@ public class Player : MonoBehaviour
             Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
             Direction.DOWN => new(currentPos.x, currentPos.y - 1),
             Direction.LEFT => new(currentPos.x - 1, currentPos.y),
-            _ => throw new Exception(
-                "ERROR: Attempted to move the player in an undefined Direction"
-            ),
+            _
+                => throw new Exception(
+                    "ERROR: Attempted to move the player in an undefined Direction"
+                ),
         };
 
         StartCoroutine(SmoothMoveAnimation(oldCoord));
@@ -145,10 +146,7 @@ public class Player : MonoBehaviour
 
         PostMove?.Invoke();
 
-        if (GameManager.inWorldMap)
-            InputManager.EnableWorldInputs();
-        else
-            InputManager.EnableMovementInputs();
+        InputManager.ReenableMovementInputs();
     }
 
     public void RefreshPlayerWalkabale()

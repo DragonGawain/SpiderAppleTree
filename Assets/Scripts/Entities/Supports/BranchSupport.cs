@@ -15,7 +15,7 @@ public class BranchSupport : ISupport
         this.supportValue = supportValue;
 
         // supportSource.???
-        supportTarget.UpdateSupports(this);
+        supportTarget.AddOrUpdateSupports(this);
     }
 
     public Coord GetCoord() => coord;
@@ -28,4 +28,6 @@ public class BranchSupport : ISupport
     }
 
     public SupportType GetSupportType() => SupportType.BRANCH_SUPPORT;
+
+    public bool IsAutoSupport() => true;
 }

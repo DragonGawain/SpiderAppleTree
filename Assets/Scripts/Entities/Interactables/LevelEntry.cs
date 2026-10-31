@@ -39,4 +39,6 @@ public class LevelEntry : IInteractable
     }
 
     public void Refresh() { }
+
+    public Coord GetCoord() => coord;
 }

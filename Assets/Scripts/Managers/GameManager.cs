@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour
     // EVENTS
     public static event Action<int> OnLevelSelect;
 
+    [SerializeField]
+    GameObject entityVisualizerPrefab;
+
     // TRACKER VARS
     // static bool snapWarning = false;
     // static Direction lastDir;
@@ -65,6 +68,8 @@ public class GameManager : MonoBehaviour
 
         // This is really only valuable if I don't create an undo stack.
     }
+
+    public GameObject GetEntityVisualizerPrefab() => entityVisualizerPrefab;
 
     public void QuitGame()
     {

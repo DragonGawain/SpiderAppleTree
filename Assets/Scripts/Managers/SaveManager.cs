@@ -373,6 +373,8 @@ public class SaveManager : MonoBehaviour
         finally
         {
             creatingLevel = false;
+            newLevel.UnloadLevel();
+            newLevel = null;
         }
     }
 

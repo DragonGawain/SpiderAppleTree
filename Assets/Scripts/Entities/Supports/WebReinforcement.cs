@@ -15,4 +15,6 @@ public class WebReinforcement : ISupport
     }
 
     public SupportType GetSupportType() => SupportType.WEB_REINFORCEMENT;
+
+    public bool IsAutoSupport() => false;
 }

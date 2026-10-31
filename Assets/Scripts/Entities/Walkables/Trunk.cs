@@ -15,9 +15,11 @@ public class Trunk : IWalkable
         this.coord = coord;
         this.height = height;
 
-        LevelManager.GetActiveLevel().AddNewElementToLevel(this);
-        for (int i = coord.y; i < coord.y + height; i++)
-            LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
+        // LevelManager.GetActiveLevel().AddNewElementToLevel(this);
+        // for (int i = coord.y; i < coord.y + height; i++)
+        //     LevelManager.GetActiveLevel().AddWalkable(new Coord(coord.x, i), this);
+
+        LevelManager.GetActiveLevel().AddWalkable(this);
 
         // When a level is loaded, the last step is to refresh the walkable directions.
         // For trunks, this means clearing all the walkable directions and rebuilding them.

@@ -81,6 +81,14 @@ public class InputManager : MonoBehaviour
 #endif
     }
 
+    public static void ReenableMovementInputs()
+    {
+        if (GameManager.inWorldMap)
+            EnableWorldInputs();
+        else
+            EnableMovementInputs();
+    }
+
     #region global
     void Pause(InputAction.CallbackContext ctx) { }
 
@@ -110,6 +118,8 @@ public class InputManager : MonoBehaviour
 
     void VerifyAndCompleteMove(Direction dir)
     {
+        if (EntityVisualizer.GetIsVisualizing())
+            return;
         if (
             LevelManager
                 .GetActiveLevel()

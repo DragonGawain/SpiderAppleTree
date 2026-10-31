@@ -16,9 +16,9 @@ public class VerticalTrunkSupport : ISupport
         this.branch = branch;
         this.coord = dto.coord;
         this.supportValue = dto.supportValue;
-        branch.OnBranchSnap += OnSnap;
+        branch.OnBranchCreate += OnSnap;
 
-        branch.UpdateSupports(this, suppressRecalculation);
+        branch.AddOrUpdateSupports(this, suppressRecalculation);
     }
 
     public VerticalTrunkSupport(Coord coord, int supportValue, bool suppressRecalculation = false)
@@ -27,9 +27,9 @@ public class VerticalTrunkSupport : ISupport
         this.supportValue = supportValue;
 
         branch = (Branch)LevelManager.GetActiveLevel().GetWalkables()[coord];
-        branch.OnBranchSnap += OnSnap;
+        branch.OnBranchCreate += OnSnap;
 
-        branch.UpdateSupports(this, suppressRecalculation);
+        branch.AddOrUpdateSupports(this, suppressRecalculation);
     }
 
     public int GetSupportValue() => supportValue;
@@ -45,4 +45,6 @@ public class VerticalTrunkSupport : ISupport
     }
 
     public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT_V;
+
+    public bool IsAutoSupport() => true;
 }

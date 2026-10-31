@@ -12,9 +12,9 @@ public class TrunkSupport : ISupport
         this.branch = branch;
         this.coord = dto.coord;
         this.supportValue = dto.supportValue;
-        branch.OnBranchSnap += OnSnap;
+        branch.OnBranchCreate += OnSnap;
 
-        branch.UpdateSupports(this, suppressRecalculation);
+        branch.AddOrUpdateSupports(this, suppressRecalculation);
     }
 
     public TrunkSupport(Coord coord, int supportValue, bool suppressRecalculation = false)
@@ -23,9 +23,9 @@ public class TrunkSupport : ISupport
         this.supportValue = supportValue;
 
         branch = (Branch)LevelManager.GetActiveLevel().GetWalkables()[coord];
-        branch.OnBranchSnap += OnSnap;
+        branch.OnBranchCreate += OnSnap;
 
-        branch.UpdateSupports(this, suppressRecalculation);
+        branch.AddOrUpdateSupports(this, suppressRecalculation);
     }
 
     public int GetSupportValue() => supportValue;
@@ -41,6 +41,8 @@ public class TrunkSupport : ISupport
     }
 
     public SupportType GetSupportType() => SupportType.TRUNK_SUPPORT_H;
+
+    public bool IsAutoSupport() => true;
 }
 
 public readonly struct TrunkSupportDTO : ISupportDTO

@@ -114,9 +114,8 @@ public class LevelManager : MonoBehaviour
         try
         {
             using (
-                StreamReader sr = new(
-                    Path.Combine(SaveManager.levelPath, levelID.ToString() + ".txt")
-                )
+                StreamReader sr =
+                    new(Path.Combine(SaveManager.levelPath, levelID.ToString() + ".txt"))
             )
             {
                 string json = sr.ReadToEnd();
@@ -197,8 +196,8 @@ public class LevelManager : MonoBehaviour
 
         foreach (Branch b in branches)
         {
-            walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
-            for (int x = 1; x < b.length; x++)
+            // walkablesMap.SetTile(new Vector3Int(b.coord.x, b.coord.y), b_src_R);
+            for (int x = 0; x < b.length; x++)
                 walkablesMap.SetTile(new Vector3Int(b.coord.x + x, b.coord.y), b_bdy_R);
 
             b.FindTrunkSupports(true);
@@ -239,6 +238,9 @@ public class LevelManager : MonoBehaviour
                 .GetComponent<Goal>();
 
         loadingLevel = false;
+
+        if (GetActiveLevel().AllFruitsConsumed())
+            goalRef.Activate();
 
         // Recalculating supports is going overboard. I should really only need to update the weight map,
         // but I'm recalculating supports as a safety net.
@@ -282,6 +284,9 @@ public class LevelManager : MonoBehaviour
         if (goalRef != null)
             Destroy(goalRef.gameObject);
         goalRef = null;
+
+        if (activeLevel != null)
+            activeLevel.UnloadLevel();
         activeLevel = null;
     }
 

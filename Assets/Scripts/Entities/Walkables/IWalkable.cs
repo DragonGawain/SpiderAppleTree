@@ -16,7 +16,7 @@ public interface IWalkable : ILevelElement
     /// You can always exit a cell in any direction.
     /// </summary>
     /// <param name="y">The height of the walkable</param>
-    /// <param name="d">The direction that player is in relative to the walkable.
+    /// <param name="d"> **OUTDATED** The direction that player is in relative to the walkable.
     /// This means that if the player is moving to the left, the direction will be RIGHT.
     /// This odd behaviour comes about from the definition - "is the right side horizontally walkable?"
     /// This question only needs to be answered when the player is coming from the right side.
@@ -26,7 +26,7 @@ public interface IWalkable : ILevelElement
     bool CanWalkVertical(int x, Direction d) => false;
 
     /// <summary>
-    /// The first bound will always be the source of the IWalkable.
+    /// left -> right OR bot -> top
     /// </summary>
     /// <returns></returns>
     public (Coord, Coord) GetBounds();

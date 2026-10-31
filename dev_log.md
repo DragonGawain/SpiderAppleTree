@@ -266,3 +266,17 @@
     - Entity visualizer is NOT designed for minute animations (i.e. shaking trunks, etc)
 - Added method to Coord: `ToWorldSpace()` to transform the tilemap coordinates into world space coordinates.
 - Some planning stuff (notes)
+
+## Oct 31 2026
+
+- Removed branch source sprite from being placed (they were just looking awkward IMO)
+    - Also they would've made the EntityVisualizer plan for falling branches much more complicated.
+- Flagged `ISupport.SupportType` (enum) as obsolete. It's effectively manually stating what the class type is.
+- Started work on major branch snap refactoring so that I can make them fall n tiles per player move instead of falling all at once
+- Enforced that every `IInteractable` needs a `GetCoords` method (instead of relying on `public readonly Coord coord`)
+- Made it so that the goal portal will animate if a level has no fruits (or rather, if there are no needed fruits when the level is loaded)
+- Offloaded the bounds calculation for adding new walkables to the level to `Level.cs`. It just makes SO much more sense that the calc be there.
+- Wow that took me like, 5 hours of work, but the branch snap refactor is now first draft complete! Moving on to testing and bug finding...
+- EntityVisualizer is an exposed field in the GameManager.
+- Cleaned up extra levels that were just hanging on but should have been garbage collected.
+- The magic of 'put debug log were suspected problem is makes the problem dissapear' has worked once again! haha! (I think the bugs are all cleaned up!) (actually I just wasn't storing the right side of the branch properly and it was causing all sorts of issues)
