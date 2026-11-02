@@ -265,7 +265,7 @@ public class Branch : IWalkable
         RecalculateActualWeight();
     }
 
-    public void UpdateWeightDelta(Coord crd, int delta)
+    public void UpdateWeightDelta(Coord crd, int delta, bool isWeightPlayer = false)
     {
         // HACK:: ensure that weightDeltas are never negative.
         // Not sure if I actually "need" to, because weightD is typically only applied if above 0..
@@ -273,6 +273,13 @@ public class Branch : IWalkable
         GameManager.DebugLog(
             $"<color=black>Updating weight of branch id {instanceID} at {crd} by {delta} </color>"
         );
+        if (isWeightPlayer && branchType == BranchType.WEBBED)
+        {
+            GameManager.DebugLog(
+                $"<color=black>Weight source is player on webbed branch! Not updating weight delta!</color>"
+            );
+            return;
+        }
 
         weightDeltas[CoordToSegmentIndex(crd)] += delta;
         // if (
@@ -405,302 +412,6 @@ public class Branch : IWalkable
         }
     }
 
-    // TODO:: Instead of a branch falling all at once, it should fall downwards two cells every turn until it rests on in its target position.
-    // Branches fall two cells at a time because webrella would go down 1 cell at a time, and branches should fall faster than the webrella
-    bool BranchSnapCheck(List<int> supportIndices)
-    {
-        for (int seg = 0; seg < length; seg++)
-        {
-            // A weight of value 0 or less has been detected!
-            // The branch should snap!
-            if (actualWeight[seg] <= 0)
-            {
-                GameManager.DebugLog("SNAP DETECTED!");
-                GameManager.DebugLog(
-                    "PRE number of walkables: " + LevelManager.GetActiveLevel().GetWalkables().Count
-                );
-
-                LevelManager levelManager = GameManager
-                    .GetManagerSingleton()
-                    .GetComponent<LevelManager>();
-
-                // Step 0: remove this branch from the level list.
-                LevelManager.GetActiveLevel().RemoveWalkable(this);
-                levelManager.ClearBranch(this);
-
-                // Step 1: set up for the creation of up to 3 new branches (left, mid (falling), right)
-                Branch leftBranch,
-                    midBranch,
-                    rightBranch;
-
-                // And the corresponding supports that each segment will have
-                // The middle segment has no supports because it's falling. The supports don't fall with it..
-                // INFO:: Maybe flying fruit? I have an idea for a level where a branch suspended by a flying fruit on each end bobs up and down as needed,
-                // so the flying fruit would need to travel with the branch...
-                List<ISupport> leftSupports = new();
-                List<ISupport> rightSupports = new();
-
-                List<ISupport> midSupports = new();
-                List<Coord> midBranchSegments = new();
-
-                // Step 2: determine the legnth of each of the segments.
-                // We know that the `seg` value is at the leftmost index that is <= 0, so that's a good starting point.
-                // We also determine the actual number of segments needed here.
-                // We also build the left/right segments that are the leftover pieces of the old branch that remain in place.
-
-                if (seg > 1)
-                {
-                    // create leftBranch piece, only if it would exist.
-                    // We don't assume the entire branch falls if this is false because it's possible that the only supports are on the right
-                    leftBranch = new(coord, seg - 1);
-                    OnBranchCreate?.Invoke(
-                        leftBranch.coord,
-                        new(leftBranch.coord.x + (leftBranch.length - 1), leftBranch.coord.y),
-                        leftBranch
-                    );
-                    levelManager.RefreshBranch(leftBranch);
-                    leftBranch.RefreshInteractables();
-                }
-                // middle section is the falling section!
-                int midLength = seg;
-                Coord onceLeft = new(coord.x + (midLength - 1), coord.y);
-                // we only add the coordinate one to the left of the snap point if it is part of the snapped branch
-                if (coord.x <= onceLeft.x && onceLeft.x <= GetBounds().Item2.x)
-                    midBranchSegments.Add(onceLeft);
-                // Add segments to the falling piece until a value that is greater than 0 is found.
-                // Add that segment, then check for supports to the right
-                for (; midLength < length; midLength++)
-                {
-                    midBranchSegments.Add(new(coord.x + midLength, coord.y));
-                    if (actualWeight[midLength] > 0)
-                        break;
-                }
-                // Are there supports to the right of the minimum falling segments?
-                bool right = supportIndices.Any(s => s > midLength);
-
-                midLength++;
-                // If not, add the rest of the branch to the mid segment
-                if (!right)
-                {
-                    for (; midLength < length; midLength++)
-                        midBranchSegments.Add(new(coord.x + midLength, coord.y));
-                }
-                // If yes, create the right segment
-                else
-                {
-                    // right branch segment
-                    if (length - midLength > 0)
-                    {
-                        // create rightBranch piece
-                        rightBranch = new(new(coord.x + midLength, coord.y), length - midLength);
-                        OnBranchCreate?.Invoke(
-                            rightBranch.coord,
-                            new(
-                                rightBranch.coord.x + (rightBranch.length - 1),
-                                rightBranch.coord.y
-                            ),
-                            rightBranch
-                        );
-                        levelManager.RefreshBranch(rightBranch);
-                        rightBranch.RefreshInteractables();
-                    }
-                }
-
-                // Step 3: Determine if the falling segment has any applicable supports
-                // Since supports outside of the falling region remove themselves, we know that all remaining supports belong to the falling region!
-                foreach (ISupport support in supportsList)
-                {
-                    // TODO:: some operation to see if they are a hanging support or a static support.
-                    // For now, I'm assuming all static, so I don't need to do anything.
-                    // Will simply need to not add any static supports to the midSupports list
-                }
-
-                // Step 4: Find the place where the falling branch should settle. The conditions for settling are:
-                // 1) Any segment lands on another branch => combine all touched branches together (form a bridge!)
-                // 2) A hanging support becomes taut // TODO I haven't set up hanging supports yet, so I won't write this logic yet
-                // 3) Flying fruit stabilize the branch height [NOT SURE IF I WILL IMPLEMENT THIS. IT'S A BIT OF SCOPE CREEP]
-
-                // Debug logs: original position of the falling segments
-                // NOTE:: I might want to export the stuff below here to helper methods and switch based on branch typem if that becomes a thing.
-                GameManager.DebugLog("mid branch segment coords: ");
-                foreach (Coord mbs in midBranchSegments)
-                {
-                    GameManager.DebugLog(mbs.ToString());
-                }
-
-                int minX = midBranchSegments[0].x;
-                int maxX = midBranchSegments[^1].x;
-                // in place swap
-                if (minX > maxX)
-                {
-                    maxX -= minX;
-                    minX += maxX;
-                    maxX = minX - maxX;
-                }
-                int y = coord.y - 1;
-
-                // scan every place the falling branch would pass through, from top to bottom, left to right
-                for (; y >= -1; y--)
-                {
-                    // TODO:: check for taut hanging support here
-                    for (int x = minX; x <= maxX; x++)
-                        if (LevelManager.GetActiveLevel().GetWalkables().ContainsKey(new(x, y)))
-                            goto FallingBranchCollisionFound;
-                    // break;
-                }
-
-                FallingBranchCollisionFound:
-                GameManager.DebugLog("Potential landing coords found at y level: " + y);
-
-                // Step 5: if the branch landed on something (i.e. y > -1), build the new branch!
-                // if y is -1, it means it found nothing to land on, and so we shouldn't do anything. Just let the branch delete itself.
-                if (y > -1)
-                {
-                    // Get all the walkabales underneath the branch
-                    // Defined as a hashset to enforce element uniqueness
-                    HashSet<IWalkable> walkables = LevelManager
-                        .GetActiveLevel()
-                        .GetWalkables()
-                        .Where(kvp => kvp.Key.y == y && kvp.Key.x >= minX && kvp.Key.x <= maxX)
-                        .Select(kvp => kvp.Value)
-                        .ToHashSet();
-
-                    // if we find at least 1 trunk segment...
-                    // We lift up the branch by 1
-                    // (we know the space is empty, cause if it wasn't the branch would have collided with whatever is above it)
-                    // And have the trunk(s) give support from underneath.
-                    // (also need to make the portions connecting the branch to the trunk vertically walkable)
-                    if (walkables.Any(w => w.GetType() == typeof(Trunk)))
-                    {
-                        y++;
-                        midBranch = new(new(minX, y), midBranchSegments.Count, false);
-                        midBranch.FindTrunkSupports(true);
-                    }
-                    // Otherwise, we haven't landed on a trunk.
-                    // At the moment, the only possibility in this case is that we've landed on at least 1 branch.
-                    else
-                    {
-                        // In this case, the first thing we need to do is expand the search slightly: 1 tile left, and 1 tile right
-                        // left scan
-                        // if (
-                        //     LevelManager
-                        //         .GetActiveLevel()
-                        //         .GetWalkables()
-                        //         .ContainsKey(new(minX - 1, y))
-
-                        // )
-                        if (
-                            LevelManager
-                                .GetActiveLevel()
-                                .GetWalkables()
-                                .Where(ws => ws.Key.Equals(new Coord(minX - 1, y)))
-                                .Select(kvp => kvp.Value.GetType() == typeof(Branch))
-                                .First()
-                        )
-                            walkables.Add(
-                                LevelManager.GetActiveLevel().GetWalkables()[new(minX - 1, y)]
-                            );
-                        // right scan
-                        // if (
-                        //     LevelManager
-                        //         .GetActiveLevel()
-                        //         .GetWalkables()
-                        //         .ContainsKey(new(maxX + 1, y))
-                        // )
-                        if (
-                            LevelManager
-                                .GetActiveLevel()
-                                .GetWalkables()
-                                .Where(ws => ws.Key.Equals(new Coord(maxX + 1, y)))
-                                .Select(kvp => kvp.Value.GetType() == typeof(Branch))
-                                .First()
-                        )
-                            walkables.Add(
-                                LevelManager.GetActiveLevel().GetWalkables()[new(maxX + 1, y)]
-                            );
-
-                        (Coord, Coord) bounds;
-                        Branch landed;
-                        List<Coord> fallenMidBranchSegments = new();
-                        foreach (Coord c in midBranchSegments)
-                            fallenMidBranchSegments.Add(new(c.x, y));
-
-                        foreach (IWalkable walkable in walkables)
-                        {
-                            bounds = walkable.GetBounds();
-                            if (bounds.Item1.x < bounds.Item2.x)
-                                for (int xb = bounds.Item1.x; xb <= bounds.Item2.x; xb++)
-                                    fallenMidBranchSegments.Add(new(xb, y));
-                            else if (bounds.Item1.x > bounds.Item2.x)
-                                for (int xb = bounds.Item2.x; xb <= bounds.Item1.x; xb++)
-                                    fallenMidBranchSegments.Add(new(xb, y));
-
-                            // HACK:: I'm assuming that if the branch didn't land on a trunk, it landed on a branch.
-                            // This will not always be true.
-                            landed = (Branch)walkable;
-                            // Know what was supporting the branches the falling branch landed on
-                            foreach (ISupport s in landed.supportsList)
-                                midSupports.Add(s);
-                            // Lastly, remove the branche(s) that we landed on from the level.
-                            LevelManager.GetActiveLevel().RemoveWalkable(walkable);
-                            levelManager.ClearBranch(landed);
-                        }
-
-                        // remove duplicates and order the elements in ascending order of x values (i.e. make it face right)
-                        // Also remove the original segments. We only want the segments at the appropriate height.
-                        fallenMidBranchSegments = fallenMidBranchSegments
-                            .Distinct()
-                            .Where(c => c.y == y)
-                            .OrderBy(c => c.x)
-                            .ToList();
-
-                        GameManager.DebugLog(
-                            "<color=yellow>mid branch segment coords - combined: </color>"
-                        );
-                        foreach (Coord mbs in fallenMidBranchSegments)
-                        {
-                            GameManager.DebugLog(mbs.ToString());
-                        }
-
-                        midBranch = new(
-                            fallenMidBranchSegments[0],
-                            fallenMidBranchSegments.Count,
-                            false
-                        );
-                        foreach (ISupport s in midSupports)
-                        {
-                            if (s.GetType() == typeof(TrunkSupport))
-                            {
-                                new TrunkSupport(
-                                    midBranch,
-                                    new(s.GetCoord(), s.GetSupportValue()),
-                                    true
-                                );
-                            }
-                        }
-                    }
-                    levelManager.RefreshBranch(midBranch);
-                    midBranch.RefreshInteractables();
-                }
-
-                GameManager.DebugLog(
-                    "POST number of walkables: "
-                        + LevelManager.GetActiveLevel().GetWalkables().Count
-                );
-
-                LevelManager.GetActiveLevel().RemoveElementFromLevel(this);
-                OnGlobalBranchSnap.Invoke();
-                GameManager.DebugLog(
-                    "<color=red>Branch snap completed successfully. A branch with original origin of "
-                        + coord
-                        + " been snapped and recalculated.</color>"
-                );
-                return true;
-            }
-        }
-        return false;
-    }
-
     bool BranchSnapRefactor()
     {
         List<int> supportIndices = new();
@@ -719,8 +430,8 @@ public class Branch : IWalkable
 
             // DEBUG BELOW v
             List<ISupport> leftSupports = supportsList
-                .Where(
-                    s => s.GetCoord().x < coord.x + seg - 1 /*&& !s.IsAutoSupport()*/
+                .Where(s =>
+                    s.GetCoord().x < coord.x + seg - 1 /*&& !s.IsAutoSupport()*/
                 )
                 .ToList();
 
@@ -752,7 +463,6 @@ public class Branch : IWalkable
             levelManager.ClearBranch(this);
 
             // Step 1: set up for the creation of up to 3 new branches (left, mid (falling), right)
-
 
             List<ISupport> midSupports = new(); // ???
 

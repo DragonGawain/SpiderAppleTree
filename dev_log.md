@@ -280,3 +280,7 @@
 - EntityVisualizer is an exposed field in the GameManager.
 - Cleaned up extra levels that were just hanging on but should have been garbage collected.
 - The magic of 'put debug log were suspected problem is makes the problem dissapear' has worked once again! haha! (I think the bugs are all cleaned up!) (actually I just wasn't storing the right side of the branch properly and it was causing all sorts of issues)
+
+## Nov 2 2026
+
+- Added clause for player to not alter weight delta of webbed branch.

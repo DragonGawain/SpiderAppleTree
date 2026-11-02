@@ -46,10 +46,10 @@ public class Player : MonoBehaviour
     public void AlterWeight(int delta)
     {
         // We assume that the player's weight has already been accounted for (it should be...)
-        // so, we only need to adjust the branche's weight by the current weight.
+        // so, we only need to adjust the branch's weight by the current weight.
         if (occupiedBranch != null)
         {
-            occupiedBranch.UpdateWeightDelta(currentPos, delta);
+            occupiedBranch.UpdateWeightDelta(currentPos, delta, true);
             LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
         }
         weight += delta;
@@ -77,10 +77,9 @@ public class Player : MonoBehaviour
             Direction.RIGHT => new(currentPos.x + 1, currentPos.y),
             Direction.DOWN => new(currentPos.x, currentPos.y - 1),
             Direction.LEFT => new(currentPos.x - 1, currentPos.y),
-            _
-                => throw new Exception(
-                    "ERROR: Attempted to move the player in an undefined Direction"
-                ),
+            _ => throw new Exception(
+                "ERROR: Attempted to move the player in an undefined Direction"
+            ),
         };
 
         StartCoroutine(SmoothMoveAnimation(oldCoord));
@@ -125,7 +124,7 @@ public class Player : MonoBehaviour
 
         if (occupiedBranch != null)
         {
-            occupiedBranch.UpdateWeightDelta(oldCoord, -weight);
+            occupiedBranch.UpdateWeightDelta(oldCoord, -weight, true);
             LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
         }
 
@@ -133,7 +132,7 @@ public class Player : MonoBehaviour
         {
             occupiedBranch = (Branch)target;
             Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
-            occupiedBranch.UpdateWeightDelta(currentPos, weight);
+            occupiedBranch.UpdateWeightDelta(currentPos, weight, true);
             LevelManager.GetActiveLevel().RegisterPendingRecalculation(occupiedBranch);
         }
         else
@@ -192,7 +191,7 @@ public class Player : MonoBehaviour
             {
                 occupiedBranch = (Branch)walkable;
                 Debug.Log("OCCUPYING BRANCH OF ID: " + occupiedBranch.instanceID);
-                occupiedBranch.UpdateWeightDelta(currentPos, weight);
+                occupiedBranch.UpdateWeightDelta(currentPos, weight, true);
                 occupiedBranch.RecalculateActualWeight();
             }
         }
