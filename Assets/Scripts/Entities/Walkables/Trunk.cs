@@ -56,4 +56,9 @@ public class Trunk : IWalkable
     }
 
     public (Coord, Coord) GetBounds() => (coord, new(coord.x, coord.y + height - 1));
+
+    public bool LandMergeCheck(Branch branch)
+    {
+        return true;
+    }
 }

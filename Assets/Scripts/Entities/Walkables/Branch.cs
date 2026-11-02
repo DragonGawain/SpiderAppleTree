@@ -160,10 +160,12 @@ public class Branch : IWalkable
             .TryGetValue(coord.ShiftX(-1), out IWalkable walkable);
         if (walkable != null && walkable.GetType() == typeof(Trunk))
         {
-            new TrunkSupport(
-                coord,
-                LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                true
+            supportsList.Add(
+                new TrunkSupport(
+                    coord,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                )
             );
             ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.LEFT);
         }
@@ -171,10 +173,12 @@ public class Branch : IWalkable
         LevelManager.GetActiveLevel().GetWalkables().TryGetValue(end.ShiftX(1), out walkable);
         if (walkable != null && walkable.GetType() == typeof(Trunk))
         {
-            new TrunkSupport(
-                end,
-                LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                true
+            supportsList.Add(
+                new TrunkSupport(
+                    end,
+                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
+                    true
+                )
             );
             ((Trunk)walkable).AddHorizontalConnection(coord.y, Direction.RIGHT);
         }
@@ -202,10 +206,15 @@ public class Branch : IWalkable
             if (walkable != null && walkable.GetType() == typeof(Trunk))
             {
                 // TODO:: change to veritcal trunk support
-                new TrunkSupport(
-                    new(x, coord.y),
-                    LevelManager.GetActiveLevel().GetInitialLevelDataContainer().baseTrunkSupport,
-                    true
+                supportsList.Add(
+                    new TrunkSupport(
+                        new(x, coord.y),
+                        LevelManager
+                            .GetActiveLevel()
+                            .GetInitialLevelDataContainer()
+                            .baseTrunkSupport,
+                        true
+                    )
                 );
                 if (addVerticalConections)
                     verticalWalkables.Add(x);
@@ -224,7 +233,10 @@ public class Branch : IWalkable
         if (!supportsList.Contains(support))
             supportsList.Add(support);
         int segmentIndex = CoordToSegmentIndex(support.GetCoord());
-        rawSupports[segmentIndex] += support.GetSupportValue();
+        rawSupports[segmentIndex] = 0;
+        foreach (ISupport iSup in supportsList)
+            if (iSup.GetCoord().Equals(support.GetCoord()))
+                rawSupports[segmentIndex] += support.GetSupportValue();
 
         // HACK
         // DEBUG
@@ -407,12 +419,12 @@ public class Branch : IWalkable
         {
             // if (!BranchSnapCheck(supportIndices))
             //     UpdateWeightMap();
-            if (!BranchSnapRefactor())
+            if (!BranchSnap())
                 UpdateWeightMap();
         }
     }
 
-    bool BranchSnapRefactor()
+    bool BranchSnap()
     {
         List<int> supportIndices = new();
 
@@ -533,6 +545,7 @@ public class Branch : IWalkable
         Branch branch = new(src, length);
 
         // Add each of the non-auto supports.
+        // BUG:: This has a problem with hanging web strings. HWS's need references to their upper and lower branches.
         supportsList.ForEach(s =>
         {
             if (comp(s.GetCoord().x, src.x - 1) && !s.IsAutoSupport())
@@ -614,6 +627,8 @@ public class Branch : IWalkable
         // A falling branch can only be stopped by landing on top of a tree (stump), or by landing on top of another branch.
         // This is NOT the same as landing on top of another walkable since there are other types of walkables (webs)
 
+        bool ret = false;
+
         for (int seg = 0; seg < length; seg++)
         {
             // If landing ON TOP OF something
@@ -624,27 +639,31 @@ public class Branch : IWalkable
                     .TryGetValue(coord.ShiftXY(seg, -1), out walkable)
             )
             {
-                // Hollow branches land on top of existing branches
-                if (
-                    walkable.GetType() == typeof(Trunk)
-                    || (branchType == BranchType.HOLLOW && walkable.GetType() == typeof(Branch))
-                )
-                    return true;
-                // If there is another branch below, set the flag to state such.
-                // We do not return false here because there might be a trunkunder the falling branch to the right.
-                // If there is a trunk, we prioritize landing on it over mergin with the branch below.
-                else if (walkable.GetType() == typeof(Branch))
-                    mergeTargets.Add((Branch)walkable);
-                else
-                {
-                    // TODO:: falling branch-???(web?) collision handling
-                    // Webs should be destroyed?
-                    // Maybe webs can catch webbed branches?
-                    // Will need to decide.
-                }
+                // if ret is already true, this will short circuit
+                ret = ret || walkable.LandMergeCheck(this);
+
+                // // Hollow branches land on top of existing branches
+                // if (
+                //     walkable.GetType() == typeof(Trunk)
+                //     || (branchType == BranchType.HOLLOW && walkable.GetType() == typeof(Branch))
+                // )
+                //     return true;
+                // // If there is another branch below, set the flag to state such.
+                // // We do not return false here because there might be a trunkunder the falling branch to the right.
+                // // If there is a trunk, we prioritize landing on it over mergin with the branch below.
+                // else if (walkable.GetType() == typeof(Branch))
+                //     mergeTargets.Add((Branch)walkable);
+                // else
+                // {
+                //     // TODO:: falling branch-???(web?) collision handling
+                //     // Webs should be destroyed?
+                //     // Maybe webs can catch webbed branches?
+                //     // Will need to decide.
+                // }
             }
         }
-        return false;
+        return ret;
+        // return false;
     }
 
     /// <summary>
@@ -706,6 +725,8 @@ public class Branch : IWalkable
         RefreshInteractables();
     }
 
+    public void AddMergeTarget(Branch b) => mergeTargets.Add(b);
+
     void RefreshInteractables()
     {
         (Coord, Coord) bounds = GetBounds();
@@ -761,11 +782,19 @@ public class Branch : IWalkable
         // TODO:: for 'heavy branches' (if they become a thing), this is how they will snap all the branches it collides with as it falls
     }
 
-    int CoordToSegmentIndex(Coord crd) => crd.x - coord.x;
+    public int CoordToSegmentIndex(Coord crd) => crd.x - coord.x;
 
     public Coord SegmentIndexToCoord(int index) => new(coord.x + index, coord.y);
 
     public (Coord, Coord) GetBounds() => (coord, new(coord.x + length - 1, coord.y));
+
+    public bool LandMergeCheck(Branch branch)
+    {
+        if (branch.branchType == BranchType.HOLLOW)
+            return true;
+        branch.AddMergeTarget(this);
+        return false;
+    }
 
     ~Branch()
     {

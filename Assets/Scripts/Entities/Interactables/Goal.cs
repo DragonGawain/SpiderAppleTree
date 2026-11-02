@@ -5,6 +5,8 @@ using UnityEngine;
 // The object itself is purely a visual indicator and the script does not implement IInteractable,
 // but it is a quasi-interactable in the sense that it is interacted with.
 // Just, the check for interactoin is based on the position stored in the Level object.
+
+// HACK:: Why is this not an AnimationTile?
 [RequireComponent(typeof(SpriteRenderer))]
 public class Goal : MonoBehaviour
 {

@@ -284,3 +284,8 @@
 ## Nov 2 2026
 
 - Added clause for player to not alter weight delta of webbed branch.
+- More refactor work on how falling branch landing/merging is done
+    - The actual calculations are the same, but I learnt in my refactoring class today a better way to do it. The checks have been abstracted out to each IWalkable (IWalkable interface modified to include a new method in the contract).
+    - This increases maintainability since the logic for land/merge for each IWalkable is contained within the IWalkable class.
+- Work on HangingWabStrings.
+- Trunk supports are now included in a `Branch`'s `supportList`.

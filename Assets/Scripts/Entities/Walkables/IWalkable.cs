@@ -1,11 +1,13 @@
 using Unity.Mathematics;
+using Unity.VisualScripting;
+using UnityEngine.Tilemaps;
 
 public enum Direction
 {
     LEFT,
     UP,
     RIGHT,
-    DOWN
+    DOWN,
 }
 
 public interface IWalkable : ILevelElement
@@ -30,4 +32,7 @@ public interface IWalkable : ILevelElement
     /// </summary>
     /// <returns></returns>
     public (Coord, Coord) GetBounds();
+
+    // public void DrawWalkable(Tilemap walkablesMap)
+    public bool LandMergeCheck(Branch branch);
 }
